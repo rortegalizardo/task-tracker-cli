@@ -1,0 +1,12 @@
+{
+  "name": "task-tracker-cli",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Task tracker CLI (M1 trial). Node.js built-in libraries only.",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "test": "node --test"
+  }
+}
