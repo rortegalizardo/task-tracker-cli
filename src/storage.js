@@ -88,10 +88,46 @@ function reasonOf(err) {
     case 'EISDIR': return 'it is a folder';
     case 'EEXIST': return 'it exists but is not a folder';
     case 'ENOTDIR': return 'a parent of it is not a folder';
+    case 'ENOENT': return 'no such file or folder';
     case 'EACCES':
     case 'EPERM': return 'permission denied';
     default: return err.code || 'unknown error';
   }
+}
+
+// The one serialization of a list: documented key order, two-space indent, a
+// final line break. Used by writeList and export.
+function serializeList(list) {
+  const canonical = {
+    nextId: list.nextId,
+    tasks: list.tasks.map((t) => ({ id: t.id, title: t.title, status: t.status, due: t.due, tags: t.tags })),
+  };
+  return JSON.stringify(canonical, null, 2) + '\n';
+}
+
+// The one parse path for stored lists and import files. Returns { list } or
+// { problem }; never throws. A whole number JSON.parse would round (above
+// 2^53-1) becomes NaN, so the id and nextId checks refuse it.
+function parseList(text) {
+  let data;
+  try {
+    data = JSON.parse(text, (key, value, context) => {
+      if (
+        typeof value === 'number' &&
+        Number.isInteger(value) &&
+        !Number.isSafeInteger(value) &&
+        context.source !== String(value)
+      ) {
+        return NaN;
+      }
+      return value;
+    });
+  } catch {
+    return { problem: 'not valid JSON' };
+  }
+  const problem = validateList(data);
+  if (problem !== null) return { problem };
+  return { list: data };
 }
 
 // Never writes. A missing file is an empty list.
@@ -105,15 +141,9 @@ function readList(env) {
     if (err.code === 'ENOENT') return { nextId: 1, tasks: [] };
     throw fail(reasonOf(err));
   }
-  let data;
-  try {
-    data = JSON.parse(text);
-  } catch {
-    throw fail('not valid JSON');
-  }
-  const problem = validateList(data);
-  if (problem !== null) throw fail(problem);
-  return data;
+  const parsed = parseList(text);
+  if (parsed.problem !== undefined) throw fail(parsed.problem);
+  return parsed.list;
 }
 
 // The atomic primitive: write `text` to a temp file next to `file`, flush it,
@@ -170,10 +200,19 @@ function writeList(list, env) {
     const made = fs.mkdirSync(dir, { recursive: true, mode: 0o700 });
     // Only a folder this call created; the umask cannot weaken it.
     if (made !== undefined) fs.chmodSync(dir, 0o700);
-    replaceFile(file, JSON.stringify(list, null, 2) + '\n', 0o600);
+    replaceFile(file, serializeList(list), 0o600);
   } catch (err) {
     throw new TtcError('cannot write ' + file + ': ' + reasonOf(err));
   }
 }
 
-module.exports = { dataPaths, validateList, readList, replaceFile, writeList };
+module.exports = {
+  dataPaths,
+  validateList,
+  serializeList,
+  parseList,
+  reasonOf,
+  readList,
+  replaceFile,
+  writeList,
+};
