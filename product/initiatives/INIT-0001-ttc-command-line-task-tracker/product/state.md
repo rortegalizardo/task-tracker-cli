@@ -3,16 +3,16 @@ id: PSTATE-INIT-0001
 type: product-state
 title: Product definition state for INIT-0001
 status: authoritative
-revision: 4
+revision: 5
 owner_role: ROLE-product-manager
 created: 2026-10-20
 updated: 2026-10-20
 updated_by_role: ROLE-product-manager
 initiative: INIT-0001
-phase: PRODUCT_DEFINITION
+phase: SOLUTION_EXPLORATION
 phase_entered: 2026-10-20
 requester: "the requester (repository owner, rortegalizardo), via the parent session, 2026-10-20"
-next_action: "ROLE-product-manager: advance to SOLUTION_EXPLORATION, record the justified single option and dispatch the technical architect (planner, PRODUCT-DISCOVERY mode) for its feasibility verdict"
+next_action: "ROLE-planner (technical architect, PRODUCT-DISCOVERY mode): write technical/capability-scan.md, impact.md and assessment.md with a feasibility verdict for option A over REQ-0001..REQ-0010"
 blocked_by: []
 converged: false
 readiness_verdict: none   # none | READY | READY-with-known-issues | NOT READY | void
@@ -29,11 +29,10 @@ these two files never describe the same thing and never share a writer.
 
 ## Where this stands
 
-PRODUCT_DEFINITION done: the initiative states outcome O1–O10 and a non-empty
-out-of-scope section; ten draft `REQ-` records (one per spec item) cover it,
-with the Product Definition Contract beside them. Drafting found seven gaps in
-`PD-0002`; `PD-0003` supersedes it with the complete rule set. Next:
-SOLUTION_EXPLORATION and the architect's feasibility verdict.
+SOLUTION_EXPLORATION: one option, justified as a decision already made by the
+requester (see Options). Ten draft `REQ-` records cover outcome O1–O10;
+`PD-0003` holds the complete behaviour rules. Next: the technical architect's
+feasibility verdict for that option.
 
 ## Problem statement
 
@@ -61,9 +60,10 @@ the spec to the product manager (`PD-0001`).
 
 ## Next action
 
-ROLE-product-manager: advance to SOLUTION_EXPLORATION, record the justified
-single option, and dispatch the technical architect (`planner`,
-PRODUCT-DISCOVERY mode) for its feasibility verdict.
+ROLE-planner (technical architect, PRODUCT-DISCOVERY mode): write
+`technical/capability-scan.md`, `technical/impact.md` and
+`technical/assessment.md`, with a feasibility verdict for option A over
+`REQ-0001`…`REQ-0010`.
 
 ## Blocked by
 
@@ -165,8 +165,22 @@ package to a registry.
 
 | Option | User-visible difference | Feasibility verdict | Cost / risk | Trade-off |
 | --- | --- | --- | --- | --- |
+| A — the `ttc` command as the spec states it: ten command groups, one story each in the spec's order, behaviour per `PD-0003`, one JSON file at `$TTC_HOME/tasks.json`, Node 24 built-ins only | The whole of outcome O1–O10 | _pending — technical architect_ | _pending_ | None inside the spec: every alternative changes something the requester fixed |
 
-_Recommended option and why:_
+**Single option, justified as a decision already made** (§12.5 item 3, item
+6). The requester fixed the solution shape, not only the problem: the exact
+commands and flags, exactly ten stories in a stated dependency order, Node 24
+with built-in libraries only, no network, one JSON file with atomic writes, a
+CLI with no UI (raw spec; `PD-0001` items 1–3; `project/constraints.md` rows
+1–9). Every detail left open is decided in `PD-0003`. A second option would
+have to differ in something the requester fixed, for example a different
+command set, a database instead of one JSON file, or a third-party argument
+parser, and `PD-0001` item 1 rules those out. There is no visual surface, so
+no design directions are explored and no design role is dispatched
+(`PD-0001` item 3).
+
+_Recommended option and why:_ A, the only option inside the spec, subject to
+the technical architect's feasibility verdict.
 
 ## Consultation log
 
@@ -230,6 +244,7 @@ Written at HANDOFF. One row; a second row means a re-handoff after a regression.
 | 2026-10-20 | BOOTSTRAP | INTAKE | ROLE-product-manager | Packet emitted, scope resolved to none | Triage verdict `new-initiative`: no `CAP-` (index empty), no `PD-` (index empty), no constraint forbids it (constraint 1 agrees with the spec), no duplicate initiative, one outcome named. Entry precondition (`lifecycle-hooks.md` §3.4.1 INTAKE) holds: packet at `degraded` with `neighbouring` read. Degradation repaired per PM §8.5 in this phase: `PD-0001`, constraints rev 2, principles rev 2. Hooks: HOOK-initiative-resolved pass, HOOK-phase-entry pass | `e72be89a650ab320`, head `b8ee70d` |
 | 2026-10-20 | INTAKE | DISCOVERY | ROLE-product-manager | INTAKE exit criteria met: initiative drafted, problem stated with its source, every ambiguity classified, both escalation-class rows answered by the requester (`PD-0001`) | Entry precondition (`lifecycle-hooks.md` §3.4.1 DISCOVERY) holds: draft `INIT-0001`, state at INTAKE with requester, problem statement and a classified ambiguity log. Discovery written with sources; mission hardened (rev 2). No `Q-` raised. Hooks: HOOK-phase-entry pass | `321480b86ed398de`, head `4e5a324` |
 | 2026-10-20 | DISCOVERY | PRODUCT_DEFINITION | ROLE-product-manager | DISCOVERY exit criteria met: problem, user, current state and success signals stated with sources; no open escalation-class ambiguity | Entry precondition (`lifecycle-hooks.md` §3.4.1 PRODUCT_DEFINITION) holds: Discovery has users, jobs with sources (S1), capability mapping `none` (S2), success signals (S3) and non-goals. `PD-0002` records the answers to ambiguity rows 3–15. Hooks: HOOK-phase-entry pass | `d22ef5f6896a83fd`, head `060e431` |
+| 2026-10-20 | PRODUCT_DEFINITION | SOLUTION_EXPLORATION | ROLE-product-manager | PRODUCT_DEFINITION exit criteria met: outcome O1–O10, out-of-scope (11 items), success measures 1–6, ten draft `REQ-` covering every outcome element, Product Definition Contract citing the raw spec | Entry precondition (`lifecycle-hooks.md` §3.4.1 SOLUTION_EXPLORATION) holds: F1 initiative populated with outcome and non-empty out-of-scope; ≥1 draft `REQ-` (10); F2 draft-mode `validate-requirement-coverage`: no `R1` defect (only `R3` `CAP-` gaps, expected before DECOMPOSITION). `PD-0003` supersedes `PD-0002`. Hooks: HOOK-phase-entry pass | `6f24bfe7e6f949b4`, head `073ab45` |
 
 > Every product-side session updates this file before ending — **including
 > sessions that failed**, which record the failure in `next_action` and do not
