@@ -17,4 +17,7 @@ jobs:
         with:
           node-version: 24
       - run: npm run lint
-      - run: npm test
+      - run: npm run test:unit
+      - name: perf (ttc add / ttc list, 10,000 tasks)
+        if: ${{ !cancelled() }}
+        run: npm run test:perf
