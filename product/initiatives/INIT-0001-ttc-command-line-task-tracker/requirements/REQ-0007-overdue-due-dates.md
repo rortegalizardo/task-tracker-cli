@@ -3,7 +3,7 @@ id: REQ-0007
 type: requirement
 title: The ttc list command marks overdue tasks and can show only them
 status: draft
-revision: 3
+revision: 4
 owner_role: ROLE-product-manager
 created: 2026-10-20
 updated: 2026-10-20
@@ -27,7 +27,7 @@ acceptance:
   - "`ttc help` → stdout holds the usage line `ttc list [--open|--done|--all|--overdue] [--tag <t>]` in place of the usage line `ttc list [--open|--done|--all] [--tag <t>]` of the list story it depends on, and holds the usage lines of the other stories it depends on, exit code 0"
   - "`npm test` runs `node:test` tests covering every criterion above → all pass"
   - "the pull request delivering this story → the CI `test` check passes"
-capabilities: []
+capabilities: [CAP-0001]
 design_refs: []
 decisions: [PD-0001, PD-0003, PD-0004, PD-0005]
 depends_on: [REQ-0001, REQ-0002, REQ-0003, REQ-0004]

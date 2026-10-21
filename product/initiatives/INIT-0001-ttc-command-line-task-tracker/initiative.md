@@ -7,7 +7,7 @@ revision: 3
 owner_role: ROLE-product-manager
 created: 2026-10-20
 updated: 2026-10-20
-capabilities: []
+capabilities: [CAP-0001]
 requirements: [REQ-0001, REQ-0002, REQ-0003, REQ-0004, REQ-0005, REQ-0006, REQ-0007, REQ-0008, REQ-0009, REQ-0010]
 tickets: []
 decisions: [PD-0001, PD-0003, PD-0004, PD-0005]
@@ -121,7 +121,7 @@ From `project/constraints.md`, one line per row.
 
 ## Capabilities affected
 
-None yet — a capability record is created at DECOMPOSITION.
+- `CAP-0001` — A person tracks their tasks locally from the ttc command line (created by this initiative; `draft` until it ships). Every story `REQ-0001`…`REQ-0010` builds part of it.
 
 ## Open questions
 

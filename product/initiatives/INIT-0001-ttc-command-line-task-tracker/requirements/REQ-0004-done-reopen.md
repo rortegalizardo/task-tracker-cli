@@ -3,7 +3,7 @@ id: REQ-0004
 type: requirement
 title: The ttc done and ttc reopen commands change a task's status
 status: draft
-revision: 3
+revision: 4
 owner_role: ROLE-product-manager
 created: 2026-10-20
 updated: 2026-10-20
@@ -24,7 +24,7 @@ acceptance:
   - "`ttc help` → stdout holds the usage lines `ttc done <id>` and `ttc reopen <id>` as well as the usage lines of the stories it depends on, exit code 0"
   - "`npm test` runs `node:test` tests covering every criterion above → all pass"
   - "the pull request delivering this story → the CI `test` check passes"
-capabilities: []
+capabilities: [CAP-0001]
 design_refs: []
 decisions: [PD-0001, PD-0003, PD-0004, PD-0005]
 depends_on: [REQ-0001, REQ-0002, REQ-0003]

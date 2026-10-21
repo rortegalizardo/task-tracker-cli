@@ -197,6 +197,16 @@ product answers the PM gives at SOLUTION_CONVERGENCE under `PD-0001` item 1.
 
 | `REQ-` | Title | Status | `CAP-` | `DES-` | Sequencing note |
 | --- | --- | --- | --- | --- | --- |
+| `REQ-0001` | The ttc command prints its usage and keeps tasks in one atomically written file | draft | `CAP-0001` | none (no visual surface) | none — frontier; fixes the stored-file layout and argument rules every later story uses (C7) |
+| `REQ-0002` | The ttc add command records a task with an optional due date and tags | draft | `CAP-0001` | none (no visual surface) | after `REQ-0001` (`depends_on`) |
+| `REQ-0003` | The ttc list command shows tasks by status and tag, one line each, in id order | draft | `CAP-0001` | none (no visual surface) | after `REQ-0001`, `REQ-0002` (`depends_on`) |
+| `REQ-0004` | The ttc done and ttc reopen commands change a task's status | draft | `CAP-0001` | none (no visual surface) | after `REQ-0001`, `REQ-0002`, `REQ-0003` (`depends_on`); merges one at a time in `depends_on` order with its siblings (C7) |
+| `REQ-0005` | The ttc rename command changes a task's title | draft | `CAP-0001` | none (no visual surface) | after `REQ-0001`, `REQ-0002`, `REQ-0003` (`depends_on`); merges one at a time in `depends_on` order with its siblings (C7) |
+| `REQ-0006` | The ttc delete command removes a task and its id is never reused | draft | `CAP-0001` | none (no visual surface) | after `REQ-0001`, `REQ-0002`, `REQ-0003` (`depends_on`); merges one at a time in `depends_on` order with its siblings (C7) |
+| `REQ-0007` | The ttc list command marks overdue tasks and can show only them | draft | `CAP-0001` | none (no visual surface) | after `REQ-0001`, `REQ-0002`, `REQ-0003`, `REQ-0004` (`depends_on`); merges one at a time in `depends_on` order with its siblings (C7) |
+| `REQ-0008` | The ttc tag command adds or removes one tag on a task | draft | `CAP-0001` | none (no visual surface) | after `REQ-0001`, `REQ-0002`, `REQ-0003` (`depends_on`); merges one at a time in `depends_on` order with its siblings (C7) |
+| `REQ-0009` | The ttc export and ttc import commands copy the whole list to and from a file, and a file that fails validation changes nothing | draft | `CAP-0001` | none (no visual surface) | after `REQ-0001`, `REQ-0002`, `REQ-0003` (`depends_on`); merges one at a time in `depends_on` order with its siblings (C7) |
+| `REQ-0010` | The ttc stats command prints the totals of open, done and overdue tasks | draft | `CAP-0001` | none (no visual surface) | after `REQ-0001`, `REQ-0002`, `REQ-0003`, `REQ-0004`, `REQ-0007` (`depends_on`); merges one at a time in `depends_on` order with its siblings (C7) |
 
 ## Readiness log
 

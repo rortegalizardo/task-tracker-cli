@@ -3,7 +3,7 @@ id: REQ-0001
 type: requirement
 title: The ttc command prints its usage and keeps tasks in one atomically written file
 status: draft
-revision: 3
+revision: 4
 owner_role: ROLE-product-manager
 created: 2026-10-20
 updated: 2026-10-20
@@ -38,7 +38,7 @@ acceptance:
   - "after installing the package from the repository clone with npm (for example `npm install --global <clone>` with a temporary prefix), running `ttc help` by name → stdout holds the usage line `ttc help`, exit code 0"
   - "`npm test` runs `node:test` tests covering every criterion above → all pass"
   - "the pull request delivering this story → the CI `test` check passes"
-capabilities: []
+capabilities: [CAP-0001]
 design_refs: []
 decisions: [PD-0001, PD-0003, PD-0004, PD-0005]
 depends_on: [none]
