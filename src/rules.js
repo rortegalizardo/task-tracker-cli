@@ -1,7 +1,9 @@
 'use strict';
 
-// Pure validation rules for the stored form. Later stories reuse them for
-// user input.
+// Pure validation rules: the stored form (titleProblem, tagProblem,
+// isValidDate) and the user-typed input forms (inputTitle, inputTag).
+
+const { TtcError } = require('./errors');
 
 // C0 and C1 controls (U+0000-U+001F, U+007F-U+009F), which cover LF, CR and
 // U+0085, plus the line and paragraph separators U+2028 and U+2029.
@@ -45,4 +47,32 @@ function isValidDate(s) {
   return d >= 1 && d <= days;
 }
 
-module.exports = { titleProblem, tagProblem, isValidDate };
+const LINE_BREAKS = new Set([0x0a, 0x0d, 0x85, 0x2028, 0x2029]);
+
+// A user-typed title to its stored form, or a TtcError. Only U+0020 is
+// removed from both ends (not String.prototype.trim, which strips tabs too).
+function inputTitle(raw) {
+  let start = 0;
+  let end = raw.length;
+  while (start < end && raw[start] === ' ') start++;
+  while (end > start && raw[end - 1] === ' ') end--;
+  const title = raw.slice(start, end);
+  const chars = [...title];
+  // Line breaks first: LF, CR and U+0085 are also control characters.
+  if (title === '' || chars.some((ch) => LINE_BREAKS.has(ch.codePointAt(0)))) {
+    throw new TtcError('title must be one non-empty line');
+  }
+  if (chars.some(isControlOrBreak)) {
+    throw new TtcError('title must not contain control characters');
+  }
+  return title;
+}
+
+// A user-typed tag to its stored (lower case) form, or a TtcError. ASCII only,
+// so lower-casing never maps non-ASCII text.
+function inputTag(raw) {
+  if (/^[A-Za-z0-9][A-Za-z0-9_-]{0,31}$/.test(raw)) return raw.toLowerCase();
+  throw new TtcError('invalid tag: ' + raw);
+}
+
+module.exports = { titleProblem, tagProblem, isValidDate, inputTitle, inputTag };
