@@ -3,7 +3,7 @@ id: PSTATE-INIT-0001
 type: product-state
 title: Product definition state for INIT-0001
 status: authoritative
-revision: 15
+revision: 16
 owner_role: ROLE-product-manager
 created: 2026-10-20
 updated: 2026-10-20
@@ -12,7 +12,7 @@ initiative: INIT-0001
 phase: HANDOFF
 phase_entered: 2026-10-20
 requester: "the requester (repository owner, rortegalizardo), via the parent session, 2026-10-20"
-next_action: "ROLE-product-manager: run SKILL-create-tickets-from-stories (Linear project Task Tracker CLI in RCDEV, one issue per story), write delivery/tickets.md, then name the ticket_codes here"
+next_action: "ROLE-orchestrator: SKILL-resume-initiative, then deliver the ticket_codes RCDEV-822, RCDEV-823, RCDEV-824, RCDEV-825, RCDEV-826, RCDEV-827, RCDEV-828, RCDEV-829, RCDEV-830, RCDEV-831 one at a time in delivery/manifest.md order; frontier: RCDEV-822"
 blocked_by: []
 converged: true
 readiness_verdict: READY   # none | READY | READY-with-known-issues | NOT READY | void
@@ -194,6 +194,7 @@ product answers the PM gives at SOLUTION_CONVERGENCE under `PD-0001` item 1.
 | 2026-10-20 | sonnet drafting child (§9b; vendor claude, model sonnet) | `RUN: INIT-0001 step=decomposition` — repair coherence round 1 D1–D6 in the draft stories, with D5 and D6 settled by `PD-0006` | Repairs applied as briefed; acceptance mirrors body in all ten. PM validated against `technical/coherence.md` round 1 and `PD-0006`: accepted, no inline repair. Tokens-scale M, usage n/a | `REQ-0001`…`REQ-0010` rev 5, `initiative.md` rev 4 |
 | 2026-10-20 | technical architect (`ROLE-planner`, PRODUCT-DISCOVERY; vendor claude, model sonnet, per `product.coherence_delta_checker`) | `RUN: INIT-0001 step=coherence` — `story-set-technical-coherence`, delta re-check, round 2 of 2 (terminal), on the repairs to `REQ-0001`…`REQ-0010` rev 5 | `coherent`. D1–D6 `fixed`; new N1 (non-blocking: `REQ-0001` read case lists only a leading space). PM disposition N1: `fixed` by inline repair in `REQ-0001` rev 6 (trailing-space and all-space cases added), no round 3 (§9a.1). Tokens-scale S, usage n/a | [`../technical/coherence.md`](../technical/coherence.md) round 2 |
 | 2026-10-20 | product readiness reviewer (`ROLE-product-readiness-reviewer`; vendor claude, model sonnet, per `product.readiness_reviewer`) | `RUN: INIT-0001 step=readiness` — readiness round 1 (cycle 1): `R13`–`R18` and the `R8`/`R9` flag clauses, on the converged set with the 0-defect validator report at `8d02e99` | `READY`, no conditions, 0 findings; two observations below the finding bar (tag order of non-letters; which error shows first when a command has two faults). No round 2 needed. Tokens-scale M, usage n/a | `Readiness log` round 1 (cycle 1); `Readiness findings` block |
+| 2026-10-20 | sonnet transcription child (`SKILL-create-tickets-from-stories` X9; vendor claude, model sonnet) | `RUN: INIT-0001 step=handoff` — transcribe the ten accepted stories onto Linear issues in team `RCDEV`, project Task Tracker CLI (`PD-0007`), and write the `delivery/tickets.md` rows | 10 issues created, RCDEV-822, RCDEV-823, RCDEV-824, RCDEV-825, RCDEV-826, RCDEV-827, RCDEV-828, RCDEV-829, RCDEV-830, RCDEV-831; criteria carried one for one (205 in all); no step-4 translations; C7's story references written as tracker keys by one second write each on RCDEV-822..824. PM verified X1–X14: X12 lint returns 0 on all ten titles and bodies; criteria counts match per story; six mapped sections only; Repository line first under Scope; all ten in the project, Backlog, no labels; RCDEV-822's tracker body re-read. Tokens-scale L, usage n/a | `delivery/tickets.md`; global `product/delivery/tickets.md`; Handoff log |
 
 ## Escalation log
 
@@ -307,7 +308,7 @@ Assembled 2026-10-20 at ENGINEERING_READY by `ROLE-product-manager` against the 
   - Keeping a symlinked `tasks.json` or export target as a link (`PD-0004` item 3).
 - **Open questions (non-blocking):** none. The verdict carries no conditions or known issues.
 - **Delivery manifest:** `product/initiatives/INIT-0001-ttc-command-line-task-tracker/delivery/manifest.md`
-- **Tickets:** pending — written at HANDOFF by `SKILL-create-tickets-from-stories` (`delivery/tickets.md`).
+- **Tickets** (Linear team `RCDEV`, project Task Tracker CLI, `PD-0007`; mapping authority `delivery/tickets.md`): `REQ-0001` → `RCDEV-822`; `REQ-0002` → `RCDEV-823`; `REQ-0003` → `RCDEV-824`; `REQ-0004` → `RCDEV-825`; `REQ-0005` → `RCDEV-826`; `REQ-0006` → `RCDEV-827`; `REQ-0007` → `RCDEV-828`; `REQ-0008` → `RCDEV-829`; `REQ-0009` → `RCDEV-830`; `REQ-0010` → `RCDEV-831`.
 
 ## Handoff log
 
@@ -315,6 +316,7 @@ Written at HANDOFF. One row; a second row means a re-handoff after a regression.
 
 | Date | Receiving role | Packet digest | Note |
 | --- | --- | --- | --- |
+| 2026-10-20 | ROLE-orchestrator (one `ticket_code` at a time; no engineering dispatched by this session) | `c2551d2481237c4c` (sha256 of the packet section, first 16 hex) | Tickets RCDEV-822, RCDEV-823, RCDEV-824, RCDEV-825, RCDEV-826, RCDEV-827, RCDEV-828, RCDEV-829, RCDEV-830, RCDEV-831 in Linear project Task Tracker CLI (`P-RCDEV-3`, `PD-0007`), repository `rortegalizardo/task-tracker-cli`. `delivery/manifest.md` `DM-INIT-0001` at `band_owner: product`, `READY@2026-10-20`. `delivery/state.md` not written (H9). Criterion translations (X14): none. |
 
 ## Phase log
 
