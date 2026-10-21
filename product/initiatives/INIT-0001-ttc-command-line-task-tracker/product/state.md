@@ -3,16 +3,16 @@ id: PSTATE-INIT-0001
 type: product-state
 title: Product definition state for INIT-0001
 status: authoritative
-revision: 14
+revision: 15
 owner_role: ROLE-product-manager
 created: 2026-10-20
 updated: 2026-10-20
 updated_by_role: ROLE-product-manager
 initiative: INIT-0001
-phase: ENGINEERING_READY
+phase: HANDOFF
 phase_entered: 2026-10-20
 requester: "the requester (repository owner, rortegalizardo), via the parent session, 2026-10-20"
-next_action: "ROLE-product-manager: write the handoff packet and compile delivery/manifest.md, then advance to HANDOFF"
+next_action: "ROLE-product-manager: run SKILL-create-tickets-from-stories (Linear project Task Tracker CLI in RCDEV, one issue per story), write delivery/tickets.md, then name the ticket_codes here"
 blocked_by: []
 converged: true
 readiness_verdict: READY   # none | READY | READY-with-known-issues | NOT READY | void
@@ -329,6 +329,7 @@ Written at HANDOFF. One row; a second row means a re-handoff after a regression.
 | 2026-10-20 | SOLUTION_CONVERGENCE | DECOMPOSITION | ROLE-product-manager | SOLUTION_CONVERGENCE exit criteria met: one accepted chosen-option `PD-0005`, indexed; draft stories and initiative consistent with it and `PD-0004`; no competing option under consideration; Solution Contract cites `PD-0005` (no design concept: no visual surface, `PD-0001` item 3) | Entry precondition (`lifecycle-hooks.md` §3.4.1 DECOMPOSITION) holds: exactly one accepted chosen-option `PD-` (`PD-0005`) citing the non-`infeasible` verdict `feasible-with-constraints`. Design steps 2a–12 not run: no user-facing visual surface (`PD-0001` item 3). Hooks: HOOK-phase-entry pass | `08f98708c2f1e052`, head `25cba6b` |
 | 2026-10-20 | DECOMPOSITION | READINESS | ROLE-product-manager | DECOMPOSITION exit criteria met: every outcome element O1–O10 maps to an accepted story; ten stories accepted after the draft-stage coherence check; convergence declared (`converged: true`) | Entry precondition (`lifecycle-hooks.md` §3.4.1 READINESS) holds: `converged: true`; full-mode `validate-requirement-coverage` 0 defects (R1–R12); terminal coherence verdict `coherent` (round 2), every blocking finding (D1, D2) `fixed`. Design steps not run: no visual surface (`PD-0001` item 3). Hooks: HOOK-phase-entry pass | `f17297ea7e4f95c1`, head `a9135a4` |
 | 2026-10-20 | READINESS | ENGINEERING_READY | ROLE-product-manager | READINESS exit criteria met: recorded verdict `READY` (round 1, cycle 1), no conditions, no known issues, 0 findings | Entry precondition (`lifecycle-hooks.md` §3.4.1 ENGINEERING_READY) holds: verdict `READY`, not `void`; story set unchanged since the verdict's digest (no edit to `requirements/` or `initiative.md` after `8d02e99`). Hooks: HOOK-phase-entry pass | `f17297ea7e4f95c1`, head `a545008` |
+| 2026-10-20 | ENGINEERING_READY | HANDOFF | ROLE-product-manager | ENGINEERING_READY exit criteria met: `H1` verdict `READY`, not void; `H4` story set unchanged since the verdict's digest; `H2` coverage full pass 0 defects; `H3` all 10 stories accepted; `H5` no `Q-` open; `H0`/`H6` 16 elements present, identifiers resolve, no `local_export` (no `DES-`); `H7` Handoff packet complete (drafted inline under §9c rule 1: a transcription of about 1.2k tokens); `H8` no conditions or known issues; `H10` all 10 stories `readiness: engineering-ready`; `H11` no HLD, plan, breakdown or estimate in product artifacts; `H12` `delivery/manifest.md` issued (`DM-INIT-0001`, `band_owner: product`, `READY@2026-10-20`, digest matches, M1–M8 hold); initiative `status: active` | Entry precondition (`lifecycle-hooks.md` §3.4.1 HANDOFF: `H7`, `H12`) holds. Hooks: HOOK-phase-entry pass; HOOK-handoff-conformance `H0`–`H12` pass, `H13` pending ticket creation | `6046a8a6f93bd715`, head `8832a2f` |
 
 > Every product-side session updates this file before ending — **including
 > sessions that failed**, which record the failure in `next_action` and do not
