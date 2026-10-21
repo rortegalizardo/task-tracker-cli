@@ -3,7 +3,7 @@ id: REQ-0010
 type: requirement
 title: The ttc stats command prints the totals of open, done and overdue tasks
 status: draft
-revision: 4
+revision: 5
 owner_role: ROLE-product-manager
 created: 2026-10-20
 updated: 2026-10-20
@@ -20,7 +20,7 @@ acceptance:
   - "tasks 1 `Buy milk` and 2 `Pay rent` stored, then `ttc stats` run twice → both runs print the same three lines, stderr is empty, exit code 0, and `tasks.json` unchanged"
   - "each of `ttc stats now`, `ttc stats --all` and `ttc stats --json`, with task 1 stored → stderr is one line that starts with `ttc: `, stdout is empty, exit code 1, and `tasks.json` unchanged; with no `tasks.json`, `ttc stats now` gives the same kind of line and creates no `tasks.json`"
   - "`tasks.json` holds the text `{` and `ttc stats` runs → stderr is exactly one line `ttc: cannot read <path>: <reason>` (`<path>` is the path of `tasks.json`, `<reason>` is not empty), stdout is empty, exit code 1, and `tasks.json` still holds `{`"
-  - "`ttc help` → stdout holds the usage line `ttc stats` as well as the usage lines of the stories it depends on, exit code 0"
+  - "`ttc help` → stdout holds the usage line `ttc stats` as well as a usage line for each command that the stories it depends on add, exit code 0"
   - "`npm test` runs `node:test` tests covering every criterion above → all pass"
   - "the pull request delivering this story → the CI `test` check passes"
 capabilities: [CAP-0001]
@@ -95,7 +95,7 @@ Code lives in the repository rortegalizardo/task-tracker-cli (~/Desktop/Projects
 - [ ] tasks 1 `Buy milk` and 2 `Pay rent` stored, then `ttc stats` run twice → both runs print the same three lines, stderr is empty, exit code 0, and `tasks.json` unchanged
 - [ ] each of `ttc stats now`, `ttc stats --all` and `ttc stats --json`, with task 1 stored → stderr is one line that starts with `ttc: `, stdout is empty, exit code 1, and `tasks.json` unchanged; with no `tasks.json`, `ttc stats now` gives the same kind of line and creates no `tasks.json`
 - [ ] `tasks.json` holds the text `{` and `ttc stats` runs → stderr is exactly one line `ttc: cannot read <path>: <reason>` (`<path>` is the path of `tasks.json`, `<reason>` is not empty), stdout is empty, exit code 1, and `tasks.json` still holds `{`
-- [ ] `ttc help` → stdout holds the usage line `ttc stats` as well as the usage lines of the stories it depends on, exit code 0
+- [ ] `ttc help` → stdout holds the usage line `ttc stats` as well as a usage line for each command that the stories it depends on add, exit code 0
 - [ ] `npm test` runs `node:test` tests covering every criterion above → all pass
 - [ ] the pull request delivering this story → the CI `test` check passes
 

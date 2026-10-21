@@ -3,7 +3,7 @@ id: REQ-0001
 type: requirement
 title: The ttc command prints its usage and keeps tasks in one atomically written file
 status: draft
-revision: 4
+revision: 5
 owner_role: ROLE-product-manager
 created: 2026-10-20
 updated: 2026-10-20
@@ -28,10 +28,10 @@ acceptance:
   - "`tasks.json` holds the text `{` (not valid JSON) → reading fails with `ttc: cannot read <path>: <reason>`, where `<path>` is the path of `tasks.json` and `<reason>` is not empty, and `tasks.json` still holds `{`"
   - "`tasks.json` holds the text `42` (valid JSON, not a task list) → reading fails with the same message form, and `tasks.json` still holds `42`"
   - "`tasks.json` is a folder, not a file → reading fails with the same message form, and the folder is unchanged"
-  - "`tasks.json` holds a list in which `<X>`, for each `<X>` in: two tasks share one id; a task holds the tag `HOME`; a task holds the tag `home` twice; a title contains a line break; a task id is 9007199254740992; the next id equals the highest task id; a due date is `2026-02-30` → for each, reading fails with `ttc: cannot read <path>: <reason>`, where `<path>` is the path of `tasks.json` and `<reason>` is not empty, and `tasks.json` unchanged"
+  - "`tasks.json` holds a list in which `<X>`, for each `<X>` in: two tasks share one id; a task holds the tag `HOME`; a task holds the tag `home` twice; a title contains a line break; a title has a space at its start; a task id is 9007199254740992; the next id equals the highest task id; a due date is `2026-02-30` → for each, reading fails with `ttc: cannot read <path>: <reason>`, where `<path>` is the path of `tasks.json` and `<reason>` is not empty, and `tasks.json` unchanged"
   - "a write stopped before it finishes (the test simulates this) while `tasks.json` holds a list → `tasks.json` still holds exactly that whole list, as valid JSON"
   - "the same stopped write when no `tasks.json` existed → `tasks.json` still does not exist"
-  - "`TTC_HOME` names an existing regular file, not a folder → a write fails with a message that the program prints as one line `ttc: <message>` on stderr with exit code 1, and that file has the same bytes as before"
+  - "`TTC_HOME` names an existing regular file, not a folder → a write fails with a non-empty message, and that file has the same bytes as before"
   - "reading `package.json` → it declares no runtime dependencies (it has no entries under `dependencies`)"
   - "every source file of the program, test files excluded → imports none of `node:net`, `node:http`, `node:https`, `node:http2`, `node:dgram` or `node:tls` (nor the same module name without the `node:` prefix)"
   - "reading `package.json` → it declares the command `ttc`; running the file that command names with `node` and the argument `help` gives stdout holding the usage line `ttc help` and exit code 0"
@@ -40,7 +40,7 @@ acceptance:
   - "the pull request delivering this story → the CI `test` check passes"
 capabilities: [CAP-0001]
 design_refs: []
-decisions: [PD-0001, PD-0003, PD-0004, PD-0005]
+decisions: [PD-0001, PD-0003, PD-0004, PD-0005, PD-0006]
 depends_on: [none]
 constraints: ["C1 (technical/assessment.md, round 1)", "C2 (technical/assessment.md, round 1)", "C3 (technical/assessment.md, round 1)", "C4 (technical/assessment.md, round 1)", "C5 (technical/assessment.md, round 1)", "C6 (technical/assessment.md, round 1)", "C7 (technical/assessment.md, round 1)"]
 observability: []
@@ -119,7 +119,7 @@ Code lives in the repository rortegalizardo/task-tracker-cli (~/Desktop/Projects
 - Tasks live in `$TTC_HOME/tasks.json`. When `TTC_HOME` is unset or empty, the folder is `~/.ttc` in the user's home folder. This folder is the data folder.
 - The file holds the whole list: each task's id, title, status (open or done), due date (if any) and tags, and the next id to be given (items 1 and 14). A list that never held a task has next id 1.
 - The JSON layout of the file, meaning its field names and value spellings, is engineering's choice (item 13). A `tasks.json` is a valid task list exactly when it passes the checks that item 14 lists for `import`, which include the title and id checks of `PD-0004` items 1 and 2 (`PD-0004` item 8).
-- **Valid task list on read (`PD-0004` item 8).** Reading `tasks.json` applies every check that `import` applies. Two tasks with one id, an upper-case tag, a repeated tag, an invalid title or date, a task id above 9007199254740991, a next id above 9007199254740992, or a next id that is not higher than every task's id each make `tasks.json` unreadable: `ttc: cannot read <path>: <reason>`.
+- **Valid task list on read (`PD-0004` item 8).** Reading `tasks.json` applies every check that `import` applies. Two tasks with one id, an upper-case tag, a repeated tag, an invalid title or date, a title with a space at either end (`PD-0006` item 1), a task id above 9007199254740991, a next id above 9007199254740992, or a next id that is not higher than every task's id each make `tasks.json` unreadable: `ttc: cannot read <path>: <reason>`.
 - A missing file means no tasks. A command that does not change the list (`help`, `list`, `stats`, `export`) never creates `tasks.json` or its folder.
 - The first command that writes creates the folder, with any missing parent folders, and the file.
 - A file that is not valid JSON, is not a valid task list, or cannot be read as a file makes every command that reads it fail with `ttc: cannot read <path>: <reason>`, where `<path>` is the path of `tasks.json` and `<reason>` is not empty text saying why. The file is left untouched.
@@ -158,10 +158,10 @@ The criteria below describe stored content by meaning (id, title, status, due da
 - [ ] `tasks.json` holds the text `{` (not valid JSON) → reading fails with `ttc: cannot read <path>: <reason>`, where `<path>` is the path of `tasks.json` and `<reason>` is not empty, and `tasks.json` still holds `{`
 - [ ] `tasks.json` holds the text `42` (valid JSON, not a task list) → reading fails with the same message form, and `tasks.json` still holds `42`
 - [ ] `tasks.json` is a folder, not a file → reading fails with the same message form, and the folder is unchanged
-- [ ] `tasks.json` holds a list in which `<X>`, for each `<X>` in: two tasks share one id; a task holds the tag `HOME`; a task holds the tag `home` twice; a title contains a line break; a task id is 9007199254740992; the next id equals the highest task id; a due date is `2026-02-30` → for each, reading fails with `ttc: cannot read <path>: <reason>`, where `<path>` is the path of `tasks.json` and `<reason>` is not empty, and `tasks.json` unchanged
+- [ ] `tasks.json` holds a list in which `<X>`, for each `<X>` in: two tasks share one id; a task holds the tag `HOME`; a task holds the tag `home` twice; a title contains a line break; a title has a space at its start; a task id is 9007199254740992; the next id equals the highest task id; a due date is `2026-02-30` → for each, reading fails with `ttc: cannot read <path>: <reason>`, where `<path>` is the path of `tasks.json` and `<reason>` is not empty, and `tasks.json` unchanged
 - [ ] a write stopped before it finishes (the test simulates this) while `tasks.json` holds a list → `tasks.json` still holds exactly that whole list, as valid JSON
 - [ ] the same stopped write when no `tasks.json` existed → `tasks.json` still does not exist
-- [ ] `TTC_HOME` names an existing regular file, not a folder → a write fails with a message that the program prints as one line `ttc: <message>` on stderr with exit code 1, and that file has the same bytes as before
+- [ ] `TTC_HOME` names an existing regular file, not a folder → a write fails with a non-empty message, and that file has the same bytes as before
 - [ ] reading `package.json` → it declares no runtime dependencies (it has no entries under `dependencies`)
 - [ ] every source file of the program, test files excluded → imports none of `node:net`, `node:http`, `node:https`, `node:http2`, `node:dgram` or `node:tls` (nor the same module name without the `node:` prefix)
 - [ ] reading `package.json` → it declares the command `ttc`; running the file that command names with `node` and the argument `help` gives stdout holding the usage line `ttc help` and exit code 0

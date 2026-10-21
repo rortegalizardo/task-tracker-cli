@@ -3,7 +3,7 @@ id: REQ-0007
 type: requirement
 title: The ttc list command marks overdue tasks and can show only them
 status: draft
-revision: 4
+revision: 5
 owner_role: ROLE-product-manager
 created: 2026-10-20
 updated: 2026-10-20
@@ -146,6 +146,7 @@ none
 - The time-zone criterion rests on `PD-0003` item 6 ("in its local time zone").
 - `PD-0003` item 8 introduces the marker in the task-line format; this is the only story that adds `!overdue` and `--overdue`.
 - The wording of argument-shape errors is engineering's (`PD-0003` item 2); the criteria assert only the form `ttc: <message>`.
+- Its usage-line criterion replaces `REQ-0003`'s criterion on the `list` usage line from this story's merge on; this story's delivery updates that test, so stories merged before or after it keep passing (`technical/coherence.md` round 1, D1).
 
 > **Immutable once `status: accepted`** — in its product content. The lifecycle
 > fields `status`, `readiness`, and `tickets` are advanced by the delivery roles

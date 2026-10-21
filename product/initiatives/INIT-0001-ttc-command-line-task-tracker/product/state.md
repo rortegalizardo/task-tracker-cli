@@ -3,7 +3,7 @@ id: PSTATE-INIT-0001
 type: product-state
 title: Product definition state for INIT-0001
 status: authoritative
-revision: 9
+revision: 10
 owner_role: ROLE-product-manager
 created: 2026-10-20
 updated: 2026-10-20
@@ -12,13 +12,13 @@ initiative: INIT-0001
 phase: DECOMPOSITION
 phase_entered: 2026-10-20
 requester: "the requester (repository owner, rortegalizardo), via the parent session, 2026-10-20"
-next_action: "ROLE-product-manager: settle D5/D6 in a PD, repair D1-D6 in the draft stories, then the delta re-check (coherence round 2, terminal)"
+next_action: "ROLE-product-manager: dispatch the delta re-check (coherence round 2, terminal) on the repaired stories"
 blocked_by: []
 converged: false
 readiness_verdict: none   # none | READY | READY-with-known-issues | NOT READY | void
 stories: [REQ-0001, REQ-0002, REQ-0003, REQ-0004, REQ-0005, REQ-0006, REQ-0007, REQ-0008, REQ-0009, REQ-0010]
 design_refs: []
-decisions: [PD-0001, PD-0002, PD-0003, PD-0004, PD-0005]
+decisions: [PD-0001, PD-0002, PD-0003, PD-0004, PD-0005, PD-0006]
 ---
 
 # Product definition state — INIT-0001
@@ -59,8 +59,8 @@ the spec to the product manager (`PD-0001`).
 
 ## Next action
 
-ROLE-product-manager: settle D5 and D6 in a `PD-`, repair D1–D6 in the draft
-stories, then run the delta re-check (coherence round 2, terminal).
+ROLE-product-manager: dispatch the delta re-check (coherence round 2,
+terminal) on the repaired stories.
 
 ## Blocked by
 
@@ -97,6 +97,8 @@ in one decision at PRODUCT_DEFINITION.
 | 2026-10-20 | 14. What a successful command that changes data prints | pm-resolvable | Decided by the PM under `PD-0001`: `PD-0002`, restated and completed by `PD-0003` |
 | 2026-10-20 | 15. Two `ttc` processes writing at the same moment | pm-resolvable | Out of scope for INIT-0001 (one person, one command at a time); written into the out-of-scope section at PRODUCT_DEFINITION; `PD-0002` item 16, kept as `PD-0003` item 16 |
 | 2026-10-20 | 16. Whether the initiative has a user-facing visual surface | escalation | Answered by the requester in the request itself: CLI only, no UI, no design roles, no `DES-` (`PD-0001` item 3) |
+| 2026-10-20 | 17. Spaces at the ends of a title in an import file or in `tasks.json` (coherence D5) | pm-resolvable | Decided by the PM under `PD-0001`: `PD-0006` item 1 |
+| 2026-10-20 | 18. Ids given again after an import, against "never reused" (coherence D6) | pm-resolvable | Decided by the PM under `PD-0001`: `PD-0006` item 2 |
 
 ## Discovery
 
@@ -188,6 +190,7 @@ product answers the PM gives at SOLUTION_CONVERGENCE under `PD-0001` item 1.
 | 2026-10-20 | technical architect (`ROLE-planner`, PRODUCT-DISCOVERY; vendor claude, model opus) | `RUN: INIT-0001 step=solution_exploration` — is option A feasible over `REQ-0001`…`REQ-0010`, and what constrains it? (scan and impact written as the assessment's required inputs, one dispatch per §9c.2) | `feasible-with-constraints`, `multi-component`; C1–C7 (C2, C5 `PD-` candidates); risks R1–R6; P1–P7 for the PM. Tokens-scale M, usage n/a | [`../technical/capability-scan.md`](../technical/capability-scan.md), [`../technical/impact.md`](../technical/impact.md), [`../technical/assessment.md`](../technical/assessment.md); Options table |
 | 2026-10-20 | sonnet drafting child (§9b; vendor claude, model sonnet) | `RUN: INIT-0001 step=solution_convergence` — apply `PD-0004` and `PD-0005` to the ten draft `REQ-`, fill each story's Technical constraints from `technical/assessment.md` round 1, update the initiative and Product Definition Contract, and draft the Solution Contract | Bundle returned complete; acceptance mirrors body in all ten stories. PM validated against `PD-0004`, `PD-0005` and the assessment: accepted, with three inline repairs (contract decisions list and non-goals; initiative constraint row 1; `REQ-0001` data-folder wording). Tokens-scale L, usage n/a | `REQ-0001`…`REQ-0010` rev 3, `initiative.md` rev 3, `product-definition-contract.md` rev 3, [`solution-contract.md`](solution-contract.md) |
 | 2026-10-20 | technical architect (`ROLE-planner`, PRODUCT-DISCOVERY; vendor claude, model opus) | `RUN: INIT-0001 step=coherence` — `story-set-technical-coherence`, full pass, round 1 of 2, on draft `REQ-0001`…`REQ-0010` rev 4 | `defects-open`: blocking D1 (help criteria vs `list` line under C7 merge order), D2 (export atomicity unverified); non-blocking D3–D6 (D5, D6 need a product answer). No verdict drift. Tokens-scale M, usage n/a | [`../technical/coherence.md`](../technical/coherence.md) round 1 |
+| 2026-10-20 | sonnet drafting child (§9b; vendor claude, model sonnet) | `RUN: INIT-0001 step=decomposition` — repair coherence round 1 D1–D6 in the draft stories, with D5 and D6 settled by `PD-0006` | Repairs applied as briefed; acceptance mirrors body in all ten. PM validated against `technical/coherence.md` round 1 and `PD-0006`: accepted, no inline repair. Tokens-scale M, usage n/a | `REQ-0001`…`REQ-0010` rev 5, `initiative.md` rev 4 |
 
 ## Escalation log
 

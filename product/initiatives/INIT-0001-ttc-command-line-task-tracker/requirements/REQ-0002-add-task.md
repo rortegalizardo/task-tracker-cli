@@ -3,7 +3,7 @@ id: REQ-0002
 type: requirement
 title: The ttc add command records a task with an optional due date and tags
 status: draft
-revision: 4
+revision: 5
 owner_role: ROLE-product-manager
 created: 2026-10-20
 updated: 2026-10-20
@@ -32,14 +32,15 @@ acceptance:
   - "`ttc add 'x'` whose write is stopped before it finishes (the test simulates this) while `tasks.json` holds a list → `tasks.json` still holds exactly that whole list, as valid JSON, without task `x`"
   - "`ttc add 'Buy milk'` with a stored list whose next id is 9007199254740991 (written by the test) → stdout is the single line `Added task 9007199254740991`, stderr is empty, exit code 0"
   - "`ttc add 'Buy milk'` with a stored list whose next id is 9007199254740992 (written by the test) → stderr is one line that starts with `ttc: `, stdout is empty, exit code 1, and `tasks.json` unchanged"
-  - "`ttc help` → stdout holds the usage line `ttc add \"<title>\" [--due YYYY-MM-DD] [--tag <t>]...` as well as the usage lines of the stories it depends on, exit code 0"
+  - "`ttc help` → stdout holds the usage line `ttc add \"<title>\" [--due YYYY-MM-DD] [--tag <t>]...` as well as a usage line for each command that the stories it depends on add, exit code 0"
+  - "`TTC_HOME` names an existing regular file, not a folder, then `ttc add 'x'` runs → stderr is one line that starts with `ttc: `, stdout is empty, exit code 1, and that file has the same bytes as before"
   - "`npm test` runs `node:test` tests covering every criterion above → all pass"
   - "the pull request delivering this story → the CI `test` check passes"
 capabilities: [CAP-0001]
 design_refs: []
 decisions: [PD-0001, PD-0003, PD-0004, PD-0005]
 depends_on: [REQ-0001]
-constraints: ["C1 (technical/assessment.md, round 1)", "C2 (technical/assessment.md, round 1)", "C4 (technical/assessment.md, round 1)", "C5 (technical/assessment.md, round 1)", "C6 (technical/assessment.md, round 1)"]
+constraints: ["C1 (technical/assessment.md, round 1)", "C2 (technical/assessment.md, round 1)", "C3 (technical/assessment.md, round 1)", "C4 (technical/assessment.md, round 1)", "C5 (technical/assessment.md, round 1)", "C6 (technical/assessment.md, round 1)"]
 observability: []
 rollout: none
 readiness: not-assessed
@@ -120,7 +121,8 @@ Code lives in the repository rortegalizardo/task-tracker-cli (~/Desktop/Projects
 - [ ] `ttc add 'x'` whose write is stopped before it finishes (the test simulates this) while `tasks.json` holds a list → `tasks.json` still holds exactly that whole list, as valid JSON, without task `x`
 - [ ] `ttc add 'Buy milk'` with a stored list whose next id is 9007199254740991 (written by the test) → stdout is the single line `Added task 9007199254740991`, stderr is empty, exit code 0
 - [ ] `ttc add 'Buy milk'` with a stored list whose next id is 9007199254740992 (written by the test) → stderr is one line that starts with `ttc: `, stdout is empty, exit code 1, and `tasks.json` unchanged
-- [ ] `ttc help` → stdout holds the usage line `ttc add "<title>" [--due YYYY-MM-DD] [--tag <t>]...` as well as the usage lines of the stories it depends on, exit code 0
+- [ ] `ttc help` → stdout holds the usage line `ttc add "<title>" [--due YYYY-MM-DD] [--tag <t>]...` as well as a usage line for each command that the stories it depends on add, exit code 0
+- [ ] `TTC_HOME` names an existing regular file, not a folder, then `ttc add 'x'` runs → stderr is one line that starts with `ttc: `, stdout is empty, exit code 1, and that file has the same bytes as before
 - [ ] `npm test` runs `node:test` tests covering every criterion above → all pass
 - [ ] the pull request delivering this story → the CI `test` check passes
 
@@ -132,6 +134,7 @@ Code lives in the repository rortegalizardo/task-tracker-cli (~/Desktop/Projects
 
 - **C1** (`technical/assessment.md`, round 1): The runtime is Node 24 with built-in modules only, and no network. The CI job has no install step, so a dependency also fails CI, and the built-in argument parser cannot be used as it is for single-dash arguments such as `-1` and `-home`.
 - **C2** (`technical/assessment.md`, round 1): "Atomic" holds at process level: after a crash, kill or error at any step of a write, `tasks.json` (and an export target) holds the whole old content or the whole new content. A power cut or operating-system crash cannot be tested in CI, and a replaced symlink becomes a regular file (`PD-0004` item 3).
+- **C3** (`technical/assessment.md`, round 1): This story's test of a stopped write simulates the interruption from the test side only. No `ttc` option or environment variable may exist for it, because `PD-0003` closes the set of user-visible behaviour.
 - **C4** (`technical/assessment.md`, round 1): Test files run at the same time in separate processes. Every test uses its own data folder, home folder and working folder, and never reads or writes the real home folder of the person running the tests.
 - **C5** (`technical/assessment.md`, round 1): Ids are exact only up to 9007199254740991. Id parsing and the import checks need that upper bound (`PD-0004` item 2).
 - **C6** (`technical/assessment.md`, round 1): Verification runs on Node 24 on Linux with a UTC clock in CI, and CI is the arbiter. The `engines` field is aligned to Node 24, and other operating systems are not verified.

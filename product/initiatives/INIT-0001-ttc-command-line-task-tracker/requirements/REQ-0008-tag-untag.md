@@ -3,7 +3,7 @@ id: REQ-0008
 type: requirement
 title: The ttc tag command adds or removes one tag on a task
 status: draft
-revision: 4
+revision: 5
 owner_role: ROLE-product-manager
 created: 2026-10-20
 updated: 2026-10-20
@@ -30,7 +30,7 @@ acceptance:
   - "`ttc tag 7 +home` and `ttc tag 7 -home` with only task 1 stored → stderr is exactly the line `ttc: no task with id 7`, stdout is empty, exit code 1, and `tasks.json` unchanged; the same two commands with no `tasks.json` give the same line and create no `tasks.json`"
   - "each of `ttc tag`, `ttc tag 1`, `ttc tag 1 +a +b`, `ttc tag 1 +a -b`, `ttc tag 1 +home --force`, `ttc tag 1 home`, `ttc tag 1 --home`, `ttc tag 1 +` and `ttc tag 1 -`, with task 1 stored → stderr is one line that starts with `ttc: `, stdout is empty, exit code 1, and `tasks.json` unchanged"
   - "`tasks.json` holds the text `{` and `ttc tag 1 +home` runs, then `ttc tag 1 -home` runs → each prints on stderr exactly one line `ttc: cannot read <path>: <reason>` (`<path>` is the path of `tasks.json`, `<reason>` is not empty), stdout is empty, exit code 1, and `tasks.json` still holds `{`"
-  - "`ttc help` → stdout holds the usage line `ttc tag <id> +<t> | -<t>` as well as the usage lines of the stories it depends on, exit code 0"
+  - "`ttc help` → stdout holds the usage line `ttc tag <id> +<t> | -<t>` as well as a usage line for each command that the stories it depends on add, exit code 0"
   - "`npm test` runs `node:test` tests covering every criterion above → all pass"
   - "the pull request delivering this story → the CI `test` check passes"
 capabilities: [CAP-0001]
@@ -116,7 +116,7 @@ Code lives in the repository rortegalizardo/task-tracker-cli (~/Desktop/Projects
 - [ ] `ttc tag 7 +home` and `ttc tag 7 -home` with only task 1 stored → stderr is exactly the line `ttc: no task with id 7`, stdout is empty, exit code 1, and `tasks.json` unchanged; the same two commands with no `tasks.json` give the same line and create no `tasks.json`
 - [ ] each of `ttc tag`, `ttc tag 1`, `ttc tag 1 +a +b`, `ttc tag 1 +a -b`, `ttc tag 1 +home --force`, `ttc tag 1 home`, `ttc tag 1 --home`, `ttc tag 1 +` and `ttc tag 1 -`, with task 1 stored → stderr is one line that starts with `ttc: `, stdout is empty, exit code 1, and `tasks.json` unchanged
 - [ ] `tasks.json` holds the text `{` and `ttc tag 1 +home` runs, then `ttc tag 1 -home` runs → each prints on stderr exactly one line `ttc: cannot read <path>: <reason>` (`<path>` is the path of `tasks.json`, `<reason>` is not empty), stdout is empty, exit code 1, and `tasks.json` still holds `{`
-- [ ] `ttc help` → stdout holds the usage line `ttc tag <id> +<t> | -<t>` as well as the usage lines of the stories it depends on, exit code 0
+- [ ] `ttc help` → stdout holds the usage line `ttc tag <id> +<t> | -<t>` as well as a usage line for each command that the stories it depends on add, exit code 0
 - [ ] `npm test` runs `node:test` tests covering every criterion above → all pass
 - [ ] the pull request delivering this story → the CI `test` check passes
 

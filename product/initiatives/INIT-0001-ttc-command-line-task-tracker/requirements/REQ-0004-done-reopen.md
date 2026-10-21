@@ -3,7 +3,7 @@ id: REQ-0004
 type: requirement
 title: The ttc done and ttc reopen commands change a task's status
 status: draft
-revision: 4
+revision: 5
 owner_role: ROLE-product-manager
 created: 2026-10-20
 updated: 2026-10-20
@@ -21,7 +21,7 @@ acceptance:
   - "`ttc done 7` and `ttc reopen 7` with only task 1 stored → stderr is exactly the line `ttc: no task with id 7`, stdout is empty, exit code 1, and `tasks.json` unchanged; the same two commands with no `tasks.json` give the same line and create no `tasks.json`"
   - "each of `ttc done`, `ttc reopen`, `ttc done 1 2`, `ttc reopen 1 2`, `ttc done 1 --force` and `ttc reopen 1 --force` → stderr is one line that starts with `ttc: `, stdout is empty, exit code 1, and `tasks.json` unchanged"
   - "`tasks.json` holds the text `{` and `ttc done 1` runs, then `ttc reopen 1` runs → each prints on stderr exactly one line `ttc: cannot read <path>: <reason>` (`<path>` is the path of `tasks.json`, `<reason>` is not empty), stdout is empty, exit code 1, and `tasks.json` still holds `{`"
-  - "`ttc help` → stdout holds the usage lines `ttc done <id>` and `ttc reopen <id>` as well as the usage lines of the stories it depends on, exit code 0"
+  - "`ttc help` → stdout holds the usage lines `ttc done <id>` and `ttc reopen <id>` as well as a usage line for each command that the stories it depends on add, exit code 0"
   - "`npm test` runs `node:test` tests covering every criterion above → all pass"
   - "the pull request delivering this story → the CI `test` check passes"
 capabilities: [CAP-0001]
@@ -95,7 +95,7 @@ Code lives in the repository rortegalizardo/task-tracker-cli (~/Desktop/Projects
 - [ ] `ttc done 7` and `ttc reopen 7` with only task 1 stored → stderr is exactly the line `ttc: no task with id 7`, stdout is empty, exit code 1, and `tasks.json` unchanged; the same two commands with no `tasks.json` give the same line and create no `tasks.json`
 - [ ] each of `ttc done`, `ttc reopen`, `ttc done 1 2`, `ttc reopen 1 2`, `ttc done 1 --force` and `ttc reopen 1 --force` → stderr is one line that starts with `ttc: `, stdout is empty, exit code 1, and `tasks.json` unchanged
 - [ ] `tasks.json` holds the text `{` and `ttc done 1` runs, then `ttc reopen 1` runs → each prints on stderr exactly one line `ttc: cannot read <path>: <reason>` (`<path>` is the path of `tasks.json`, `<reason>` is not empty), stdout is empty, exit code 1, and `tasks.json` still holds `{`
-- [ ] `ttc help` → stdout holds the usage lines `ttc done <id>` and `ttc reopen <id>` as well as the usage lines of the stories it depends on, exit code 0
+- [ ] `ttc help` → stdout holds the usage lines `ttc done <id>` and `ttc reopen <id>` as well as a usage line for each command that the stories it depends on add, exit code 0
 - [ ] `npm test` runs `node:test` tests covering every criterion above → all pass
 - [ ] the pull request delivering this story → the CI `test` check passes
 

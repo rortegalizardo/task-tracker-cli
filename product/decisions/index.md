@@ -7,6 +7,7 @@ not re-open the question.
 
 | ID | Title | Status | Path | Updated |
 | --- | --- | --- | --- | --- |
+| PD-0006 | Titles in a stored or imported file must be in stored form, and an import may give ids again | accepted | [PD-0006-ttc-file-titles-and-ids-after-import.md](PD-0006-ttc-file-titles-and-ids-after-import.md) | 2026-10-20 |
 | PD-0005 | Build ttc as option A, the ten-story command the spec states, under the architect's constraints | accepted | [PD-0005-ttc-chosen-option-a.md](PD-0005-ttc-chosen-option-a.md) | 2026-10-20 |
 | PD-0004 | Add the ttc behaviour rules the feasibility assessment showed were missing | accepted | [PD-0004-ttc-rules-from-feasibility.md](PD-0004-ttc-rules-from-feasibility.md) | 2026-10-20 |
 | PD-0003 | Fix the complete set of user-visible behaviour rules the ttc spec leaves open | accepted | [PD-0003-ttc-behaviour-rules-complete.md](PD-0003-ttc-behaviour-rules-complete.md) | 2026-10-20 |

@@ -3,7 +3,7 @@ id: REQ-0006
 type: requirement
 title: The ttc delete command removes a task and its id is never reused
 status: draft
-revision: 4
+revision: 5
 owner_role: ROLE-product-manager
 created: 2026-10-20
 updated: 2026-10-20
@@ -20,12 +20,12 @@ acceptance:
   - "`ttc delete 7` with only task 1 stored → stderr is exactly the line `ttc: no task with id 7`, stdout is empty, exit code 1, and `tasks.json` unchanged; the same command with no `tasks.json` gives the same line and creates no `tasks.json`"
   - "each of `ttc delete`, `ttc delete 1 2` and `ttc delete 1 --force`, with task 1 stored → stderr is one line that starts with `ttc: `, stdout is empty, exit code 1, and `tasks.json` unchanged"
   - "`tasks.json` holds the text `{` and `ttc delete 1` runs → stderr is exactly one line `ttc: cannot read <path>: <reason>` (`<path>` is the path of `tasks.json`, `<reason>` is not empty), stdout is empty, exit code 1, and `tasks.json` still holds `{`"
-  - "`ttc help` → stdout holds the usage line `ttc delete <id>` as well as the usage lines of the stories it depends on, exit code 0"
+  - "`ttc help` → stdout holds the usage line `ttc delete <id>` as well as a usage line for each command that the stories it depends on add, exit code 0"
   - "`npm test` runs `node:test` tests covering every criterion above → all pass"
   - "the pull request delivering this story → the CI `test` check passes"
 capabilities: [CAP-0001]
 design_refs: []
-decisions: [PD-0001, PD-0003, PD-0004, PD-0005]
+decisions: [PD-0001, PD-0003, PD-0004, PD-0005, PD-0006]
 depends_on: [REQ-0001, REQ-0002, REQ-0003]
 constraints: ["C1 (technical/assessment.md, round 1)", "C2 (technical/assessment.md, round 1)", "C4 (technical/assessment.md, round 1)", "C5 (technical/assessment.md, round 1)", "C6 (technical/assessment.md, round 1)", "C7 (technical/assessment.md, round 1)"]
 observability: []
@@ -72,7 +72,7 @@ Code lives in the repository rortegalizardo/task-tracker-cli (~/Desktop/Projects
 **Command.** `ttc delete <id>`
 
 - **Result (`PD-0003` item 10).** It removes task `<id>` and prints `Deleted task <id>` to stdout, then exits 0. It works on an open task and on a done task alike. The command asks for no confirmation.
-- **Ids are never reused (item 1; `PD-0004` item 2).** Each task gets a positive whole number, given in order from 1. After a delete, the next task still gets a higher number than any task ever created. This holds when the deleted task had the highest id and when the list becomes empty. The remaining tasks keep their ids; nothing is renumbered.
+- **Ids are never reused (item 1; `PD-0004` item 2).** Each task gets a positive whole number, given in order from 1. After a delete, the next task still gets a higher number than any task ever created. This holds when the deleted task had the highest id and when the list becomes empty. This holds within one list's history. An import replaces the list with the file's next id, so ids given since that file was exported can be given again (`PD-0006` item 2). The remaining tasks keep their ids; nothing is renumbered.
 - **Deleting a task that is not there.** A valid id with no task is an error, not a repeated action that succeeds: `ttc: no task with id <id>` (item 2; the repeated actions that succeed are only those listed in item 9). This holds for an id that was deleted earlier, and when `tasks.json` does not exist, and no file is created.
 - **Task id (item 2; `PD-0004` item 2).** `<id>` must be a positive whole number written in digits. Anything else is an error: `ttc: invalid task id: <arg>`, with `<arg>` as typed. The largest id is 9007199254740991: an `<id>` above it is an error: `ttc: invalid task id: <arg>`. Leading zeros are allowed: `007` names task 7, and messages print the id without them: `Deleted task 7`.
 - **Argument rules (item 2).** A missing id, an extra argument and any option are errors, because the usage line shows no options. Each error prints one line `ttc: <message>` (item 11).
@@ -92,7 +92,7 @@ Code lives in the repository rortegalizardo/task-tracker-cli (~/Desktop/Projects
 - [ ] `ttc delete 7` with only task 1 stored → stderr is exactly the line `ttc: no task with id 7`, stdout is empty, exit code 1, and `tasks.json` unchanged; the same command with no `tasks.json` gives the same line and creates no `tasks.json`
 - [ ] each of `ttc delete`, `ttc delete 1 2` and `ttc delete 1 --force`, with task 1 stored → stderr is one line that starts with `ttc: `, stdout is empty, exit code 1, and `tasks.json` unchanged
 - [ ] `tasks.json` holds the text `{` and `ttc delete 1` runs → stderr is exactly one line `ttc: cannot read <path>: <reason>` (`<path>` is the path of `tasks.json`, `<reason>` is not empty), stdout is empty, exit code 1, and `tasks.json` still holds `{`
-- [ ] `ttc help` → stdout holds the usage line `ttc delete <id>` as well as the usage lines of the stories it depends on, exit code 0
+- [ ] `ttc help` → stdout holds the usage line `ttc delete <id>` as well as a usage line for each command that the stories it depends on add, exit code 0
 - [ ] `npm test` runs `node:test` tests covering every criterion above → all pass
 - [ ] the pull request delivering this story → the CI `test` check passes
 

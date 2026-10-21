@@ -3,14 +3,14 @@ id: INIT-0001
 type: initiative
 title: Tasks are tracked locally from the ttc command line
 status: draft
-revision: 3
+revision: 4
 owner_role: ROLE-product-manager
 created: 2026-10-20
 updated: 2026-10-20
 capabilities: [CAP-0001]
 requirements: [REQ-0001, REQ-0002, REQ-0003, REQ-0004, REQ-0005, REQ-0006, REQ-0007, REQ-0008, REQ-0009, REQ-0010]
 tickets: []
-decisions: [PD-0001, PD-0003, PD-0004, PD-0005]
+decisions: [PD-0001, PD-0003, PD-0004, PD-0005, PD-0006]
 ---
 
 # INIT-0001 — Tasks are tracked locally from the ttc command line
@@ -61,7 +61,7 @@ The repository holds an empty Node project: `package.json`, a placeholder test a
 - The rules that bind every command:
   - tasks live in one JSON file at `$TTC_HOME/tasks.json` (default `~/.ttc`), and every write is atomic;
   - every failure is one line on stderr, with exit code 1 and no stored data changed;
-  - the fixed message texts, argument rules, id rules and output formats in `PD-0003` and `PD-0004`;
+  - the fixed message texts, argument rules, id rules and output formats in `PD-0003`, `PD-0004` and `PD-0006`;
   - Node 24, built-in libraries only, no network;
   - `node:test` tests for every command, and a passing CI `test` check.
 
@@ -134,3 +134,4 @@ None.
 | 2026-10-20 | 1 | Created at INTAKE as a draft | Triage verdict `new-initiative` |
 | 2026-10-20 | 2 | Outcome, scope, success measures and requirements written | PRODUCT_DEFINITION |
 | 2026-10-20 | 3 | Rules of PD-0004 and the chosen option PD-0005 applied; two out-of-scope items added | SOLUTION_CONVERGENCE |
+| 2026-10-20 | 4 | Rules of PD-0006 applied (coherence round 1, D5 and D6) | DECOMPOSITION |

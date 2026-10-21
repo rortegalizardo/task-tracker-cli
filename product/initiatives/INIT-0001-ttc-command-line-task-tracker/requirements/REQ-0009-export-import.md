@@ -3,7 +3,7 @@ id: REQ-0009
 type: requirement
 title: The ttc export and ttc import commands copy the whole list to and from a file, and a file that fails validation changes nothing
 status: draft
-revision: 4
+revision: 5
 owner_role: ROLE-product-manager
 created: 2026-10-20
 updated: 2026-10-20
@@ -32,7 +32,7 @@ acceptance:
   - "`ttc import bad.json` with task 1 `Keep` stored, for each `bad.json` that is a list exported from tasks 1 `One` and 2 `Two` and changed only so that task 2 holds the tag `two words`, the 33-letter tag `abcdefghijklmnopqrstuvwxyzabcdefa`, the tag `café`, or the tag `home` twice → for each, stderr is exactly one line `ttc: invalid import file bad.json: <problem>` (`<problem>` is not empty), stdout is empty, exit code 1, and `tasks.json` unchanged"
   - "`ttc import bad.json` with task 1 `Keep` stored, where `bad.json` is a list exported from tasks 1 `One` and 2 `Two` and changed only so that task 2 holds the tag `HOME` → stderr is exactly one line `ttc: invalid import file bad.json: <problem>` (`<problem>` is not empty), stdout is empty, exit code 1, and `tasks.json` unchanged (import never changes the case of a tag)"
   - "`ttc import bad.json` with task 1 `Keep` stored, for each `bad.json` that is a list exported from tasks 1 `One` and 2 `Two` and changed only so that the next id is equal to the highest task id, or lower than it → for each, stderr is exactly one line `ttc: invalid import file bad.json: <problem>` (`<problem>` is not empty), stdout is empty, exit code 1, and `tasks.json` unchanged"
-  - "`ttc import bad.json` with task 1 `Keep` stored, for each `bad.json` that is a list exported from tasks 1 `One` and 2 `Two` and changed only so that task 2's id is 9007199254740992, or the next id is 9007199254740993, or task 2's title contains a tab (U+0009) → for each, stderr is exactly one line `ttc: invalid import file bad.json: <problem>` (`<problem>` is not empty), stdout is empty, exit code 1, and `tasks.json` unchanged"
+  - "`ttc import bad.json` with task 1 `Keep` stored, for each `bad.json` that is a list exported from tasks 1 `One` and 2 `Two` and changed only so that task 2's id is 9007199254740992, or the next id is 9007199254740993, or task 2's title contains a tab (U+0009), or task 2's title is `Two` with a space before it, or task 2's title is `Two` with a space after it, or task 2's title is three spaces → for each, stderr is exactly one line `ttc: invalid import file bad.json: <problem>` (`<problem>` is not empty), stdout is empty, exit code 1, and `tasks.json` unchanged"
   - "`ttc import bad.json` with task 1 `Keep` stored, for each `bad.json` that holds the text `{`, is an empty file, or holds the text `42` → for each, stderr is exactly one line `ttc: invalid import file bad.json: <problem>` (`<problem>` is not empty), stdout is empty, exit code 1, and `tasks.json` unchanged"
   - "`ttc import bad.json` with task 1 `Keep` stored, where `bad.json` is a list exported from tasks 1 `One` and 2 `Two` and changed so that task 1's id is `0` and task 2's status is `pending` → stderr is exactly one line that starts with `ttc: invalid import file bad.json: ` (only one problem is reported), stdout is empty, exit code 1, and `tasks.json` unchanged"
   - "`ttc import bad.json` where `bad.json` holds the text `{`, with no `tasks.json` and no `TTC_HOME` folder → stderr is exactly one line `ttc: invalid import file bad.json: <problem>` (`<problem>` is not empty), stdout is empty, exit code 1, and neither `tasks.json` nor the `TTC_HOME` folder is created"
@@ -40,14 +40,16 @@ acceptance:
   - "`ttc import nope.json` when no file `nope.json` exists and task 1 `Keep` is stored → stderr is one line that starts with `ttc: `, stdout is empty, exit code 1, and `tasks.json` unchanged"
   - "`ttc import sub/a.json` run in a working folder that holds the file `sub/a.json`, exported from task 1 `One`, with `TTC_HOME` set to a different folder that holds task 1 `Keep` and no `sub` folder → stdout is the single line `Imported 1 tasks from sub/a.json`, exit code 0; `ttc list --all` prints exactly `#1 [ ] One` (the path is relative to the working folder, not to the `TTC_HOME` folder)"
   - "each of `ttc import`, `ttc import a.json b.json`, `ttc import a.json --force` and `ttc import --in`, with a valid exported file `a.json` and task 1 `Keep` stored → stderr is one line that starts with `ttc: `, stdout is empty, exit code 1, and `tasks.json` unchanged"
-  - "`ttc help` → stdout holds the usage lines `ttc export <file>` and `ttc import <file>` as well as the usage lines of the stories it depends on, exit code 0"
+  - "`ttc help` → stdout holds the usage lines `ttc export <file>` and `ttc import <file>` as well as a usage line for each command that the stories it depends on add, exit code 0"
+  - "`ttc export backup.json` whose write is stopped before it finishes (the test simulates this), with task 1 `Buy milk` stored and `backup.json` holding the text `old` → `backup.json` still holds exactly `old`"
+  - "the same stopped export when no `backup.json` existed → `backup.json` still does not exist"
   - "`npm test` runs `node:test` tests covering every criterion above → all pass"
   - "the pull request delivering this story → the CI `test` check passes"
 capabilities: [CAP-0001]
 design_refs: []
-decisions: [PD-0001, PD-0003, PD-0004, PD-0005]
+decisions: [PD-0001, PD-0003, PD-0004, PD-0005, PD-0006]
 depends_on: [REQ-0001, REQ-0002, REQ-0003]
-constraints: ["C1 (technical/assessment.md, round 1)", "C2 (technical/assessment.md, round 1)", "C4 (technical/assessment.md, round 1)", "C5 (technical/assessment.md, round 1)", "C6 (technical/assessment.md, round 1)", "C7 (technical/assessment.md, round 1)"]
+constraints: ["C1 (technical/assessment.md, round 1)", "C2 (technical/assessment.md, round 1)", "C3 (technical/assessment.md, round 1)", "C4 (technical/assessment.md, round 1)", "C5 (technical/assessment.md, round 1)", "C6 (technical/assessment.md, round 1)", "C7 (technical/assessment.md, round 1)"]
 observability: []
 rollout: none
 readiness: not-assessed
@@ -109,15 +111,15 @@ Code lives in the repository rortegalizardo/task-tracker-cli (~/Desktop/Projects
 - **Check first.** It checks the whole file before changing anything. It checks that:
   - the file is valid JSON;
   - every id is a positive whole number, at most 9007199254740991, with no id used twice (`PD-0004` item 2);
-  - every title is one non-empty line, with no control character (`PD-0004` item 1);
+  - every title is one non-empty line, with no control character (`PD-0004` item 1) and no space at either end (`PD-0006` item 1);
   - every status is open or done;
   - every due date is valid or absent;
   - every tag is valid and already in lower case, with no repeats on one task;
   - the next id is higher than every task's id, and at most 9007199254740992 (`PD-0004` item 2).
 
-  The title check is that of `PD-0004` item 1: a line break is any of LF, CR, U+0085, U+2028 or U+2029, and any other control character (U+0000–U+001F, tab included, and U+007F–U+009F) is a problem too. A failure is reported as an import problem, in the form below.
+  The title check is that of `PD-0004` item 1: a line break is any of LF, CR, U+0085, U+2028 or U+2029, and any other control character (U+0000–U+001F, tab included, and U+007F–U+009F) is a problem too. A failure is reported as an import problem, in the form below. The import never changes a title: a title must already be in its stored form, and `ttc` always stores titles trimmed, so a file `ttc` wrote always passes (`PD-0006` item 1).
 - **A problem.** The first problem found is reported as `ttc: invalid import file <file>: <problem>`, with `<file>` as typed. Exactly one line is printed, to stderr; stdout is empty; the exit code is 1. The stored list is left exactly as it was, and no file or folder is created (items 11 and 13).
-- **A valid file.** It replaces the whole current list, keeping the file's ids and its next id, then prints `Imported <n> tasks from <file>` and exits 0 (item 10). `<n>` is the number of tasks in the file. The write is atomic (item 13; `PD-0004` items 3 and 4). The first command that writes creates the `TTC_HOME` folder and `tasks.json` when they are missing (item 13).
+- **A valid file.** It replaces the whole current list, keeping the file's ids and its next id, then prints `Imported <n> tasks from <file>` and exits 0 (item 10). `<n>` is the number of tasks in the file. The write is atomic (item 13; `PD-0004` items 3 and 4). The first command that writes creates the `TTC_HOME` folder and `tasks.json` when they are missing (item 13). So after an import, ids given since the file was exported can be given again (`PD-0006` item 2).
 - **Import never merges.** Tasks that are in the current list and not in the file are gone afterwards, and when ids clash the file's task is the one kept. A file with no tasks gives an empty list.
 - **The file is not changed.** `import` only reads `<file>`.
 - **A list exported and then imported is the same list, task for task** (item 14): the same ids, titles, statuses, due dates and tags, and the same next id.
@@ -153,7 +155,7 @@ Code lives in the repository rortegalizardo/task-tracker-cli (~/Desktop/Projects
 - [ ] `ttc import bad.json` with task 1 `Keep` stored, for each `bad.json` that is a list exported from tasks 1 `One` and 2 `Two` and changed only so that task 2 holds the tag `two words`, the 33-letter tag `abcdefghijklmnopqrstuvwxyzabcdefa`, the tag `café`, or the tag `home` twice → for each, stderr is exactly one line `ttc: invalid import file bad.json: <problem>` (`<problem>` is not empty), stdout is empty, exit code 1, and `tasks.json` unchanged
 - [ ] `ttc import bad.json` with task 1 `Keep` stored, where `bad.json` is a list exported from tasks 1 `One` and 2 `Two` and changed only so that task 2 holds the tag `HOME` → stderr is exactly one line `ttc: invalid import file bad.json: <problem>` (`<problem>` is not empty), stdout is empty, exit code 1, and `tasks.json` unchanged (import never changes the case of a tag)
 - [ ] `ttc import bad.json` with task 1 `Keep` stored, for each `bad.json` that is a list exported from tasks 1 `One` and 2 `Two` and changed only so that the next id is equal to the highest task id, or lower than it → for each, stderr is exactly one line `ttc: invalid import file bad.json: <problem>` (`<problem>` is not empty), stdout is empty, exit code 1, and `tasks.json` unchanged
-- [ ] `ttc import bad.json` with task 1 `Keep` stored, for each `bad.json` that is a list exported from tasks 1 `One` and 2 `Two` and changed only so that task 2's id is 9007199254740992, or the next id is 9007199254740993, or task 2's title contains a tab (U+0009) → for each, stderr is exactly one line `ttc: invalid import file bad.json: <problem>` (`<problem>` is not empty), stdout is empty, exit code 1, and `tasks.json` unchanged
+- [ ] `ttc import bad.json` with task 1 `Keep` stored, for each `bad.json` that is a list exported from tasks 1 `One` and 2 `Two` and changed only so that task 2's id is 9007199254740992, or the next id is 9007199254740993, or task 2's title contains a tab (U+0009), or task 2's title is `Two` with a space before it, or task 2's title is `Two` with a space after it, or task 2's title is three spaces → for each, stderr is exactly one line `ttc: invalid import file bad.json: <problem>` (`<problem>` is not empty), stdout is empty, exit code 1, and `tasks.json` unchanged
 - [ ] `ttc import bad.json` with task 1 `Keep` stored, for each `bad.json` that holds the text `{`, is an empty file, or holds the text `42` → for each, stderr is exactly one line `ttc: invalid import file bad.json: <problem>` (`<problem>` is not empty), stdout is empty, exit code 1, and `tasks.json` unchanged
 - [ ] `ttc import bad.json` with task 1 `Keep` stored, where `bad.json` is a list exported from tasks 1 `One` and 2 `Two` and changed so that task 1's id is `0` and task 2's status is `pending` → stderr is exactly one line that starts with `ttc: invalid import file bad.json: ` (only one problem is reported), stdout is empty, exit code 1, and `tasks.json` unchanged
 - [ ] `ttc import bad.json` where `bad.json` holds the text `{`, with no `tasks.json` and no `TTC_HOME` folder → stderr is exactly one line `ttc: invalid import file bad.json: <problem>` (`<problem>` is not empty), stdout is empty, exit code 1, and neither `tasks.json` nor the `TTC_HOME` folder is created
@@ -161,7 +163,9 @@ Code lives in the repository rortegalizardo/task-tracker-cli (~/Desktop/Projects
 - [ ] `ttc import nope.json` when no file `nope.json` exists and task 1 `Keep` is stored → stderr is one line that starts with `ttc: `, stdout is empty, exit code 1, and `tasks.json` unchanged
 - [ ] `ttc import sub/a.json` run in a working folder that holds the file `sub/a.json`, exported from task 1 `One`, with `TTC_HOME` set to a different folder that holds task 1 `Keep` and no `sub` folder → stdout is the single line `Imported 1 tasks from sub/a.json`, exit code 0; `ttc list --all` prints exactly `#1 [ ] One` (the path is relative to the working folder, not to the `TTC_HOME` folder)
 - [ ] each of `ttc import`, `ttc import a.json b.json`, `ttc import a.json --force` and `ttc import --in`, with a valid exported file `a.json` and task 1 `Keep` stored → stderr is one line that starts with `ttc: `, stdout is empty, exit code 1, and `tasks.json` unchanged
-- [ ] `ttc help` → stdout holds the usage lines `ttc export <file>` and `ttc import <file>` as well as the usage lines of the stories it depends on, exit code 0
+- [ ] `ttc help` → stdout holds the usage lines `ttc export <file>` and `ttc import <file>` as well as a usage line for each command that the stories it depends on add, exit code 0
+- [ ] `ttc export backup.json` whose write is stopped before it finishes (the test simulates this), with task 1 `Buy milk` stored and `backup.json` holding the text `old` → `backup.json` still holds exactly `old`
+- [ ] the same stopped export when no `backup.json` existed → `backup.json` still does not exist
 - [ ] `npm test` runs `node:test` tests covering every criterion above → all pass
 - [ ] the pull request delivering this story → the CI `test` check passes
 
@@ -175,6 +179,7 @@ Code lives in the repository rortegalizardo/task-tracker-cli (~/Desktop/Projects
 
 - **C1** (`technical/assessment.md`, round 1): The runtime is Node 24 with built-in modules only, and no network. The CI job has no install step, so a dependency also fails CI, and the built-in argument parser cannot be used as it is for single-dash arguments such as `-1` and `-home`.
 - **C2** (`technical/assessment.md`, round 1): "Atomic" holds at process level: after a crash, kill or error at any step of a write, `tasks.json` (and an export target) holds the whole old content or the whole new content. A power cut or operating-system crash cannot be tested in CI, and a replaced symlink becomes a regular file (`PD-0004` item 3).
+- **C3** (`technical/assessment.md`, round 1): Tests simulate a stopped export from the test side only. No `ttc` option or environment variable may exist for it, because `PD-0003` closes the set of user-visible behaviour.
 - **C4** (`technical/assessment.md`, round 1): Test files run at the same time in separate processes. Every test uses its own data folder, home folder and working folder, and never reads or writes the real home folder of the person running the tests.
 - **C5** (`technical/assessment.md`, round 1): Ids are exact only up to 9007199254740991. Id parsing and the import checks need that upper bound (`PD-0004` item 2).
 - **C6** (`technical/assessment.md`, round 1): Verification runs on Node 24 on Linux with a UTC clock in CI, and CI is the arbiter. The `engines` field is aligned to Node 24, and other operating systems are not verified.

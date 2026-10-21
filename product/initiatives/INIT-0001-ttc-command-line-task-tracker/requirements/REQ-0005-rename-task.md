@@ -3,7 +3,7 @@ id: REQ-0005
 type: requirement
 title: The ttc rename command changes a task's title
 status: draft
-revision: 4
+revision: 5
 owner_role: ROLE-product-manager
 created: 2026-10-20
 updated: 2026-10-20
@@ -22,7 +22,7 @@ acceptance:
   - "`ttc rename 7 'New'` with only task 1 stored → stderr is exactly the line `ttc: no task with id 7`, stdout is empty, exit code 1, and `tasks.json` unchanged; the same command with no `tasks.json` gives the same line and creates no `tasks.json`"
   - "each of `ttc rename`, `ttc rename 1`, `ttc rename 1 a b`, `ttc rename 1 'New' --force` and `ttc rename 1 '--new'`, with task 1 stored → stderr is one line that starts with `ttc: `, stdout is empty, exit code 1, and `tasks.json` unchanged"
   - "`tasks.json` holds the text `{` and `ttc rename 1 'New'` runs → stderr is exactly one line `ttc: cannot read <path>: <reason>` (`<path>` is the path of `tasks.json`, `<reason>` is not empty), stdout is empty, exit code 1, and `tasks.json` still holds `{`"
-  - "`ttc help` → stdout holds the usage line `ttc rename <id> \"<title>\"` as well as the usage lines of the stories it depends on, exit code 0"
+  - "`ttc help` → stdout holds the usage line `ttc rename <id> \"<title>\"` as well as a usage line for each command that the stories it depends on add, exit code 0"
   - "`npm test` runs `node:test` tests covering every criterion above → all pass"
   - "the pull request delivering this story → the CI `test` check passes"
 capabilities: [CAP-0001]
@@ -97,7 +97,7 @@ Code lives in the repository rortegalizardo/task-tracker-cli (~/Desktop/Projects
 - [ ] `ttc rename 7 'New'` with only task 1 stored → stderr is exactly the line `ttc: no task with id 7`, stdout is empty, exit code 1, and `tasks.json` unchanged; the same command with no `tasks.json` gives the same line and creates no `tasks.json`
 - [ ] each of `ttc rename`, `ttc rename 1`, `ttc rename 1 a b`, `ttc rename 1 'New' --force` and `ttc rename 1 '--new'`, with task 1 stored → stderr is one line that starts with `ttc: `, stdout is empty, exit code 1, and `tasks.json` unchanged
 - [ ] `tasks.json` holds the text `{` and `ttc rename 1 'New'` runs → stderr is exactly one line `ttc: cannot read <path>: <reason>` (`<path>` is the path of `tasks.json`, `<reason>` is not empty), stdout is empty, exit code 1, and `tasks.json` still holds `{`
-- [ ] `ttc help` → stdout holds the usage line `ttc rename <id> "<title>"` as well as the usage lines of the stories it depends on, exit code 0
+- [ ] `ttc help` → stdout holds the usage line `ttc rename <id> "<title>"` as well as a usage line for each command that the stories it depends on add, exit code 0
 - [ ] `npm test` runs `node:test` tests covering every criterion above → all pass
 - [ ] the pull request delivering this story → the CI `test` check passes
 
