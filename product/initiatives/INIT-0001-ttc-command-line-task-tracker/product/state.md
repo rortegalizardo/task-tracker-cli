@@ -18,7 +18,7 @@ converged: true
 readiness_verdict: READY   # none | READY | READY-with-known-issues | NOT READY | void
 stories: [REQ-0001, REQ-0002, REQ-0003, REQ-0004, REQ-0005, REQ-0006, REQ-0007, REQ-0008, REQ-0009, REQ-0010]
 design_refs: []
-decisions: [PD-0001, PD-0002, PD-0003, PD-0004, PD-0005, PD-0006]
+decisions: [PD-0001, PD-0002, PD-0003, PD-0004, PD-0005, PD-0006, PD-0007]
 ---
 
 # Product definition state — INIT-0001
