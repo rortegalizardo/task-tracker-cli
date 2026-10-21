@@ -51,3 +51,20 @@ test('ttc frobnicate is the exact unknown-command line (criterion 6)', () => {
   assert.equal(fs.existsSync(ttcHome), false);
   assert.equal(fs.existsSync(path.join(r.home, '.ttc')), false);
 });
+
+test('ttc help lists the add, list, export and import usages (RCDEV-830 AC31)', () => {
+  const base = fs.mkdtempSync(path.join(os.tmpdir(), 'ttc-'));
+  const r = ttc(['help'], { ttcHome: path.join(base, 'data') });
+  assert.equal(r.status, 0);
+  const lines = usageLines(r.stdout);
+  assert.ok(lines.includes('ttc help'));
+  assert.ok(lines.some((l) => l.startsWith('ttc add ')));
+  assert.ok(lines.some((l) => l.startsWith('ttc list ')));
+  assert.ok(lines.some((l) => l.startsWith('ttc rename ')));
+  assert.ok(lines.some((l) => l.startsWith('ttc delete ')));
+  assert.ok(lines.some((l) => l.startsWith('ttc done ')));
+  assert.ok(lines.some((l) => l.startsWith('ttc reopen ')));
+  assert.ok(lines.some((l) => l.startsWith('ttc tag ')));
+  assert.ok(lines.includes('ttc export <file>'));
+  assert.ok(lines.includes('ttc import <file>'));
+});

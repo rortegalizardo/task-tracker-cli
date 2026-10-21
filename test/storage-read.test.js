@@ -90,3 +90,14 @@ for (const [name, list] of Object.entries(BAD_LISTS)) {
     assert.equal(fs.readFileSync(file, 'utf8'), text);
   });
 }
+
+test('reading fails when the next id is 9007199254740993, which JSON.parse would round (RCDEV-830)', () => {
+  const dir = tmpDir();
+  const file = path.join(dir, 'tasks.json');
+  // A JS number cannot hold this value, so the raw text is built by replacement.
+  const text = JSON.stringify({ nextId: 3, tasks: [task(1), task(2)] }).replace('"nextId":3', '"nextId":9007199254740993');
+  assert.ok(text.includes('9007199254740993'));
+  fs.writeFileSync(file, text);
+  readFails({ TTC_HOME: dir }, file);
+  assert.equal(fs.readFileSync(file, 'utf8'), text);
+});
