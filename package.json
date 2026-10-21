@@ -3,10 +3,13 @@
   "version": "0.0.0",
   "private": true,
   "description": "Task tracker CLI (M1 trial). Node.js built-in libraries only.",
+  "bin": {
+    "ttc": "bin/ttc.js"
+  },
   "engines": {
-    "node": ">=22"
+    "node": ">=24"
   },
   "scripts": {
-    "test": "node --test"
+    "test": "node --test \"test/**/*.test.js\""
   }
 }
