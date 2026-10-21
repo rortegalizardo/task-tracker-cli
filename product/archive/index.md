@@ -9,6 +9,7 @@ archived.
 
 | ID | Title | Type | Superseded by | Archived on | Path |
 | --- | --- | --- | --- | --- | --- |
+| PD-0002 | Fix the user-visible behaviour rules the ttc spec leaves open | decision | PD-0003 | 2026-10-20 | [../decisions/PD-0002-ttc-behaviour-rules.md](../decisions/PD-0002-ttc-behaviour-rules.md) |
 
 Decisions are the deliberate exception: superseded decisions stay in
 `product/decisions/` rather than moving here, because their reasoning is read

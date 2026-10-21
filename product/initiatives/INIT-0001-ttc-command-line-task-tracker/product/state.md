@@ -3,7 +3,7 @@ id: PSTATE-INIT-0001
 type: product-state
 title: Product definition state for INIT-0001
 status: authoritative
-revision: 3
+revision: 4
 owner_role: ROLE-product-manager
 created: 2026-10-20
 updated: 2026-10-20
@@ -12,13 +12,13 @@ initiative: INIT-0001
 phase: PRODUCT_DEFINITION
 phase_entered: 2026-10-20
 requester: "the requester (repository owner, rortegalizardo), via the parent session, 2026-10-20"
-next_action: "ROLE-product-manager: draft the initiative, the REQ- set and the Product Definition Contract (sonnet drafting child), validate, then advance to SOLUTION_EXPLORATION"
+next_action: "ROLE-product-manager: advance to SOLUTION_EXPLORATION, record the justified single option and dispatch the technical architect (planner, PRODUCT-DISCOVERY mode) for its feasibility verdict"
 blocked_by: []
 converged: false
 readiness_verdict: none   # none | READY | READY-with-known-issues | NOT READY | void
-stories: []
+stories: [REQ-0001, REQ-0002, REQ-0003, REQ-0004, REQ-0005, REQ-0006, REQ-0007, REQ-0008, REQ-0009, REQ-0010]
 design_refs: []
-decisions: [PD-0001, PD-0002]
+decisions: [PD-0001, PD-0002, PD-0003]
 ---
 
 # Product definition state — INIT-0001
@@ -29,10 +29,11 @@ these two files never describe the same thing and never share a writer.
 
 ## Where this stands
 
-PRODUCT_DEFINITION: every open detail the spec leaves to the PM is decided in
-`PD-0002`. Next: the initiative's outcome and scope, ten draft `REQ-` records
-(one per spec item) and the Product Definition Contract, drafted by one sonnet
-child and validated against the raw spec.
+PRODUCT_DEFINITION done: the initiative states outcome O1–O10 and a non-empty
+out-of-scope section; ten draft `REQ-` records (one per spec item) cover it,
+with the Product Definition Contract beside them. Drafting found seven gaps in
+`PD-0002`; `PD-0003` supersedes it with the complete rule set. Next:
+SOLUTION_EXPLORATION and the architect's feasibility verdict.
 
 ## Problem statement
 
@@ -60,9 +61,9 @@ the spec to the product manager (`PD-0001`).
 
 ## Next action
 
-ROLE-product-manager: draft the initiative, the `REQ-` set and the Product
-Definition Contract (sonnet drafting child), validate them, then advance to
-SOLUTION_EXPLORATION.
+ROLE-product-manager: advance to SOLUTION_EXPLORATION, record the justified
+single option, and dispatch the technical architect (`planner`,
+PRODUCT-DISCOVERY mode) for its feasibility verdict.
 
 ## Blocked by
 
@@ -85,19 +86,19 @@ in one decision at PRODUCT_DEFINITION.
 | --- | --- | --- | --- |
 | 2026-10-20 | 1. `package.json` declares `engines >=22`; the spec says Node 24 | pm-resolvable | The spec governs: Node 24 is the runtime (`PD-0001` item 2, constraint 2). Aligning `engines` is engineering's |
 | 2026-10-20 | 2. Who decides the details the spec leaves open | escalation | Answered by the requester in the request itself: the PM decides inside the spec and asks only if the spec contradicts itself (`PD-0001` item 1) |
-| 2026-10-20 | 3. How a task is named by `<id>`, and whether a deleted task's id is reused | pm-resolvable | Decided by the PM under `PD-0001`: `PD-0002`  |
-| 2026-10-20 | 4. What `ttc list` shows with no status flag, in what order, and what one line holds | pm-resolvable | Decided by the PM under `PD-0001`: `PD-0002`  |
-| 2026-10-20 | 5. What "overdue" means: which day is today, a task due today, a done task | pm-resolvable | Decided by the PM under `PD-0001`: `PD-0002`  |
-| 2026-10-20 | 6. What makes a title, a tag and a due date valid | pm-resolvable | Decided by the PM under `PD-0001`: `PD-0002`  |
-| 2026-10-20 | 7. Repeated or no-op actions: `done` on a done task, adding a tag twice, removing an absent tag | pm-resolvable | Decided by the PM under `PD-0001`: `PD-0002`  |
-| 2026-10-20 | 8. Whether `import` replaces the list or merges into it, and what "validate first" checks | pm-resolvable | Decided by the PM under `PD-0001`: `PD-0002`  |
-| 2026-10-20 | 9. What `export` does when the target file already exists | pm-resolvable | Decided by the PM under `PD-0001`: `PD-0002`  |
-| 2026-10-20 | 10. What `ttc stats` prints | pm-resolvable | Decided by the PM under `PD-0001`: `PD-0002`  |
-| 2026-10-20 | 11. What `ttc help` lists while commands arrive one story at a time | pm-resolvable | Decided by the PM under `PD-0001`: `PD-0002`  |
-| 2026-10-20 | 12. Behaviour when the data file or `$TTC_HOME` is missing, or the file is unreadable | pm-resolvable | Decided by the PM under `PD-0001`: `PD-0002`  |
-| 2026-10-20 | 13. Exit code and wording of the one-line error | pm-resolvable | Decided by the PM under `PD-0001`: `PD-0002`  |
-| 2026-10-20 | 14. What a successful command that changes data prints | pm-resolvable | Decided by the PM under `PD-0001`: `PD-0002`  |
-| 2026-10-20 | 15. Two `ttc` processes writing at the same moment | pm-resolvable | Out of scope for INIT-0001 (one person, one command at a time); written into the out-of-scope section at PRODUCT_DEFINITION; `PD-0002` item 16 |
+| 2026-10-20 | 3. How a task is named by `<id>`, and whether a deleted task's id is reused | pm-resolvable | Decided by the PM under `PD-0001`: `PD-0002`, restated and completed by `PD-0003` |
+| 2026-10-20 | 4. What `ttc list` shows with no status flag, in what order, and what one line holds | pm-resolvable | Decided by the PM under `PD-0001`: `PD-0002`, restated and completed by `PD-0003` |
+| 2026-10-20 | 5. What "overdue" means: which day is today, a task due today, a done task | pm-resolvable | Decided by the PM under `PD-0001`: `PD-0002`, restated and completed by `PD-0003` |
+| 2026-10-20 | 6. What makes a title, a tag and a due date valid | pm-resolvable | Decided by the PM under `PD-0001`: `PD-0002`, restated and completed by `PD-0003` |
+| 2026-10-20 | 7. Repeated or no-op actions: `done` on a done task, adding a tag twice, removing an absent tag | pm-resolvable | Decided by the PM under `PD-0001`: `PD-0002`, restated and completed by `PD-0003` |
+| 2026-10-20 | 8. Whether `import` replaces the list or merges into it, and what "validate first" checks | pm-resolvable | Decided by the PM under `PD-0001`: `PD-0002`, restated and completed by `PD-0003` |
+| 2026-10-20 | 9. What `export` does when the target file already exists | pm-resolvable | Decided by the PM under `PD-0001`: `PD-0002`, restated and completed by `PD-0003` |
+| 2026-10-20 | 10. What `ttc stats` prints | pm-resolvable | Decided by the PM under `PD-0001`: `PD-0002`, restated and completed by `PD-0003` |
+| 2026-10-20 | 11. What `ttc help` lists while commands arrive one story at a time | pm-resolvable | Decided by the PM under `PD-0001`: `PD-0002`, restated and completed by `PD-0003` |
+| 2026-10-20 | 12. Behaviour when the data file or `$TTC_HOME` is missing, or the file is unreadable | pm-resolvable | Decided by the PM under `PD-0001`: `PD-0002`, restated and completed by `PD-0003` |
+| 2026-10-20 | 13. Exit code and wording of the one-line error | pm-resolvable | Decided by the PM under `PD-0001`: `PD-0002`, restated and completed by `PD-0003` |
+| 2026-10-20 | 14. What a successful command that changes data prints | pm-resolvable | Decided by the PM under `PD-0001`: `PD-0002`, restated and completed by `PD-0003` |
+| 2026-10-20 | 15. Two `ttc` processes writing at the same moment | pm-resolvable | Out of scope for INIT-0001 (one person, one command at a time); written into the out-of-scope section at PRODUCT_DEFINITION; `PD-0002` item 16, kept as `PD-0003` item 16 |
 | 2026-10-20 | 16. Whether the initiative has a user-facing visual surface | escalation | Answered by the requester in the request itself: CLI only, no UI, no design roles, no `DES-` (`PD-0001` item 3) |
 
 ## Discovery
@@ -171,6 +172,7 @@ _Recommended option and why:_
 
 | Date | Delegate role | Question | Answer / verdict | Recorded as |
 | --- | --- | --- | --- | --- |
+| 2026-10-20 | sonnet drafting child (§9b; vendor claude, model sonnet) | `RUN: INIT-0001 step=product_definition` — draft the initiative, ten `REQ-` records (one per spec item, `depends_on` per the spec order) and the Product Definition Contract from the raw spec, `PD-0001` and `PD-0002` | Draft bundle returned with 7 `TODO(PM)` gaps against `PD-0002`. PM validated against the raw spec: gaps settled by `PD-0003` (supersedes `PD-0002`); one repair dispatch (same child) applied `PD-0003`, removed cross-story help wording, fixed `REQ-0010` `depends_on`. Tokens-scale L, usage n/a | `initiative.md` rev 2, `REQ-0001`…`REQ-0010` (draft), `product-definition-contract.md`, `PD-0003` |
 
 ## Escalation log
 
