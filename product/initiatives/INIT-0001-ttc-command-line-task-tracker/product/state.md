@@ -3,16 +3,16 @@ id: PSTATE-INIT-0001
 type: product-state
 title: Product definition state for INIT-0001
 status: authoritative
-revision: 1
+revision: 2
 owner_role: ROLE-product-manager
 created: 2026-10-20
 updated: 2026-10-20
 updated_by_role: ROLE-product-manager
 initiative: INIT-0001
-phase: INTAKE
+phase: DISCOVERY
 phase_entered: 2026-10-20
 requester: "the requester (repository owner, rortegalizardo), via the parent session, 2026-10-20"
-next_action: "ROLE-product-manager: advance INIT-0001 to DISCOVERY"
+next_action: "ROLE-product-manager: advance INIT-0001 to PRODUCT_DEFINITION"
 blocked_by: []
 converged: false
 readiness_verdict: none   # none | READY | READY-with-known-issues | NOT READY | void
@@ -29,10 +29,10 @@ these two files never describe the same thing and never share a writer.
 
 ## Where this stands
 
-INTAKE: the raw request is committed verbatim
-([`sources/2026-10-20-requester-spec.md`](sources/2026-10-20-requester-spec.md)).
-Triage verdict `new-initiative`. Every ambiguity below is classified. Next:
-DISCOVERY.
+DISCOVERY: users, jobs, current state (no `CAP-`), success signals and
+non-goals are written below with sources; `project/mission.md` is hardened from
+the requester's words. No escalation-class ambiguity is open. Next:
+PRODUCT_DEFINITION.
 
 ## Problem statement
 
@@ -60,7 +60,7 @@ the spec to the product manager (`PD-0001`).
 
 ## Next action
 
-ROLE-product-manager: advance INIT-0001 to DISCOVERY.
+ROLE-product-manager: advance INIT-0001 to PRODUCT_DEFINITION.
 
 ## Blocked by
 
@@ -100,7 +100,63 @@ in one decision at PRODUCT_DEFINITION.
 
 ## Discovery
 
-_Written at DISCOVERY._
+Sources: `S` = the raw request,
+[`sources/2026-10-20-requester-spec.md`](sources/2026-10-20-requester-spec.md)
+(requester, 2026-10-20); `R` = the repository at head `4e5a324`.
+
+**Target user.** One person who works in a terminal and keeps their own to-do
+list on one machine, with no account, server or network (S: "a `ttc`
+command-line task tracker ... no network"; "one JSON file at
+$TTC_HOME/tasks.json"). No second user or shared list appears anywhere in S.
+
+**Jobs and problems, each with its source.**
+
+| # | Job the user has | Source |
+| --- | --- | --- |
+| J1 | Capture a task in one command, optionally with a due date and tags | S, story 2 |
+| J2 | See open tasks, done tasks or all tasks, optionally only one tag's | S, story 3 |
+| J3 | Mark a task done, and undo that | S, story 4 |
+| J4 | Fix a task's title | S, story 5 |
+| J5 | Remove a task | S, story 6 |
+| J6 | Notice which tasks are past their due date, and list only those | S, story 7 |
+| J7 | Add or remove a tag on an existing task | S, story 8 |
+| J8 | Copy the whole list to a file and restore it from one, without a bad file damaging the list | S, story 9 ("validate first, all or nothing") |
+| J9 | Read totals of open, done and overdue tasks | S, story 10 |
+| J10 | Find out what the tool can do from the tool itself | S, story 1 (`ttc help`) |
+| J11 | Trust that the list is never left half written, lives in one known file, and never leaves the machine | S, lines 1–2 |
+| J12 | Script the tool: a failure is one line on stderr with a non-zero exit | S, line 3 |
+
+**Current state.** Capability mapping: **none**. `capabilities/index.md` has
+no rows, and the repository has no product code: `package.json` (test script
+`node --test`, `engines >=22`), `test/placeholder.test.js`, and
+`.github/workflows/ci.yml`, which runs a job named `test` (`npm test` on
+Node 24) for every pull request (R).
+
+**Population sizes.** None to record: the product holds no data today. No
+`tasks.json` exists and no list-bearing surface has real data behind it (R).
+The spec states no expected list size.
+
+**Success signals** (observable, not "it shipped"):
+
+1. From an empty `$TTC_HOME`, each of the ten command groups in S does what its
+   story says, and each has `node:test` tests that run in `npm test` (S, line
+   3).
+2. The CI `test` check passes on every pull request that delivers a story (S,
+   line 3).
+3. A write interrupted at any point leaves `tasks.json` either as it was or as
+   intended, never unreadable (S, "Every write is atomic").
+4. Every failure prints exactly one line on stderr and exits non-zero (S,
+   line 3).
+5. A list exported and then imported is the same list; a file that fails
+   validation changes nothing (S, story 9).
+6. No command opens a network connection (S, "no network").
+
+**Known non-goals** (nothing in S asks for them): more than one user or a
+shared list; sync between machines; any graphical or full-screen terminal
+interface (S and the requester's instructions: "CLI only, no UI"); reminders or
+notifications; recurring tasks; priorities, subtasks or notes; text search;
+safe concurrent writes from two `ttc` processes at once; publishing the
+package to a registry.
 
 ## Options
 
@@ -168,6 +224,7 @@ Written at HANDOFF. One row; a second row means a re-handoff after a regression.
 | --- | --- | --- | --- | --- | --- | --- |
 | 2026-10-20 | — | BOOTSTRAP | ROLE-product-manager | Raw request relayed by the parent session | Packet: `readiness: degraded` (`foundation: incomplete`: `project/principles.md` is `draft`), `scope.initiative: null`, profile S; `neighbouring` band read in full: capability, decision, initiative and question indexes all empty. Hooks: none (hydration only) | `e72be89a650ab320`, head `b8ee70d` |
 | 2026-10-20 | BOOTSTRAP | INTAKE | ROLE-product-manager | Packet emitted, scope resolved to none | Triage verdict `new-initiative`: no `CAP-` (index empty), no `PD-` (index empty), no constraint forbids it (constraint 1 agrees with the spec), no duplicate initiative, one outcome named. Entry precondition (`lifecycle-hooks.md` §3.4.1 INTAKE) holds: packet at `degraded` with `neighbouring` read. Degradation repaired per PM §8.5 in this phase: `PD-0001`, constraints rev 2, principles rev 2. Hooks: HOOK-initiative-resolved pass, HOOK-phase-entry pass | `e72be89a650ab320`, head `b8ee70d` |
+| 2026-10-20 | INTAKE | DISCOVERY | ROLE-product-manager | INTAKE exit criteria met: initiative drafted, problem stated with its source, every ambiguity classified, both escalation-class rows answered by the requester (`PD-0001`) | Entry precondition (`lifecycle-hooks.md` §3.4.1 DISCOVERY) holds: draft `INIT-0001`, state at INTAKE with requester, problem statement and a classified ambiguity log. Discovery written with sources; mission hardened (rev 2). No `Q-` raised. Hooks: HOOK-phase-entry pass | `321480b86ed398de`, head `4e5a324` |
 
 > Every product-side session updates this file before ending — **including
 > sessions that failed**, which record the failure in `next_action` and do not
