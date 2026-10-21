@@ -3,22 +3,22 @@ id: PSTATE-INIT-0001
 type: product-state
 title: Product definition state for INIT-0001
 status: authoritative
-revision: 5
+revision: 6
 owner_role: ROLE-product-manager
 created: 2026-10-20
 updated: 2026-10-20
 updated_by_role: ROLE-product-manager
 initiative: INIT-0001
-phase: SOLUTION_EXPLORATION
+phase: SOLUTION_CONVERGENCE
 phase_entered: 2026-10-20
 requester: "the requester (repository owner, rortegalizardo), via the parent session, 2026-10-20"
-next_action: "ROLE-product-manager: advance to SOLUTION_CONVERGENCE; record P1–P7 answers and the chosen option A as PD- records"
+next_action: "ROLE-product-manager: bring the draft REQ- set and initiative in line with PD-0004/PD-0005 and get the Solution Contract drafted (one sonnet child), validate, then advance to DECOMPOSITION"
 blocked_by: []
 converged: false
 readiness_verdict: none   # none | READY | READY-with-known-issues | NOT READY | void
 stories: [REQ-0001, REQ-0002, REQ-0003, REQ-0004, REQ-0005, REQ-0006, REQ-0007, REQ-0008, REQ-0009, REQ-0010]
 design_refs: []
-decisions: [PD-0001, PD-0002, PD-0003]
+decisions: [PD-0001, PD-0002, PD-0003, PD-0004, PD-0005]
 ---
 
 # Product definition state — INIT-0001
@@ -29,10 +29,10 @@ these two files never describe the same thing and never share a writer.
 
 ## Where this stands
 
-SOLUTION_EXPLORATION: one option, justified as a decision already made by the
-requester (see Options). Ten draft `REQ-` records cover outcome O1–O10;
-`PD-0003` holds the complete behaviour rules. Next: the technical architect's
-feasibility verdict for that option.
+SOLUTION_CONVERGENCE: option A is chosen (`PD-0005`) on the architect's
+`feasible-with-constraints` verdict; `PD-0004` answers the architect's P1–P7.
+Next: the draft stories and initiative brought in line with both, and the
+Solution Contract.
 
 ## Problem statement
 
@@ -60,10 +60,9 @@ the spec to the product manager (`PD-0001`).
 
 ## Next action
 
-ROLE-planner (technical architect, PRODUCT-DISCOVERY mode): write
-`technical/capability-scan.md`, `technical/impact.md` and
-`technical/assessment.md`, with a feasibility verdict for option A over
-`REQ-0001`…`REQ-0010`.
+ROLE-product-manager: bring the draft `REQ-` set and the initiative in line
+with `PD-0004` and `PD-0005`, and get the Solution Contract drafted (one sonnet
+child); validate, then advance to DECOMPOSITION.
 
 ## Blocked by
 
@@ -247,6 +246,7 @@ Written at HANDOFF. One row; a second row means a re-handoff after a regression.
 | 2026-10-20 | INTAKE | DISCOVERY | ROLE-product-manager | INTAKE exit criteria met: initiative drafted, problem stated with its source, every ambiguity classified, both escalation-class rows answered by the requester (`PD-0001`) | Entry precondition (`lifecycle-hooks.md` §3.4.1 DISCOVERY) holds: draft `INIT-0001`, state at INTAKE with requester, problem statement and a classified ambiguity log. Discovery written with sources; mission hardened (rev 2). No `Q-` raised. Hooks: HOOK-phase-entry pass | `321480b86ed398de`, head `4e5a324` |
 | 2026-10-20 | DISCOVERY | PRODUCT_DEFINITION | ROLE-product-manager | DISCOVERY exit criteria met: problem, user, current state and success signals stated with sources; no open escalation-class ambiguity | Entry precondition (`lifecycle-hooks.md` §3.4.1 PRODUCT_DEFINITION) holds: Discovery has users, jobs with sources (S1), capability mapping `none` (S2), success signals (S3) and non-goals. `PD-0002` records the answers to ambiguity rows 3–15. Hooks: HOOK-phase-entry pass | `d22ef5f6896a83fd`, head `060e431` |
 | 2026-10-20 | PRODUCT_DEFINITION | SOLUTION_EXPLORATION | ROLE-product-manager | PRODUCT_DEFINITION exit criteria met: outcome O1–O10, out-of-scope (11 items), success measures 1–6, ten draft `REQ-` covering every outcome element, Product Definition Contract citing the raw spec | Entry precondition (`lifecycle-hooks.md` §3.4.1 SOLUTION_EXPLORATION) holds: F1 initiative populated with outcome and non-empty out-of-scope; ≥1 draft `REQ-` (10); F2 draft-mode `validate-requirement-coverage`: no `R1` defect (only `R3` `CAP-` gaps, expected before DECOMPOSITION). `PD-0003` supersedes `PD-0002`. Hooks: HOOK-phase-entry pass | `6f24bfe7e6f949b4`, head `073ab45` |
+| 2026-10-20 | SOLUTION_EXPLORATION | SOLUTION_CONVERGENCE | ROLE-product-manager | SOLUTION_EXPLORATION exit criteria met: one option, justified as already decided by the requester, with verdict `feasible-with-constraints` and its trade-off; PM recommendation A | Entry precondition (`lifecycle-hooks.md` §3.4.1 SOLUTION_CONVERGENCE) holds: X1 single option justified in `Options`; X2 verdict recorded per option (`technical/assessment.md`); `Consultation log` row present. In this phase: `PD-0004` (P1–P7 answers, C2/C5 meaning) and `PD-0005` (chosen option A, cites the non-`infeasible` verdict). Hooks: HOOK-phase-entry pass | `b92ef9d75933030c`, head `09279c2` |
 
 > Every product-side session updates this file before ending — **including
 > sessions that failed**, which record the failure in `next_action` and do not
