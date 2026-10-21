@@ -6,6 +6,7 @@ here and remain in place on disk.
 
 | ID | Title | Status | Path | Updated |
 | --- | --- | --- | --- | --- |
+| INIT-0001 | Tasks are tracked locally from the ttc command line | draft | [INIT-0001-ttc-command-line-task-tracker/initiative.md](INIT-0001-ttc-command-line-task-tracker/initiative.md) | 2026-10-20 |
 
 To create one: allocate `INIT-nnnn` from `../manifest.yaml`, copy
 `../templates/initiative.md` into `INIT-nnnn-<slug>/initiative.md`, create

@@ -7,7 +7,8 @@ not re-open the question.
 
 | ID | Title | Status | Path | Updated |
 | --- | --- | --- | --- | --- |
+| PD-0001 | Treat the requester's spec as complete, record its rules as constraints, and decide every detail inside it | accepted | [PD-0001-spec-is-complete-pm-decides-within-it.md](PD-0001-spec-is-complete-pm-decides-within-it.md) | 2026-10-20 |
 
-Empty at bootstrap. Decisions about the memory system itself
+Decisions about the memory system itself
 (`owner_role: ROLE-product-architect`) and product decisions
 (`owner_role: ROLE-product-manager`) share this index and one `PD-` counter.
