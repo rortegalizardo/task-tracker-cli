@@ -130,17 +130,30 @@ function parseList(text) {
   return { list: data };
 }
 
+// The text of `bytes`, or null when they are not strict UTF-8. A byte order
+// mark is kept (as U+FEFF), so a BOM still fails as "not valid JSON". Reading
+// with 'utf8' instead would replace bad bytes with U+FFFD and accept them.
+function decodeUtf8(bytes) {
+  try {
+    return new TextDecoder('utf-8', { fatal: true, ignoreBOM: true }).decode(bytes);
+  } catch {
+    return null;
+  }
+}
+
 // Never writes. A missing file is an empty list.
 function readList(env) {
   const { file } = dataPaths(env);
   const fail = (reason) => new TtcError('cannot read ' + file + ': ' + reason);
-  let text;
+  let bytes;
   try {
-    text = fs.readFileSync(file, 'utf8');
+    bytes = fs.readFileSync(file);
   } catch (err) {
     if (err.code === 'ENOENT') return { nextId: 1, tasks: [] };
     throw fail(reasonOf(err));
   }
+  const text = decodeUtf8(bytes);
+  if (text === null) throw fail('not valid UTF-8');
   const parsed = parseList(text);
   if (parsed.problem !== undefined) throw fail(parsed.problem);
   return parsed.list;
@@ -210,6 +223,7 @@ module.exports = {
   dataPaths,
   validateList,
   serializeList,
+  decodeUtf8,
   parseList,
   reasonOf,
   readList,
