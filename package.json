@@ -11,6 +11,8 @@
   },
   "scripts": {
     "lint": "node scripts/check-syntax.js",
-    "test": "node --test \"test/**/*.test.js\""
+    "test:unit": "node --test \"test/**/*.test.js\"",
+    "test:perf": "node --test test/perf/add-list.perf.js",
+    "test": "npm run test:unit && npm run test:perf"
   }
 }
