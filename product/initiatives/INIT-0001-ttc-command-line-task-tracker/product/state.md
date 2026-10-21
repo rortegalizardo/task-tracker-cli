@@ -3,16 +3,16 @@ id: PSTATE-INIT-0001
 type: product-state
 title: Product definition state for INIT-0001
 status: authoritative
-revision: 7
+revision: 8
 owner_role: ROLE-product-manager
 created: 2026-10-20
 updated: 2026-10-20
 updated_by_role: ROLE-product-manager
 initiative: INIT-0001
-phase: SOLUTION_CONVERGENCE
+phase: DECOMPOSITION
 phase_entered: 2026-10-20
 requester: "the requester (repository owner, rortegalizardo), via the parent session, 2026-10-20"
-next_action: "ROLE-product-manager: advance to DECOMPOSITION"
+next_action: "ROLE-product-manager: register draft CAP-0001, fill the Stories table, then dispatch the architect coherence check (round 1) on the draft set"
 blocked_by: []
 converged: false
 readiness_verdict: none   # none | READY | READY-with-known-issues | NOT READY | void
@@ -29,10 +29,9 @@ these two files never describe the same thing and never share a writer.
 
 ## Where this stands
 
-SOLUTION_CONVERGENCE: option A is chosen (`PD-0005`) on the architect's
-`feasible-with-constraints` verdict; `PD-0004` answers the architect's P1–P7.
-The draft stories and initiative follow both, and the Solution Contract
-([`solution-contract.md`](solution-contract.md)) is written.
+DECOMPOSITION: option A (`PD-0005`) with the rules of `PD-0003` and
+`PD-0004`; ten draft stories carry their technical constraints. Next: the
+capability record, the `Stories` table and the architect's coherence check.
 
 ## Problem statement
 
@@ -60,7 +59,8 @@ the spec to the product manager (`PD-0001`).
 
 ## Next action
 
-ROLE-product-manager: advance to DECOMPOSITION.
+ROLE-product-manager: register draft `CAP-0001`, fill the `Stories` table, then
+dispatch the architect's coherence check (round 1) on the draft set.
 
 ## Blocked by
 
@@ -246,6 +246,7 @@ Written at HANDOFF. One row; a second row means a re-handoff after a regression.
 | 2026-10-20 | DISCOVERY | PRODUCT_DEFINITION | ROLE-product-manager | DISCOVERY exit criteria met: problem, user, current state and success signals stated with sources; no open escalation-class ambiguity | Entry precondition (`lifecycle-hooks.md` §3.4.1 PRODUCT_DEFINITION) holds: Discovery has users, jobs with sources (S1), capability mapping `none` (S2), success signals (S3) and non-goals. `PD-0002` records the answers to ambiguity rows 3–15. Hooks: HOOK-phase-entry pass | `d22ef5f6896a83fd`, head `060e431` |
 | 2026-10-20 | PRODUCT_DEFINITION | SOLUTION_EXPLORATION | ROLE-product-manager | PRODUCT_DEFINITION exit criteria met: outcome O1–O10, out-of-scope (11 items), success measures 1–6, ten draft `REQ-` covering every outcome element, Product Definition Contract citing the raw spec | Entry precondition (`lifecycle-hooks.md` §3.4.1 SOLUTION_EXPLORATION) holds: F1 initiative populated with outcome and non-empty out-of-scope; ≥1 draft `REQ-` (10); F2 draft-mode `validate-requirement-coverage`: no `R1` defect (only `R3` `CAP-` gaps, expected before DECOMPOSITION). `PD-0003` supersedes `PD-0002`. Hooks: HOOK-phase-entry pass | `6f24bfe7e6f949b4`, head `073ab45` |
 | 2026-10-20 | SOLUTION_EXPLORATION | SOLUTION_CONVERGENCE | ROLE-product-manager | SOLUTION_EXPLORATION exit criteria met: one option, justified as already decided by the requester, with verdict `feasible-with-constraints` and its trade-off; PM recommendation A | Entry precondition (`lifecycle-hooks.md` §3.4.1 SOLUTION_CONVERGENCE) holds: X1 single option justified in `Options`; X2 verdict recorded per option (`technical/assessment.md`); `Consultation log` row present. In this phase: `PD-0004` (P1–P7 answers, C2/C5 meaning) and `PD-0005` (chosen option A, cites the non-`infeasible` verdict). Hooks: HOOK-phase-entry pass | `b92ef9d75933030c`, head `09279c2` |
+| 2026-10-20 | SOLUTION_CONVERGENCE | DECOMPOSITION | ROLE-product-manager | SOLUTION_CONVERGENCE exit criteria met: one accepted chosen-option `PD-0005`, indexed; draft stories and initiative consistent with it and `PD-0004`; no competing option under consideration; Solution Contract cites `PD-0005` (no design concept: no visual surface, `PD-0001` item 3) | Entry precondition (`lifecycle-hooks.md` §3.4.1 DECOMPOSITION) holds: exactly one accepted chosen-option `PD-` (`PD-0005`) citing the non-`infeasible` verdict `feasible-with-constraints`. Design steps 2a–12 not run: no user-facing visual surface (`PD-0001` item 3). Hooks: HOOK-phase-entry pass | `08f98708c2f1e052`, head `25cba6b` |
 
 > Every product-side session updates this file before ending — **including
 > sessions that failed**, which record the failure in `next_action` and do not
