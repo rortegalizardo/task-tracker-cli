@@ -3,16 +3,16 @@ id: PSTATE-INIT-0001
 type: product-state
 title: Product definition state for INIT-0001
 status: authoritative
-revision: 11
+revision: 12
 owner_role: ROLE-product-manager
 created: 2026-10-20
 updated: 2026-10-20
 updated_by_role: ROLE-product-manager
 initiative: INIT-0001
-phase: DECOMPOSITION
+phase: READINESS
 phase_entered: 2026-10-20
 requester: "the requester (repository owner, rortegalizardo), via the parent session, 2026-10-20"
-next_action: "ROLE-product-manager: advance to READINESS and dispatch ROLE-product-readiness-reviewer"
+next_action: "ROLE-product-readiness-reviewer: readiness review round 1 (R13-R18, R8/R9 flag clauses)"
 blocked_by: []
 converged: true
 readiness_verdict: none   # none | READY | READY-with-known-issues | NOT READY | void
@@ -29,7 +29,7 @@ these two files never describe the same thing and never share a writer.
 
 ## Where this stands
 
-DECOMPOSITION: ten stories accepted (`REQ-0001`…`REQ-0010`), each mapped to
+READINESS (entered after DECOMPOSITION): ten stories accepted (`REQ-0001`…`REQ-0010`), each mapped to
 `CAP-0001`, with no visual surface. The architect's coherence check is
 `coherent` at its terminal round 2. Full-mode coverage has 0 defects.
 Convergence is declared (`converged: true`).
@@ -60,8 +60,8 @@ the spec to the product manager (`PD-0001`).
 
 ## Next action
 
-ROLE-product-manager: advance to READINESS and dispatch
-`ROLE-product-readiness-reviewer`.
+ROLE-product-readiness-reviewer: readiness review round 1 (`R13`–`R18`, plus
+the flag-only clauses of `R8` and `R9`).
 
 ## Blocked by
 
@@ -263,6 +263,7 @@ Written at HANDOFF. One row; a second row means a re-handoff after a regression.
 | 2026-10-20 | PRODUCT_DEFINITION | SOLUTION_EXPLORATION | ROLE-product-manager | PRODUCT_DEFINITION exit criteria met: outcome O1–O10, out-of-scope (11 items), success measures 1–6, ten draft `REQ-` covering every outcome element, Product Definition Contract citing the raw spec | Entry precondition (`lifecycle-hooks.md` §3.4.1 SOLUTION_EXPLORATION) holds: F1 initiative populated with outcome and non-empty out-of-scope; ≥1 draft `REQ-` (10); F2 draft-mode `validate-requirement-coverage`: no `R1` defect (only `R3` `CAP-` gaps, expected before DECOMPOSITION). `PD-0003` supersedes `PD-0002`. Hooks: HOOK-phase-entry pass | `6f24bfe7e6f949b4`, head `073ab45` |
 | 2026-10-20 | SOLUTION_EXPLORATION | SOLUTION_CONVERGENCE | ROLE-product-manager | SOLUTION_EXPLORATION exit criteria met: one option, justified as already decided by the requester, with verdict `feasible-with-constraints` and its trade-off; PM recommendation A | Entry precondition (`lifecycle-hooks.md` §3.4.1 SOLUTION_CONVERGENCE) holds: X1 single option justified in `Options`; X2 verdict recorded per option (`technical/assessment.md`); `Consultation log` row present. In this phase: `PD-0004` (P1–P7 answers, C2/C5 meaning) and `PD-0005` (chosen option A, cites the non-`infeasible` verdict). Hooks: HOOK-phase-entry pass | `b92ef9d75933030c`, head `09279c2` |
 | 2026-10-20 | SOLUTION_CONVERGENCE | DECOMPOSITION | ROLE-product-manager | SOLUTION_CONVERGENCE exit criteria met: one accepted chosen-option `PD-0005`, indexed; draft stories and initiative consistent with it and `PD-0004`; no competing option under consideration; Solution Contract cites `PD-0005` (no design concept: no visual surface, `PD-0001` item 3) | Entry precondition (`lifecycle-hooks.md` §3.4.1 DECOMPOSITION) holds: exactly one accepted chosen-option `PD-` (`PD-0005`) citing the non-`infeasible` verdict `feasible-with-constraints`. Design steps 2a–12 not run: no user-facing visual surface (`PD-0001` item 3). Hooks: HOOK-phase-entry pass | `08f98708c2f1e052`, head `25cba6b` |
+| 2026-10-20 | DECOMPOSITION | READINESS | ROLE-product-manager | DECOMPOSITION exit criteria met: every outcome element O1–O10 maps to an accepted story; ten stories accepted after the draft-stage coherence check; convergence declared (`converged: true`) | Entry precondition (`lifecycle-hooks.md` §3.4.1 READINESS) holds: `converged: true`; full-mode `validate-requirement-coverage` 0 defects (R1–R12); terminal coherence verdict `coherent` (round 2), every blocking finding (D1, D2) `fixed`. Design steps not run: no visual surface (`PD-0001` item 3). Hooks: HOOK-phase-entry pass | `f17297ea7e4f95c1`, head `a9135a4` |
 
 > Every product-side session updates this file before ending — **including
 > sessions that failed**, which record the failure in `next_action` and do not
