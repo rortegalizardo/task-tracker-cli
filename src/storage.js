@@ -1,6 +1,7 @@
 'use strict';
 
-// The stored list: where it lives, how it is read and checked.
+// The stored list: where it lives, how it is read and checked, and how it is
+// written whole and atomically.
 //
 // Stored layout (fixed by C7; later stories' tests write it directly):
 //
@@ -15,6 +16,7 @@
 const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
+const crypto = require('node:crypto');
 const { TtcError } = require('./errors');
 const { titleProblem, tagProblem, isValidDate } = require('./rules');
 
@@ -84,6 +86,7 @@ function validateList(data) {
 function reasonOf(err) {
   switch (err.code) {
     case 'EISDIR': return 'it is a folder';
+    case 'EEXIST': return 'it exists but is not a folder';
     case 'ENOTDIR': return 'a parent of it is not a folder';
     case 'EACCES':
     case 'EPERM': return 'permission denied';
@@ -113,4 +116,64 @@ function readList(env) {
   return data;
 }
 
-module.exports = { dataPaths, validateList, readList };
+// The atomic primitive: write `text` to a temp file next to `file`, flush it,
+// rename it over `file`, then flush the folder. A symlink at `file` is replaced
+// by a regular file; its target is left alone. Also used by export (RCDEV-830).
+function replaceFile(file, text, mode) {
+  const dir = path.dirname(file);
+  const tmp = path.join(
+    dir,
+    '.' + path.basename(file) + '.' + process.pid + '.' + crypto.randomBytes(6).toString('hex') + '.tmp',
+  );
+  let created = false;
+  try {
+    const fd = fs.openSync(tmp, 'wx', mode ?? 0o666);
+    created = true;
+    try {
+      // The umask cannot weaken an explicit mode.
+      if (mode !== undefined) fs.fchmodSync(fd, mode);
+      const buf = Buffer.from(text, 'utf8');
+      let offset = 0;
+      while (offset < buf.length) {
+        offset += fs.writeSync(fd, buf, offset, buf.length - offset);
+      }
+      fs.fsyncSync(fd);
+    } finally {
+      fs.closeSync(fd);
+    }
+    fs.renameSync(tmp, file);
+    const dirFd = fs.openSync(dir, 'r');
+    try {
+      fs.fsyncSync(dirFd);
+    } finally {
+      fs.closeSync(dirFd);
+    }
+  } catch (err) {
+    if (created) {
+      try {
+        fs.unlinkSync(tmp);
+      } catch {
+        // best effort
+      }
+    }
+    throw err;
+  }
+}
+
+// Validates, then replaces tasks.json whole. Never writes a list it could not
+// read back.
+function writeList(list, env) {
+  const problem = validateList(list);
+  if (problem !== null) throw new TtcError('cannot write a list that is not valid: ' + problem);
+  const { dir, file } = dataPaths(env);
+  try {
+    const made = fs.mkdirSync(dir, { recursive: true, mode: 0o700 });
+    // Only a folder this call created; the umask cannot weaken it.
+    if (made !== undefined) fs.chmodSync(dir, 0o700);
+    replaceFile(file, JSON.stringify(list, null, 2) + '\n', 0o600);
+  } catch (err) {
+    throw new TtcError('cannot write ' + file + ': ' + reasonOf(err));
+  }
+}
+
+module.exports = { dataPaths, validateList, readList, replaceFile, writeList };
