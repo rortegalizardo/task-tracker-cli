@@ -1,6 +1,7 @@
 'use strict';
 
 const help = require('./help');
+const add = require('./add');
 
 // Registry order is the order of the usage (PD-0003 item 12).
-module.exports = [help];
+module.exports = [help, add];
