@@ -9,6 +9,7 @@ const del = require('./delete');
 const tag = require('./tag');
 const exportCmd = require('./export');
 const importCmd = require('./import');
+const stats = require('./stats');
 
 // Registry order is the order of the usage (PD-0003 item 12).
-module.exports = [help, add, list, done, reopen, rename, del, tag, exportCmd, importCmd];
+module.exports = [help, add, list, done, reopen, rename, del, tag, exportCmd, importCmd, stats];
