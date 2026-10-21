@@ -3,7 +3,7 @@ id: PSTATE-INIT-0001
 type: product-state
 title: Product definition state for INIT-0001
 status: authoritative
-revision: 12
+revision: 13
 owner_role: ROLE-product-manager
 created: 2026-10-20
 updated: 2026-10-20
@@ -12,10 +12,10 @@ initiative: INIT-0001
 phase: READINESS
 phase_entered: 2026-10-20
 requester: "the requester (repository owner, rortegalizardo), via the parent session, 2026-10-20"
-next_action: "ROLE-product-readiness-reviewer: readiness review round 1 (R13-R18, R8/R9 flag clauses)"
+next_action: "ROLE-product-manager: advance to ENGINEERING_READY (handoff packet, delivery manifest)"
 blocked_by: []
 converged: true
-readiness_verdict: none   # none | READY | READY-with-known-issues | NOT READY | void
+readiness_verdict: READY   # none | READY | READY-with-known-issues | NOT READY | void
 stories: [REQ-0001, REQ-0002, REQ-0003, REQ-0004, REQ-0005, REQ-0006, REQ-0007, REQ-0008, REQ-0009, REQ-0010]
 design_refs: []
 decisions: [PD-0001, PD-0002, PD-0003, PD-0004, PD-0005, PD-0006]
@@ -60,8 +60,8 @@ the spec to the product manager (`PD-0001`).
 
 ## Next action
 
-ROLE-product-readiness-reviewer: readiness review round 1 (`R13`–`R18`, plus
-the flag-only clauses of `R8` and `R9`).
+ROLE-product-manager: advance to ENGINEERING_READY (handoff packet, delivery
+manifest).
 
 ## Blocked by
 
@@ -193,6 +193,7 @@ product answers the PM gives at SOLUTION_CONVERGENCE under `PD-0001` item 1.
 | 2026-10-20 | technical architect (`ROLE-planner`, PRODUCT-DISCOVERY; vendor claude, model opus) | `RUN: INIT-0001 step=coherence` — `story-set-technical-coherence`, full pass, round 1 of 2, on draft `REQ-0001`…`REQ-0010` rev 4 | `defects-open`: blocking D1 (help criteria vs `list` line under C7 merge order), D2 (export atomicity unverified); non-blocking D3–D6 (D5, D6 need a product answer). No verdict drift. Tokens-scale M, usage n/a | [`../technical/coherence.md`](../technical/coherence.md) round 1 |
 | 2026-10-20 | sonnet drafting child (§9b; vendor claude, model sonnet) | `RUN: INIT-0001 step=decomposition` — repair coherence round 1 D1–D6 in the draft stories, with D5 and D6 settled by `PD-0006` | Repairs applied as briefed; acceptance mirrors body in all ten. PM validated against `technical/coherence.md` round 1 and `PD-0006`: accepted, no inline repair. Tokens-scale M, usage n/a | `REQ-0001`…`REQ-0010` rev 5, `initiative.md` rev 4 |
 | 2026-10-20 | technical architect (`ROLE-planner`, PRODUCT-DISCOVERY; vendor claude, model sonnet, per `product.coherence_delta_checker`) | `RUN: INIT-0001 step=coherence` — `story-set-technical-coherence`, delta re-check, round 2 of 2 (terminal), on the repairs to `REQ-0001`…`REQ-0010` rev 5 | `coherent`. D1–D6 `fixed`; new N1 (non-blocking: `REQ-0001` read case lists only a leading space). PM disposition N1: `fixed` by inline repair in `REQ-0001` rev 6 (trailing-space and all-space cases added), no round 3 (§9a.1). Tokens-scale S, usage n/a | [`../technical/coherence.md`](../technical/coherence.md) round 2 |
+| 2026-10-20 | product readiness reviewer (`ROLE-product-readiness-reviewer`; vendor claude, model sonnet, per `product.readiness_reviewer`) | `RUN: INIT-0001 step=readiness` — readiness round 1 (cycle 1): `R13`–`R18` and the `R8`/`R9` flag clauses, on the converged set with the 0-defect validator report at `8d02e99` | `READY`, no conditions, 0 findings; two observations below the finding bar (tag order of non-letters; which error shows first when a command has two faults). No round 2 needed. Tokens-scale M, usage n/a | `Readiness log` round 1 (cycle 1); `Readiness findings` block |
 
 ## Escalation log
 
@@ -226,6 +227,7 @@ what makes the verdict void when the set moves.
 
 | Date | Round | Verdict | Conditions | Reviewer | Story-set digest | Findings | Finding ids |
 | --- | --- | --- | --- | --- | --- | --- | --- |
+| 2026-10-20 | 1 (cycle 1) | READY | none | ROLE-product-readiness-reviewer (claude, sonnet-5-5; independent of the PM) | `REQ-0001`@6/2026-10-20; `REQ-0002`…`REQ-0010`@5/2026-10-20 each; `INIT-0001`@4 | 0 | none |
 
 ## Readiness findings
 
@@ -240,6 +242,31 @@ with no findings rows is invalid output.
 
 | Finding | Criterion | Artifact | What is wrong | Route phase | Route role |
 | --- | --- | --- | --- | --- | --- |
+
+### Round 1 (cycle 1), 2026-10-20: no findings
+
+Scope: `R13`–`R18` and the flag-only clauses of `R8` and `R9`. `R1`–`R12` are
+not re-run: the PM's full-mode validator report (0 defects, 10 stories, at head
+`8d02e99`) is the precondition, and its set matches the digest in the log row
+(all ten stories `accepted`, revisions and `updated` read from the files).
+Inputs were read as artifacts, not as the dispatch's account of them.
+
+| Criterion | Result | Basis |
+| --- | --- | --- |
+| `R13` Acceptance criteria are testable | pass | Every criterion in `REQ-0001`…`REQ-0010` pairs a stated trigger with exact output text, exit code and a stored-file state. Where text is engineering's (`<reason>`, `<problem>`, argument-shape errors), the criteria assert a form and non-emptiness, not an evaluative word. Date criteria use `<yesterday>`/`<today>`/`<tomorrow>` and a two-zone pair 25 hours apart. "the test simulates this" for a stopped write names the outcome (old content intact, or file still absent) |
+| `R14` Bounded product scope | pass | Each story's `Scope` and `Non-goals` state a boundary, not examples. The three stories that bundle (`REQ-0001` help and storage, `REQ-0004` done and reopen, `REQ-0009` export and import) follow the requester's own ten-item list (raw spec, "Exactly 10 stories, one per item") and are bounded in text |
+| `R15` Requirements and designs agree | not applicable | No `DES-`; `design_refs: []` on every story (`PD-0001` item 3). B10: not applicable (no `kind: code` `DES-`) |
+| `R16` No behaviour implicit only in design | not applicable | No design exists to hold implicit behaviour |
+| `R17` No product decision delegated to engineering | pass | Defaults, ordering, limits, empty state, success text and error text are fixed in `PD-0003`, `PD-0004`, `PD-0006` and quoted in the stories: default `list` view, `No tasks.`, id bound and leading zeros, tag and title charsets and limits, past due dates allowed, import replaces, owner-only modes, symlink result. What is left to engineering is named and bounded: JSON layout (fixed once by `REQ-0001`), wording of argument and `<reason>`/`<problem>` messages (form fixed), how atomicity is achieved |
+| `R18` Self-containment | pass | `INIT-0001` leads to the stories, the contracts, the raw spec under `product/sources/`, `PD-0001`…`PD-0006`, `constraints.md` and the assessment. Constraints C1–C7 sit in each story's Technical constraints. The repo state (`package.json`, placeholder test, `ci.yml`) is described. No question an implementer would have to answer for itself was found |
+| `R8` flag-only: contradiction with an accepted `PD-` or `constraints.md` | pass, no flag | No `Q-` is open; the ambiguity log has no unrecorded escalation row. The stories restate `PD-0003`/`PD-0004`/`PD-0006` without changing a rule. Out-of-scope items (Windows, symlinks, merge on import, concurrency) match the decisions that created them. `constraints.md` rows 1–9 are carried into `initiative.md` unchanged |
+| `R9` flag-only: coherence verdict still describes the set on disk | pass, with a date flag | `technical/coherence.md` round 2 (terminal) is `coherent`, D1–D6 `fixed`, no blocking defect open. Flag, not a finding: the verdict covers rev 5, and `REQ-0001` is now rev 6 after the PM's inline repair of N1. The read-path criterion now lists the trailing-space and all-space titles, as the round 2 note asked, and no other criterion or behaviour line of the set differs in substance from what the verdict certified |
+
+Observations below the bar for a finding (no `Q-` raised, none changes what is
+built or leaves an agent without an answer; recorded so delivery sees them):
+
+- Tag order is "alphabetical" (`PD-0003` item 4). The stories test letters only; where a tag mixes digits, `-` and `_` (for example `a-b` against `ab`), the order is the implementer's reading of that word. Every criterion passes under any reasonable order.
+- Which error shows when one command has two faults (for example an invalid title and an invalid date) is not stated. Each fault has its own criterion, and either order passes them all.
 
 ## Handoff packet
 
