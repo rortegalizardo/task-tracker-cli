@@ -2,7 +2,7 @@
 id: REQ-0008
 type: requirement
 title: The ttc tag command adds or removes one tag on a task
-status: draft
+status: accepted
 revision: 5
 owner_role: ROLE-product-manager
 created: 2026-10-20

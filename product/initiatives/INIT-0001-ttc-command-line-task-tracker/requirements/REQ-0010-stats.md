@@ -2,7 +2,7 @@
 id: REQ-0010
 type: requirement
 title: The ttc stats command prints the totals of open, done and overdue tasks
-status: draft
+status: accepted
 revision: 5
 owner_role: ROLE-product-manager
 created: 2026-10-20

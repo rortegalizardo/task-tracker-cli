@@ -2,7 +2,7 @@
 id: REQ-0004
 type: requirement
 title: The ttc done and ttc reopen commands change a task's status
-status: draft
+status: accepted
 revision: 5
 owner_role: ROLE-product-manager
 created: 2026-10-20

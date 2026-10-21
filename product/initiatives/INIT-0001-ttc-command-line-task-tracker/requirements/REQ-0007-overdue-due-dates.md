@@ -2,7 +2,7 @@
 id: REQ-0007
 type: requirement
 title: The ttc list command marks overdue tasks and can show only them
-status: draft
+status: accepted
 revision: 5
 owner_role: ROLE-product-manager
 created: 2026-10-20

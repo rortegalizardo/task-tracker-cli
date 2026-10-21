@@ -2,7 +2,7 @@
 id: REQ-0003
 type: requirement
 title: The ttc list command shows tasks by status and tag, one line each, in id order
-status: draft
+status: accepted
 revision: 5
 owner_role: ROLE-product-manager
 created: 2026-10-20

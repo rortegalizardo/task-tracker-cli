@@ -2,8 +2,8 @@
 id: REQ-0001
 type: requirement
 title: The ttc command prints its usage and keeps tasks in one atomically written file
-status: draft
-revision: 5
+status: accepted
+revision: 6
 owner_role: ROLE-product-manager
 created: 2026-10-20
 updated: 2026-10-20
@@ -28,7 +28,7 @@ acceptance:
   - "`tasks.json` holds the text `{` (not valid JSON) → reading fails with `ttc: cannot read <path>: <reason>`, where `<path>` is the path of `tasks.json` and `<reason>` is not empty, and `tasks.json` still holds `{`"
   - "`tasks.json` holds the text `42` (valid JSON, not a task list) → reading fails with the same message form, and `tasks.json` still holds `42`"
   - "`tasks.json` is a folder, not a file → reading fails with the same message form, and the folder is unchanged"
-  - "`tasks.json` holds a list in which `<X>`, for each `<X>` in: two tasks share one id; a task holds the tag `HOME`; a task holds the tag `home` twice; a title contains a line break; a title has a space at its start; a task id is 9007199254740992; the next id equals the highest task id; a due date is `2026-02-30` → for each, reading fails with `ttc: cannot read <path>: <reason>`, where `<path>` is the path of `tasks.json` and `<reason>` is not empty, and `tasks.json` unchanged"
+  - "`tasks.json` holds a list in which `<X>`, for each `<X>` in: two tasks share one id; a task holds the tag `HOME`; a task holds the tag `home` twice; a title contains a line break; a title has a space at its start; a title has a space at its end; a title is three spaces; a task id is 9007199254740992; the next id equals the highest task id; a due date is `2026-02-30` → for each, reading fails with `ttc: cannot read <path>: <reason>`, where `<path>` is the path of `tasks.json` and `<reason>` is not empty, and `tasks.json` unchanged"
   - "a write stopped before it finishes (the test simulates this) while `tasks.json` holds a list → `tasks.json` still holds exactly that whole list, as valid JSON"
   - "the same stopped write when no `tasks.json` existed → `tasks.json` still does not exist"
   - "`TTC_HOME` names an existing regular file, not a folder → a write fails with a non-empty message, and that file has the same bytes as before"
@@ -158,7 +158,7 @@ The criteria below describe stored content by meaning (id, title, status, due da
 - [ ] `tasks.json` holds the text `{` (not valid JSON) → reading fails with `ttc: cannot read <path>: <reason>`, where `<path>` is the path of `tasks.json` and `<reason>` is not empty, and `tasks.json` still holds `{`
 - [ ] `tasks.json` holds the text `42` (valid JSON, not a task list) → reading fails with the same message form, and `tasks.json` still holds `42`
 - [ ] `tasks.json` is a folder, not a file → reading fails with the same message form, and the folder is unchanged
-- [ ] `tasks.json` holds a list in which `<X>`, for each `<X>` in: two tasks share one id; a task holds the tag `HOME`; a task holds the tag `home` twice; a title contains a line break; a title has a space at its start; a task id is 9007199254740992; the next id equals the highest task id; a due date is `2026-02-30` → for each, reading fails with `ttc: cannot read <path>: <reason>`, where `<path>` is the path of `tasks.json` and `<reason>` is not empty, and `tasks.json` unchanged
+- [ ] `tasks.json` holds a list in which `<X>`, for each `<X>` in: two tasks share one id; a task holds the tag `HOME`; a task holds the tag `home` twice; a title contains a line break; a title has a space at its start; a title has a space at its end; a title is three spaces; a task id is 9007199254740992; the next id equals the highest task id; a due date is `2026-02-30` → for each, reading fails with `ttc: cannot read <path>: <reason>`, where `<path>` is the path of `tasks.json` and `<reason>` is not empty, and `tasks.json` unchanged
 - [ ] a write stopped before it finishes (the test simulates this) while `tasks.json` holds a list → `tasks.json` still holds exactly that whole list, as valid JSON
 - [ ] the same stopped write when no `tasks.json` existed → `tasks.json` still does not exist
 - [ ] `TTC_HOME` names an existing regular file, not a folder → a write fails with a non-empty message, and that file has the same bytes as before

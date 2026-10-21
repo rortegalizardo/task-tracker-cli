@@ -1,4 +1,4 @@
-Verdict: defects-open
+Verdict: coherent
 Initiative: INIT-0001
 Story set reviewed: REQ-0001, REQ-0002, REQ-0003, REQ-0004, REQ-0005, REQ-0006, REQ-0007, REQ-0008, REQ-0009, REQ-0010 (all `draft`, revision 4)
 Authorising decision: PD-0005
@@ -138,3 +138,43 @@ Evidence read: the ten REQ files, `initiative.md` rev 3, `product/state.md` (Opt
 | Q- id | What it blocks |
 | --- | --- |
 | none | This dispatch limits writes to this file. D5 and D6 need a product answer from `ROLE-product-manager`, who records it as a `PD-` (under `PD-0001` item 1) or a `Q-`. Neither blocks the verdict. |
+
+## Round 2 (delta re-check, terminal)
+
+Reviewed: 2026-10-20
+Mode: PRODUCT-DISCOVERY
+Check: story-set technical coherence, delta re-check, round 2 of 2. Terminal: no round 3 runs against this set (rule 10).
+Story set: REQ-0001 to REQ-0010, all revision 5. Authorising decision: PD-0005, with PD-0006 (adds to PD-0003 and PD-0004; changes no rule either states).
+Assessment round relied on: 1. Verdict drift: none (see D5 and D6 below; neither adds work the assessment never covered).
+Evidence: `git diff 23db67b f007ec9` over `requirements/`, PD-0006, `impact.md`, `capability-scan.md`, the round 1 defect text.
+Scope: D1 to D6 and the repair edits only. Round 1 `carried-accepted` rows: none existed. The rest of the set is not re-derived.
+
+**Round 2 verdict: `coherent`.** Zero open blocking defects. One new non-blocking observation (N1).
+
+### Defects
+
+| # | REQ- id | Check failed | Blocking? | Disposition | Resolvable in decomposition? | Note |
+| --- | --- | --- | --- | --- | --- | --- |
+| D1 | REQ-0002 to REQ-0010, REQ-0003, REQ-0007 | Sequencing possibility / independence (rules 2-3) | Yes | fixed | n/a | Every dependent's help criterion now asks for "a usage line for each command that the stories it depends on add", so it holds for either `list` line. REQ-0003 and REQ-0007 each carry the note that REQ-0007's usage criterion replaces REQ-0003's `list`-line criterion from REQ-0007's merge on, and that REQ-0007's delivery updates that test. No order C7 allows breaks a criterion. REQ-0007 depends on REQ-0001 to REQ-0004 only, so the stories that follow it in its own criterion are already merged. Not re-raised: REQ-0003's literal `list` line criterion still fails after REQ-0007, but the note makes that a stated, owned update, not a hidden prerequisite |
+| D2 | REQ-0009 | Verdict constraint not verified (C2; PD-0004 item 3) | Yes | fixed | n/a | Two stopped-export criteria: target holding `old` stays exactly `old`; no prior target stays absent. C3 added to `constraints:` and to the constraints section (test-side simulation only, no `ttc` option or environment variable). Matches the form REQ-0002 uses. An in-place writer now fails the first criterion |
+| D3 | REQ-0001, REQ-0002 | Independence (rule 2) | No | fixed | n/a | REQ-0001 now states the store-level outcome only (non-empty message, file keeps its bytes). REQ-0002 gains the end-to-end case (one `ttc: ` line on stderr, empty stdout, exit 1, file unchanged), which first becomes possible with `add` |
+| D4 | REQ-0002, REQ-0003 | Constraint carriage (PD-0005) | No | fixed | n/a | C3 in REQ-0002 `constraints:` and constraints section; C7 in REQ-0003 `constraints:` and constraints section |
+| D5 | REQ-0001, REQ-0009 | Rule left undefined for a shared check | No | fixed | n/a | PD-0006 item 1 (option (a), as recommended): a file title must already be in stored form, import never changes it. REQ-0009 states the rule and tests a leading space, a trailing space and an all-space title. REQ-0001's read-path Behavior states it; see N1 for its criterion. Buildable with built-ins only; no new capability or system |
+| D6 | REQ-0006, REQ-0009 | Cross-story contradiction | No | fixed | n/a | PD-0006 item 2 (option (a), as recommended): "never reused" holds within one list's history; an import restores the file's next id. Both stories say so and cite PD-0006. REQ-0009 still does not read the current `tasks.json` (PD-0003 item 13), so no new dependency or capability |
+| N1 | REQ-0001 | Verification gap, read path (rule 2) | No | open | Yes, optional | New in round 2, introduced by the D5 repair. The REQ-0001 Behavior bars a space at either end of a title on read, but its criterion list adds only "a title has a space at its start". The trailing-space and all-space cases are tested on the import path in REQ-0009, not on the read path. It does not change what gets built: the Behavior sentence states the rule and the criterion is a representative case. The PM may add the two cases or leave it |
+
+### Repair edits checked for new defects
+
+- **Help wording (REQ-0002 to REQ-0010).** No new hidden prerequisite. REQ-0001 owns `help`, and the wording asks only for commands that existing dependencies add. No capability assumed.
+- **REQ-0003 / REQ-0007 notes.** Consistent with each other and with C7. The `depends_on` graph is unchanged and acyclic. No edge was added or removed in the diff.
+- **REQ-0009 stopped-export criteria and C3.** Simulation is test-side from a child process, the same capability round 1 marked `exists` for REQ-0002. No edge touched.
+- **REQ-0002 end-to-end criterion.** Needs only `add` and the store from REQ-0001, its stated dependency. Does not touch other stories.
+- **PD-0006 effects.** The set stays inside option A of PD-0005. PD-0006 adds a title check on read and import, and no id lookup on import, both inside the assessed built-in JSON read and whole-file replace. No `regression-required` condition.
+
+### Questions raised
+
+| Q- id | What it blocks |
+| --- | --- |
+| none | Nothing. N1 is optional for the PM. |
+
+Terminal round: no round 3 will run against this set. No REQ-, state.md, index or decision was edited by this check.

@@ -2,7 +2,7 @@
 id: REQ-0009
 type: requirement
 title: The ttc export and ttc import commands copy the whole list to and from a file, and a file that fails validation changes nothing
-status: draft
+status: accepted
 revision: 5
 owner_role: ROLE-product-manager
 created: 2026-10-20

@@ -2,7 +2,7 @@
 id: REQ-0006
 type: requirement
 title: The ttc delete command removes a task and its id is never reused
-status: draft
+status: accepted
 revision: 5
 owner_role: ROLE-product-manager
 created: 2026-10-20

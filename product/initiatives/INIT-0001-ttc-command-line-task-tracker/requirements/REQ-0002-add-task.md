@@ -2,7 +2,7 @@
 id: REQ-0002
 type: requirement
 title: The ttc add command records a task with an optional due date and tags
-status: draft
+status: accepted
 revision: 5
 owner_role: ROLE-product-manager
 created: 2026-10-20

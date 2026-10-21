@@ -3,7 +3,7 @@ id: PSTATE-INIT-0001
 type: product-state
 title: Product definition state for INIT-0001
 status: authoritative
-revision: 10
+revision: 11
 owner_role: ROLE-product-manager
 created: 2026-10-20
 updated: 2026-10-20
@@ -12,9 +12,9 @@ initiative: INIT-0001
 phase: DECOMPOSITION
 phase_entered: 2026-10-20
 requester: "the requester (repository owner, rortegalizardo), via the parent session, 2026-10-20"
-next_action: "ROLE-product-manager: dispatch the delta re-check (coherence round 2, terminal) on the repaired stories"
+next_action: "ROLE-product-manager: advance to READINESS and dispatch ROLE-product-readiness-reviewer"
 blocked_by: []
-converged: false
+converged: true
 readiness_verdict: none   # none | READY | READY-with-known-issues | NOT READY | void
 stories: [REQ-0001, REQ-0002, REQ-0003, REQ-0004, REQ-0005, REQ-0006, REQ-0007, REQ-0008, REQ-0009, REQ-0010]
 design_refs: []
@@ -29,9 +29,10 @@ these two files never describe the same thing and never share a writer.
 
 ## Where this stands
 
-DECOMPOSITION: option A (`PD-0005`) with the rules of `PD-0003` and
-`PD-0004`; ten draft stories carry their technical constraints. Next: the
-capability record, the `Stories` table and the architect's coherence check.
+DECOMPOSITION: ten stories accepted (`REQ-0001`…`REQ-0010`), each mapped to
+`CAP-0001`, with no visual surface. The architect's coherence check is
+`coherent` at its terminal round 2. Full-mode coverage has 0 defects.
+Convergence is declared (`converged: true`).
 
 ## Problem statement
 
@@ -59,8 +60,8 @@ the spec to the product manager (`PD-0001`).
 
 ## Next action
 
-ROLE-product-manager: dispatch the delta re-check (coherence round 2,
-terminal) on the repaired stories.
+ROLE-product-manager: advance to READINESS and dispatch
+`ROLE-product-readiness-reviewer`.
 
 ## Blocked by
 
@@ -191,6 +192,7 @@ product answers the PM gives at SOLUTION_CONVERGENCE under `PD-0001` item 1.
 | 2026-10-20 | sonnet drafting child (§9b; vendor claude, model sonnet) | `RUN: INIT-0001 step=solution_convergence` — apply `PD-0004` and `PD-0005` to the ten draft `REQ-`, fill each story's Technical constraints from `technical/assessment.md` round 1, update the initiative and Product Definition Contract, and draft the Solution Contract | Bundle returned complete; acceptance mirrors body in all ten stories. PM validated against `PD-0004`, `PD-0005` and the assessment: accepted, with three inline repairs (contract decisions list and non-goals; initiative constraint row 1; `REQ-0001` data-folder wording). Tokens-scale L, usage n/a | `REQ-0001`…`REQ-0010` rev 3, `initiative.md` rev 3, `product-definition-contract.md` rev 3, [`solution-contract.md`](solution-contract.md) |
 | 2026-10-20 | technical architect (`ROLE-planner`, PRODUCT-DISCOVERY; vendor claude, model opus) | `RUN: INIT-0001 step=coherence` — `story-set-technical-coherence`, full pass, round 1 of 2, on draft `REQ-0001`…`REQ-0010` rev 4 | `defects-open`: blocking D1 (help criteria vs `list` line under C7 merge order), D2 (export atomicity unverified); non-blocking D3–D6 (D5, D6 need a product answer). No verdict drift. Tokens-scale M, usage n/a | [`../technical/coherence.md`](../technical/coherence.md) round 1 |
 | 2026-10-20 | sonnet drafting child (§9b; vendor claude, model sonnet) | `RUN: INIT-0001 step=decomposition` — repair coherence round 1 D1–D6 in the draft stories, with D5 and D6 settled by `PD-0006` | Repairs applied as briefed; acceptance mirrors body in all ten. PM validated against `technical/coherence.md` round 1 and `PD-0006`: accepted, no inline repair. Tokens-scale M, usage n/a | `REQ-0001`…`REQ-0010` rev 5, `initiative.md` rev 4 |
+| 2026-10-20 | technical architect (`ROLE-planner`, PRODUCT-DISCOVERY; vendor claude, model sonnet, per `product.coherence_delta_checker`) | `RUN: INIT-0001 step=coherence` — `story-set-technical-coherence`, delta re-check, round 2 of 2 (terminal), on the repairs to `REQ-0001`…`REQ-0010` rev 5 | `coherent`. D1–D6 `fixed`; new N1 (non-blocking: `REQ-0001` read case lists only a leading space). PM disposition N1: `fixed` by inline repair in `REQ-0001` rev 6 (trailing-space and all-space cases added), no round 3 (§9a.1). Tokens-scale S, usage n/a | [`../technical/coherence.md`](../technical/coherence.md) round 2 |
 
 ## Escalation log
 
@@ -201,16 +203,16 @@ product answers the PM gives at SOLUTION_CONVERGENCE under `PD-0001` item 1.
 
 | `REQ-` | Title | Status | `CAP-` | `DES-` | Sequencing note |
 | --- | --- | --- | --- | --- | --- |
-| `REQ-0001` | The ttc command prints its usage and keeps tasks in one atomically written file | draft | `CAP-0001` | none (no visual surface) | none — frontier; fixes the stored-file layout and argument rules every later story uses (C7) |
-| `REQ-0002` | The ttc add command records a task with an optional due date and tags | draft | `CAP-0001` | none (no visual surface) | after `REQ-0001` (`depends_on`) |
-| `REQ-0003` | The ttc list command shows tasks by status and tag, one line each, in id order | draft | `CAP-0001` | none (no visual surface) | after `REQ-0001`, `REQ-0002` (`depends_on`) |
-| `REQ-0004` | The ttc done and ttc reopen commands change a task's status | draft | `CAP-0001` | none (no visual surface) | after `REQ-0001`, `REQ-0002`, `REQ-0003` (`depends_on`); merges one at a time in `depends_on` order with its siblings (C7) |
-| `REQ-0005` | The ttc rename command changes a task's title | draft | `CAP-0001` | none (no visual surface) | after `REQ-0001`, `REQ-0002`, `REQ-0003` (`depends_on`); merges one at a time in `depends_on` order with its siblings (C7) |
-| `REQ-0006` | The ttc delete command removes a task and its id is never reused | draft | `CAP-0001` | none (no visual surface) | after `REQ-0001`, `REQ-0002`, `REQ-0003` (`depends_on`); merges one at a time in `depends_on` order with its siblings (C7) |
-| `REQ-0007` | The ttc list command marks overdue tasks and can show only them | draft | `CAP-0001` | none (no visual surface) | after `REQ-0001`, `REQ-0002`, `REQ-0003`, `REQ-0004` (`depends_on`); merges one at a time in `depends_on` order with its siblings (C7) |
-| `REQ-0008` | The ttc tag command adds or removes one tag on a task | draft | `CAP-0001` | none (no visual surface) | after `REQ-0001`, `REQ-0002`, `REQ-0003` (`depends_on`); merges one at a time in `depends_on` order with its siblings (C7) |
-| `REQ-0009` | The ttc export and ttc import commands copy the whole list to and from a file, and a file that fails validation changes nothing | draft | `CAP-0001` | none (no visual surface) | after `REQ-0001`, `REQ-0002`, `REQ-0003` (`depends_on`); merges one at a time in `depends_on` order with its siblings (C7) |
-| `REQ-0010` | The ttc stats command prints the totals of open, done and overdue tasks | draft | `CAP-0001` | none (no visual surface) | after `REQ-0001`, `REQ-0002`, `REQ-0003`, `REQ-0004`, `REQ-0007` (`depends_on`); merges one at a time in `depends_on` order with its siblings (C7) |
+| `REQ-0001` | The ttc command prints its usage and keeps tasks in one atomically written file | accepted | `CAP-0001` | none (no visual surface) | none — frontier; fixes the stored-file layout and argument rules every later story uses (C7) |
+| `REQ-0002` | The ttc add command records a task with an optional due date and tags | accepted | `CAP-0001` | none (no visual surface) | after `REQ-0001` (`depends_on`) |
+| `REQ-0003` | The ttc list command shows tasks by status and tag, one line each, in id order | accepted | `CAP-0001` | none (no visual surface) | after `REQ-0001`, `REQ-0002` (`depends_on`) |
+| `REQ-0004` | The ttc done and ttc reopen commands change a task's status | accepted | `CAP-0001` | none (no visual surface) | after `REQ-0001`, `REQ-0002`, `REQ-0003` (`depends_on`); merges one at a time in `depends_on` order with its siblings (C7) |
+| `REQ-0005` | The ttc rename command changes a task's title | accepted | `CAP-0001` | none (no visual surface) | after `REQ-0001`, `REQ-0002`, `REQ-0003` (`depends_on`); merges one at a time in `depends_on` order with its siblings (C7) |
+| `REQ-0006` | The ttc delete command removes a task and its id is never reused | accepted | `CAP-0001` | none (no visual surface) | after `REQ-0001`, `REQ-0002`, `REQ-0003` (`depends_on`); merges one at a time in `depends_on` order with its siblings (C7) |
+| `REQ-0007` | The ttc list command marks overdue tasks and can show only them | accepted | `CAP-0001` | none (no visual surface) | after `REQ-0001`, `REQ-0002`, `REQ-0003`, `REQ-0004` (`depends_on`); merges one at a time in `depends_on` order with its siblings (C7) |
+| `REQ-0008` | The ttc tag command adds or removes one tag on a task | accepted | `CAP-0001` | none (no visual surface) | after `REQ-0001`, `REQ-0002`, `REQ-0003` (`depends_on`); merges one at a time in `depends_on` order with its siblings (C7) |
+| `REQ-0009` | The ttc export and ttc import commands copy the whole list to and from a file, and a file that fails validation changes nothing | accepted | `CAP-0001` | none (no visual surface) | after `REQ-0001`, `REQ-0002`, `REQ-0003` (`depends_on`); merges one at a time in `depends_on` order with its siblings (C7) |
+| `REQ-0010` | The ttc stats command prints the totals of open, done and overdue tasks | accepted | `CAP-0001` | none (no visual surface) | after `REQ-0001`, `REQ-0002`, `REQ-0003`, `REQ-0004`, `REQ-0007` (`depends_on`); merges one at a time in `depends_on` order with its siblings (C7) |
 
 ## Readiness log
 

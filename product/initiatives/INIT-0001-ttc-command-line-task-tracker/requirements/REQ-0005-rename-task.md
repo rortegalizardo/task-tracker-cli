@@ -2,7 +2,7 @@
 id: REQ-0005
 type: requirement
 title: The ttc rename command changes a task's title
-status: draft
+status: accepted
 revision: 5
 owner_role: ROLE-product-manager
 created: 2026-10-20
