@@ -529,7 +529,7 @@ canonical *there*.
 
 **Decided by.** `CP1` at `HOOK-checkpoint` — every written path is tested against
 the recorded canonical root, with the `agent_home` prefix exempt and the
-`~/Factory/Artifacts/tickets/` session workspace, `~/Factory/Artifacts/batches/`, and packet locations explicitly not.
+`~/Factory/Artifacts/projects/TTC/tickets/` session workspace, `~/Factory/Artifacts/projects/TTC/batches/`, and packet locations explicitly not.
 
 **The three-place rule for a new skill.** A skill is not finished until it exists
 in all three: a declaration under `~/.claude/skills/`, a contract block in

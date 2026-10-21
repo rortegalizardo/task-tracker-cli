@@ -175,7 +175,7 @@ product manager still never writes `delivery/state.md`, `delivery/tickets.md`, o
 any ticket graph.
 
 **The architect writes nothing here in HLD mode.** An HLD is addressed by ticket
-and lives in the session workspace (`~/Factory/Artifacts/tickets/<ticket_code>/plan/`), which
+and lives in the session workspace (`~/Factory/Artifacts/projects/TTC/tickets/<ticket_code>/plan/`), which
 `adoption-notes.md` classifies as session-local. Only the pre-handoff discovery
 findings are product memory, because only they are what a product decision was
 made on.
@@ -192,7 +192,7 @@ delivery board excludes them; the index does not.
 | Issue tracker (Linear etc.) | System of record for ticket status/assignment | For ticket state only; mirrored into `delivery/tickets.md` |
 | External design tool | System of record for editable design files | For the design source only; mirrored as `DES-` record + local export |
 | Working Context Packet | The assembled working set for one session | **No.** Derived, instantaneous, and never read by a later session — only its `context_digest` persists. |
-| Session-local batch file (`~/Factory/Artifacts/batches/<slug>.md`) | Convenience mirror of a fanout run | **No.** `delivery/manifest.md` is authoritative for an initiative's dispatch state; on disagreement the mirror is rewritten. |
+| Session-local batch file (`~/Factory/Artifacts/projects/TTC/batches/<slug>.md`) | Convenience mirror of a fanout run | **No.** `delivery/manifest.md` is authoritative for an initiative's dispatch state; on disagreement the mirror is rewritten. |
 | Agent session transcripts, scratchpads, temp dirs | Working memory for one session | **No.** Discardable at any moment. |
 | Workspace folders outside the repository | Convenience only | **No.** Not version-controlled with the code. |
 | Global agent home (`~/.claude/agents/`, `~/.claude/skills/`) | Canonical location for agent and skill **declarations** | **Yes, for declarations only** — and for nothing else. It holds no product artifact, and it is **not** a temporary location: guardrail `G2` exempts it explicitly and must never flag it. Each declaration's *contract* is version-controlled here, in `architecture/skill-library.md` and the `roles:` registry. |

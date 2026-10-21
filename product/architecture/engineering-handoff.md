@@ -94,7 +94,7 @@ They are related, never equated:
   invents a ticket key, and the delivery side never re-encodes a `REQ-`
   identifier into one;
 - the engineering orchestrator's per-ticket working directory
-  (`~/Factory/Artifacts/tickets/<ticket_code>/`) is session-local, per
+  (`~/Factory/Artifacts/projects/TTC/tickets/<ticket_code>/`) is session-local, per
   [`adoption-notes.md`](adoption-notes.md). It may be derived from a story; a
   story may never be derived from it.
 

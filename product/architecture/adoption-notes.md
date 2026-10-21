@@ -54,8 +54,8 @@ repository's `product/`. A session resolves its canonical root from the
 declared repository root, never from proximity to its working directory.
 
 **Ticket working folders are session-local.** The per-ticket folder
-(`~/Factory/Artifacts/tickets/<ticket_code>/`) and batch files
-(`~/Factory/Artifacts/batches/`) sit outside any repository and are session
+(`~/Factory/Artifacts/projects/TTC/tickets/<ticket_code>/`) and batch files
+(`~/Factory/Artifacts/projects/TTC/batches/`) sit outside any repository and are session
 working memory, not authoritative product state. Anything in them that must
 survive as product memory is promoted into `product/`:
 
