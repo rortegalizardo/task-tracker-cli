@@ -3,6 +3,7 @@
 const help = require('./help');
 const add = require('./add');
 const list = require('./list');
+const tag = require('./tag');
 
 // Registry order is the order of the usage (PD-0003 item 12).
-module.exports = [help, add, list];
+module.exports = [help, add, list, tag];
