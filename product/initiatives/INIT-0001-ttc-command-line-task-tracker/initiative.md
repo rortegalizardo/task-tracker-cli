@@ -2,7 +2,7 @@
 id: INIT-0001
 type: initiative
 title: Tasks are tracked locally from the ttc command line
-status: draft
+status: active
 revision: 4
 owner_role: ROLE-product-manager
 created: 2026-10-20

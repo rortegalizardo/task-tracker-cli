@@ -270,7 +270,44 @@ built or leaves an agent without an answer; recorded so delivery sees them):
 
 ## Handoff packet
 
-_Written at ENGINEERING_READY._
+Assembled 2026-10-20 at ENGINEERING_READY by `ROLE-product-manager` against the `READY` verdict of 2026-10-20 (Readiness log, round 1). Drafted inline: it is a transcription of existing records, below the §9c spawn threshold.
+
+- **Repository:** `rortegalizardo/task-tracker-cli` (`~/Desktop/Projects/task-tracker-cli`), default branch `main` (`project/constraints.md` row 9).
+- **Outcome:** One person can keep a to-do list from the terminal with the `ttc` command, on their own machine, on Node 24 with built-in libraries only and no network — adding tasks with optional due dates and tags, listing, completing, reopening, renaming, deleting and retagging them, seeing overdue ones, exporting and importing the whole list, and reading totals — with tasks kept in one local JSON file that is never left half written (`initiative.md` `## Outcome`, O1–O10).
+- **Stories, in suggested sequence** (derived from `depends_on`; hard ordering lives in the stories):
+  1. `REQ-0001`
+  2. `REQ-0002`
+  3. `REQ-0003`
+  4. `REQ-0004`, `REQ-0005`, `REQ-0006`, `REQ-0008`, `REQ-0009` — buildable in parallel, merged one at a time in `depends_on` order (C7)
+  5. `REQ-0007`
+  6. `REQ-0010`
+- **Design references and export paths:** none — no user-facing surface (CLI only, no UI; `PD-0001` item 3).
+- **Decisions in force:** `PD-0001`, `PD-0003`, `PD-0004`, `PD-0005` (chosen option), `PD-0006`. (`PD-0002` is superseded by `PD-0003`.)
+- **Binding technical constraints** (all from `technical/assessment.md`, round 1, accepted by `PD-0005`):
+  - C1 — Node 24, built-in modules only, no network; CI has no install step; the built-in argument parser rejects single-dash arguments, so argument handling cannot rely on it as-is.
+  - C2 — atomic means process-level: after a crash, kill or error at any step, `tasks.json` (and an export target) is whole-old or whole-new; a symlinked target is replaced by a regular file and old permissions are not kept; survival of a power cut or OS crash is not verifiable in CI.
+  - C3 — "today" is the local calendar date in the process's time zone; due dates compare as calendar dates; tests set zone, clock and write interruptions from the test side only, with no `ttc` option or variable for it.
+  - C4 — test files run concurrently in separate processes; each test uses its own data, home and working folders and never touches the real home folder.
+  - C5 — ids are exact only up to 9007199254740991 (2^53−1); id parsing and import checks need that upper bound.
+  - C6 — verification runtime is Node 24 on Linux with a UTC clock (CI is the arbiter; the local default is Node 26); `engines` is aligned to Node 24; other operating systems are not verified.
+  - C7 — `REQ-0001` fixes the stored-file layout; stories after `REQ-0003` merge one at a time in `depends_on` order because they share the command list, usage text and argument rules.
+- **Explicitly out of scope** (copied from `initiative.md` `## Scope`, Out of scope):
+  - More than one user, or a shared list: nothing in the spec asks for it.
+  - Sync between machines.
+  - Any graphical or full-screen terminal interface, and any other visual surface: "CLI only, no UI" (`PD-0001` item 3).
+  - Reminders or notifications.
+  - Recurring tasks.
+  - Priorities, subtasks or notes.
+  - Text search.
+  - Changing or clearing a due date after `add`: the spec has no command for it (`PD-0003` Consequences).
+  - Merging on import: import replaces the whole list (`PD-0003` item 14).
+  - Safe concurrent writes from two `ttc` processes at once (`PD-0003` item 16).
+  - Publishing the package to a registry.
+  - Windows: `ttc` supports Linux and macOS (`PD-0004` item 5).
+  - Keeping a symlinked `tasks.json` or export target as a link (`PD-0004` item 3).
+- **Open questions (non-blocking):** none. The verdict carries no conditions or known issues.
+- **Delivery manifest:** `product/initiatives/INIT-0001-ttc-command-line-task-tracker/delivery/manifest.md`
+- **Tickets:** pending — written at HANDOFF by `SKILL-create-tickets-from-stories` (`delivery/tickets.md`).
 
 ## Handoff log
 
