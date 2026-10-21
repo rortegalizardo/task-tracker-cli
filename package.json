@@ -10,6 +10,7 @@
     "node": ">=24"
   },
   "scripts": {
+    "lint": "node scripts/check-syntax.js",
     "test": "node --test \"test/**/*.test.js\""
   }
 }
