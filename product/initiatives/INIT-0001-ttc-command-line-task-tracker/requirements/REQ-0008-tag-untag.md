@@ -3,7 +3,7 @@ id: REQ-0008
 type: requirement
 title: The ttc tag command adds or removes one tag on a task
 status: draft
-revision: 2
+revision: 3
 owner_role: ROLE-product-manager
 created: 2026-10-20
 updated: 2026-10-20
@@ -35,9 +35,9 @@ acceptance:
   - "the pull request delivering this story → the CI `test` check passes"
 capabilities: []
 design_refs: []
-decisions: [PD-0001, PD-0003]
+decisions: [PD-0001, PD-0003, PD-0004, PD-0005]
 depends_on: [REQ-0001, REQ-0002, REQ-0003]
-constraints: []
+constraints: ["C1 (technical/assessment.md, round 1)", "C2 (technical/assessment.md, round 1)", "C4 (technical/assessment.md, round 1)", "C5 (technical/assessment.md, round 1)", "C6 (technical/assessment.md, round 1)", "C7 (technical/assessment.md, round 1)"]
 observability: []
 rollout: none
 readiness: not-assessed
@@ -88,10 +88,10 @@ Code lives in the repository rortegalizardo/task-tracker-cli (~/Desktop/Projects
 - **Tag rules (item 4).** A tag is 1 to 32 characters. The first is an English letter or a digit; each of the others is an English letter, a digit, `-` or `_`. So `-x` and `_x` are not tags, and every tag can be removed with `ttc tag <id> -<t>`. Tags are case-insensitive and stored in lower case, so `+HOME` and `+home` are the same tag, and `-HOME` removes `home`. A task never holds the same tag twice. A task's tags are always shown in alphabetical order. Any other tag is an error, for `+` and for `-`: `ttc: invalid tag: <t>`, with `<t>` as typed, without the sign.
 - **The tag in the messages (item 9).** In every message that names a tag, which are the four messages above, `<t>` is the tag as stored, in lower case: `ttc tag 1 +HOME` prints `Added tag home to task 1`, `ttc tag 1 +HOME` on a task that holds `home` prints `Task 1 already has tag home`, and `ttc tag 1 -HOME` on a task that holds `home` prints `Removed tag home from task 1`. Only the error message shows `<t>` as typed.
 - **Only the tags change.** The task keeps its id, title, status and due date, so a done task stays done. The command works on an open task and on a done task. Every other task is unchanged. The command asks for no confirmation (item 10).
-- **Task id (item 2).** `<id>` must be a positive whole number written in digits. Anything else is an error: `ttc: invalid task id: <arg>`, with `<arg>` as typed. A valid number with no task is an error: `ttc: no task with id <id>`. This holds when `tasks.json` does not exist, and no file is created.
+- **Task id (item 2; `PD-0004` item 2).** `<id>` must be a positive whole number written in digits. Anything else is an error: `ttc: invalid task id: <arg>`, with `<arg>` as typed. The largest id is 9007199254740991: an `<id>` above it is an error: `ttc: invalid task id: <arg>`. Leading zeros are allowed: `007` names task 7, and messages print the id without them: `Added tag home to task 7`. A valid number with no task is an error: `ttc: no task with id <id>`. This holds when `tasks.json` does not exist, and no file is created.
 - **Argument rules (item 2).** The command takes exactly an id and one signed tag. A missing id, a missing tag, an extra argument, any option and a tag argument that starts with neither `+` nor `-` are errors. An argument that begins with `--` is read as an option. An argument that begins with a single `-`, such as `-1` or `-home`, is not an option. A sign with nothing after it (`+` or `-`) is an error. Each error prints one line `ttc: <message>` (item 11).
-- **Unreadable list.** When `tasks.json` cannot be read, the command fails with `ttc: cannot read <path>: <reason>` (item 13).
-- **Atomic write.** A command that changes the tags writes atomically (item 13). A no-op writes nothing that changes the list.
+- **Unreadable list.** When `tasks.json` cannot be read, the command fails with `ttc: cannot read <path>: <reason>` (item 13; `PD-0004` item 8).
+- **Atomic write.** A command that changes the tags writes atomically (item 13; `PD-0004` items 3 and 4). A no-op writes nothing that changes the list.
 - **Usage line this story adds (item 12).** `ttc tag <id> +<t> | -<t>`
 
 ## Acceptance criteria
@@ -128,7 +128,12 @@ Code lives in the repository rortegalizardo/task-tracker-cli (~/Desktop/Projects
 
 ## Technical constraints
 
-None yet — filled at DECOMPOSITION from the architect's assessment (technical/assessment.md).
+- **C1** (`technical/assessment.md`, round 1): The runtime is Node 24 with built-in modules only, and no network. The CI job has no install step, so a dependency also fails CI, and the built-in argument parser cannot be used as it is for single-dash arguments such as `-1` and `-home`.
+- **C2** (`technical/assessment.md`, round 1): "Atomic" holds at process level: after a crash, kill or error at any step of a write, `tasks.json` (and an export target) holds the whole old content or the whole new content. A power cut or operating-system crash cannot be tested in CI, and a replaced symlink becomes a regular file (`PD-0004` item 3).
+- **C4** (`technical/assessment.md`, round 1): Test files run at the same time in separate processes. Every test uses its own data folder, home folder and working folder, and never reads or writes the real home folder of the person running the tests.
+- **C5** (`technical/assessment.md`, round 1): Ids are exact only up to 9007199254740991. Id parsing and the import checks need that upper bound (`PD-0004` item 2).
+- **C6** (`technical/assessment.md`, round 1): Verification runs on Node 24 on Linux with a UTC clock in CI, and CI is the arbiter. The `engines` field is aligned to Node 24, and other operating systems are not verified.
+- **C7** (`technical/assessment.md`, round 1): Stories after `REQ-0003` merge one at a time, in `depends_on` order, because they share the command list, the usage text and the argument rules. The stored-file layout is the one `REQ-0001` fixes.
 
 ## Observability
 
@@ -142,7 +147,7 @@ none
 
 - A done task is set up by writing `tasks.json` directly in the test, because this story does not depend on `ttc done`; the file's JSON layout is engineering's choice (`PD-0003` item 13).
 - The wording of argument-shape errors is engineering's (`PD-0003` item 2). The criteria for a missing tag, an extra argument, a tag with no sign and a sign with no tag assert only the form `ttc: <message>`.
-- `PD-0003` item 4 gives the tag rules, item 9 the repeated-action messages and item 10 the success messages.
+- `PD-0003` item 4 gives the tag rules, item 9 the repeated-action messages and item 10 the success messages. `PD-0004` item 2 adds the id bound and the leading-zero rule to the id rules of item 2.
 
 > **Immutable once `status: accepted`** — in its product content. The lifecycle
 > fields `status`, `readiness`, and `tickets` are advanced by the delivery roles

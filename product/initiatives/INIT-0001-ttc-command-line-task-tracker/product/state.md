@@ -3,7 +3,7 @@ id: PSTATE-INIT-0001
 type: product-state
 title: Product definition state for INIT-0001
 status: authoritative
-revision: 6
+revision: 7
 owner_role: ROLE-product-manager
 created: 2026-10-20
 updated: 2026-10-20
@@ -12,7 +12,7 @@ initiative: INIT-0001
 phase: SOLUTION_CONVERGENCE
 phase_entered: 2026-10-20
 requester: "the requester (repository owner, rortegalizardo), via the parent session, 2026-10-20"
-next_action: "ROLE-product-manager: bring the draft REQ- set and initiative in line with PD-0004/PD-0005 and get the Solution Contract drafted (one sonnet child), validate, then advance to DECOMPOSITION"
+next_action: "ROLE-product-manager: advance to DECOMPOSITION"
 blocked_by: []
 converged: false
 readiness_verdict: none   # none | READY | READY-with-known-issues | NOT READY | void
@@ -31,8 +31,8 @@ these two files never describe the same thing and never share a writer.
 
 SOLUTION_CONVERGENCE: option A is chosen (`PD-0005`) on the architect's
 `feasible-with-constraints` verdict; `PD-0004` answers the architect's P1–P7.
-Next: the draft stories and initiative brought in line with both, and the
-Solution Contract.
+The draft stories and initiative follow both, and the Solution Contract
+([`solution-contract.md`](solution-contract.md)) is written.
 
 ## Problem statement
 
@@ -60,9 +60,7 @@ the spec to the product manager (`PD-0001`).
 
 ## Next action
 
-ROLE-product-manager: bring the draft `REQ-` set and the initiative in line
-with `PD-0004` and `PD-0005`, and get the Solution Contract drafted (one sonnet
-child); validate, then advance to DECOMPOSITION.
+ROLE-product-manager: advance to DECOMPOSITION.
 
 ## Blocked by
 
@@ -188,6 +186,7 @@ product answers the PM gives at SOLUTION_CONVERGENCE under `PD-0001` item 1.
 | --- | --- | --- | --- | --- |
 | 2026-10-20 | sonnet drafting child (§9b; vendor claude, model sonnet) | `RUN: INIT-0001 step=product_definition` — draft the initiative, ten `REQ-` records (one per spec item, `depends_on` per the spec order) and the Product Definition Contract from the raw spec, `PD-0001` and `PD-0002` | Draft bundle returned with 7 `TODO(PM)` gaps against `PD-0002`. PM validated against the raw spec: gaps settled by `PD-0003` (supersedes `PD-0002`); one repair dispatch (same child) applied `PD-0003`, removed cross-story help wording, fixed `REQ-0010` `depends_on`. Tokens-scale L, usage n/a | `initiative.md` rev 2, `REQ-0001`…`REQ-0010` (draft), `product-definition-contract.md`, `PD-0003` |
 | 2026-10-20 | technical architect (`ROLE-planner`, PRODUCT-DISCOVERY; vendor claude, model opus) | `RUN: INIT-0001 step=solution_exploration` — is option A feasible over `REQ-0001`…`REQ-0010`, and what constrains it? (scan and impact written as the assessment's required inputs, one dispatch per §9c.2) | `feasible-with-constraints`, `multi-component`; C1–C7 (C2, C5 `PD-` candidates); risks R1–R6; P1–P7 for the PM. Tokens-scale M, usage n/a | [`../technical/capability-scan.md`](../technical/capability-scan.md), [`../technical/impact.md`](../technical/impact.md), [`../technical/assessment.md`](../technical/assessment.md); Options table |
+| 2026-10-20 | sonnet drafting child (§9b; vendor claude, model sonnet) | `RUN: INIT-0001 step=solution_convergence` — apply `PD-0004` and `PD-0005` to the ten draft `REQ-`, fill each story's Technical constraints from `technical/assessment.md` round 1, update the initiative and Product Definition Contract, and draft the Solution Contract | Bundle returned complete; acceptance mirrors body in all ten stories. PM validated against `PD-0004`, `PD-0005` and the assessment: accepted, with three inline repairs (contract decisions list and non-goals; initiative constraint row 1; `REQ-0001` data-folder wording). Tokens-scale L, usage n/a | `REQ-0001`…`REQ-0010` rev 3, `initiative.md` rev 3, `product-definition-contract.md` rev 3, [`solution-contract.md`](solution-contract.md) |
 
 ## Escalation log
 

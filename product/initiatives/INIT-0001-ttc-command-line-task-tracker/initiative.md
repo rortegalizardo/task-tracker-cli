@@ -3,14 +3,14 @@ id: INIT-0001
 type: initiative
 title: Tasks are tracked locally from the ttc command line
 status: draft
-revision: 2
+revision: 3
 owner_role: ROLE-product-manager
 created: 2026-10-20
 updated: 2026-10-20
 capabilities: []
 requirements: [REQ-0001, REQ-0002, REQ-0003, REQ-0004, REQ-0005, REQ-0006, REQ-0007, REQ-0008, REQ-0009, REQ-0010]
 tickets: []
-decisions: [PD-0001, PD-0003]
+decisions: [PD-0001, PD-0003, PD-0004, PD-0005]
 ---
 
 # INIT-0001 — Tasks are tracked locally from the ttc command line
@@ -61,7 +61,7 @@ The repository holds an empty Node project: `package.json`, a placeholder test a
 - The rules that bind every command:
   - tasks live in one JSON file at `$TTC_HOME/tasks.json` (default `~/.ttc`), and every write is atomic;
   - every failure is one line on stderr, with exit code 1 and no stored data changed;
-  - the fixed message texts, argument rules, id rules and output formats in `PD-0003`;
+  - the fixed message texts, argument rules, id rules and output formats in `PD-0003` and `PD-0004`;
   - Node 24, built-in libraries only, no network;
   - `node:test` tests for every command, and a passing CI `test` check.
 
@@ -78,6 +78,8 @@ The repository holds an empty Node project: `package.json`, a placeholder test a
 - Merging on import: import replaces the whole list (`PD-0003` item 14).
 - Safe concurrent writes from two `ttc` processes at once (`PD-0003` item 16).
 - Publishing the package to a registry.
+- Windows: `ttc` supports Linux and macOS (`PD-0004` item 5).
+- Keeping a symlinked `tasks.json` or export target as a link (`PD-0004` item 3).
 
 ## Success measures
 
@@ -94,6 +96,7 @@ Each is observable (source: `product/state.md`, Discovery, success signals).
 
 From `project/constraints.md`, one line per row.
 
+- Row 1: Node.js, built-in libraries only.
 - Row 2: Node 24 is the runtime.
 - Row 3: no network, in every command.
 - Row 4: all task data lives in one JSON file at `$TTC_HOME/tasks.json` (default `~/.ttc`).
@@ -130,3 +133,4 @@ None.
 | --- | --- | --- | --- |
 | 2026-10-20 | 1 | Created at INTAKE as a draft | Triage verdict `new-initiative` |
 | 2026-10-20 | 2 | Outcome, scope, success measures and requirements written | PRODUCT_DEFINITION |
+| 2026-10-20 | 3 | Rules of PD-0004 and the chosen option PD-0005 applied; two out-of-scope items added | SOLUTION_CONVERGENCE |

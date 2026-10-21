@@ -3,7 +3,7 @@ id: REQ-0003
 type: requirement
 title: The ttc list command shows tasks by status and tag, one line each, in id order
 status: draft
-revision: 2
+revision: 3
 owner_role: ROLE-product-manager
 created: 2026-10-20
 updated: 2026-10-20
@@ -33,9 +33,9 @@ acceptance:
   - "the pull request delivering this story → the CI `test` check passes"
 capabilities: []
 design_refs: []
-decisions: [PD-0001, PD-0003]
+decisions: [PD-0001, PD-0003, PD-0004, PD-0005]
 depends_on: [REQ-0001, REQ-0002]
-constraints: []
+constraints: ["C1 (technical/assessment.md, round 1)", "C4 (technical/assessment.md, round 1)", "C6 (technical/assessment.md, round 1)"]
 observability: []
 rollout: none
 readiness: not-assessed
@@ -91,7 +91,7 @@ Code lives in the repository rortegalizardo/task-tracker-cli (~/Desktop/Projects
 - **Success.** The command prints only the task lines (or `No tasks.`) to stdout, prints nothing to stderr, and exits 0.
 - **Read-only (item 13).** It never changes `tasks.json` and never creates it or its folder.
 - **Argument rules (item 2).** Options may come before or after each other. These are errors: an extra positional argument, `--tag` with no value, `--tag` given twice, two status options, and an unknown option. Each prints one line `ttc: <message>` (item 11).
-- **Unreadable list.** When `tasks.json` cannot be read, `list` fails with `ttc: cannot read <path>: <reason>` (item 13).
+- **Unreadable list.** When `tasks.json` cannot be read, `list` fails with `ttc: cannot read <path>: <reason>` (item 13; `PD-0004` item 8).
 - **Usage line this story adds (item 12).** `ttc list [--open|--done|--all] [--tag <t>]`
 
 ## Acceptance criteria
@@ -125,7 +125,9 @@ Code lives in the repository rortegalizardo/task-tracker-cli (~/Desktop/Projects
 
 ## Technical constraints
 
-None yet — filled at DECOMPOSITION from the architect's assessment (technical/assessment.md).
+- **C1** (`technical/assessment.md`, round 1): The runtime is Node 24 with built-in modules only, and no network. The CI job has no install step, so a dependency also fails CI, and the built-in argument parser cannot be used as it is for single-dash arguments such as `-1` and `-home`.
+- **C4** (`technical/assessment.md`, round 1): Test files run at the same time in separate processes. Every test uses its own data folder, home folder and working folder, and never reads or writes the real home folder of the person running the tests.
+- **C6** (`technical/assessment.md`, round 1): Verification runs on Node 24 on Linux with a UTC clock in CI, and CI is the arbiter. The `engines` field is aligned to Node 24, and other operating systems are not verified.
 
 ## Observability
 

@@ -3,7 +3,7 @@ id: REQ-0006
 type: requirement
 title: The ttc delete command removes a task and its id is never reused
 status: draft
-revision: 2
+revision: 3
 owner_role: ROLE-product-manager
 created: 2026-10-20
 updated: 2026-10-20
@@ -25,9 +25,9 @@ acceptance:
   - "the pull request delivering this story → the CI `test` check passes"
 capabilities: []
 design_refs: []
-decisions: [PD-0001, PD-0003]
+decisions: [PD-0001, PD-0003, PD-0004, PD-0005]
 depends_on: [REQ-0001, REQ-0002, REQ-0003]
-constraints: []
+constraints: ["C1 (technical/assessment.md, round 1)", "C2 (technical/assessment.md, round 1)", "C4 (technical/assessment.md, round 1)", "C5 (technical/assessment.md, round 1)", "C6 (technical/assessment.md, round 1)", "C7 (technical/assessment.md, round 1)"]
 observability: []
 rollout: none
 readiness: not-assessed
@@ -72,12 +72,12 @@ Code lives in the repository rortegalizardo/task-tracker-cli (~/Desktop/Projects
 **Command.** `ttc delete <id>`
 
 - **Result (`PD-0003` item 10).** It removes task `<id>` and prints `Deleted task <id>` to stdout, then exits 0. It works on an open task and on a done task alike. The command asks for no confirmation.
-- **Ids are never reused (item 1).** Each task gets a positive whole number, given in order from 1. After a delete, the next task still gets a higher number than any task ever created. This holds when the deleted task had the highest id and when the list becomes empty. The remaining tasks keep their ids; nothing is renumbered.
+- **Ids are never reused (item 1; `PD-0004` item 2).** Each task gets a positive whole number, given in order from 1. After a delete, the next task still gets a higher number than any task ever created. This holds when the deleted task had the highest id and when the list becomes empty. The remaining tasks keep their ids; nothing is renumbered.
 - **Deleting a task that is not there.** A valid id with no task is an error, not a repeated action that succeeds: `ttc: no task with id <id>` (item 2; the repeated actions that succeed are only those listed in item 9). This holds for an id that was deleted earlier, and when `tasks.json` does not exist, and no file is created.
-- **Task id (item 2).** `<id>` must be a positive whole number written in digits. Anything else is an error: `ttc: invalid task id: <arg>`, with `<arg>` as typed.
+- **Task id (item 2; `PD-0004` item 2).** `<id>` must be a positive whole number written in digits. Anything else is an error: `ttc: invalid task id: <arg>`, with `<arg>` as typed. The largest id is 9007199254740991: an `<id>` above it is an error: `ttc: invalid task id: <arg>`. Leading zeros are allowed: `007` names task 7, and messages print the id without them: `Deleted task 7`.
 - **Argument rules (item 2).** A missing id, an extra argument and any option are errors, because the usage line shows no options. Each error prints one line `ttc: <message>` (item 11).
-- **Unreadable list.** When `tasks.json` cannot be read, `delete` fails with `ttc: cannot read <path>: <reason>` (item 13).
-- **Atomic write.** The write is atomic (item 13).
+- **Unreadable list.** When `tasks.json` cannot be read, `delete` fails with `ttc: cannot read <path>: <reason>` (item 13; `PD-0004` item 8).
+- **Atomic write.** The write is atomic (item 13; `PD-0004` items 3 and 4).
 - **Usage line this story adds (item 12).** `ttc delete <id>`
 
 ## Acceptance criteria
@@ -104,7 +104,12 @@ Code lives in the repository rortegalizardo/task-tracker-cli (~/Desktop/Projects
 
 ## Technical constraints
 
-None yet — filled at DECOMPOSITION from the architect's assessment (technical/assessment.md).
+- **C1** (`technical/assessment.md`, round 1): The runtime is Node 24 with built-in modules only, and no network. The CI job has no install step, so a dependency also fails CI, and the built-in argument parser cannot be used as it is for single-dash arguments such as `-1` and `-home`.
+- **C2** (`technical/assessment.md`, round 1): "Atomic" holds at process level: after a crash, kill or error at any step of a write, `tasks.json` (and an export target) holds the whole old content or the whole new content. A power cut or operating-system crash cannot be tested in CI, and a replaced symlink becomes a regular file (`PD-0004` item 3).
+- **C4** (`technical/assessment.md`, round 1): Test files run at the same time in separate processes. Every test uses its own data folder, home folder and working folder, and never reads or writes the real home folder of the person running the tests.
+- **C5** (`technical/assessment.md`, round 1): Ids are exact only up to 9007199254740991. Id parsing and the import checks need that upper bound (`PD-0004` item 2).
+- **C6** (`technical/assessment.md`, round 1): Verification runs on Node 24 on Linux with a UTC clock in CI, and CI is the arbiter. The `engines` field is aligned to Node 24, and other operating systems are not verified.
+- **C7** (`technical/assessment.md`, round 1): Stories after `REQ-0003` merge one at a time, in `depends_on` order, because they share the command list, the usage text and the argument rules. The stored-file layout is the one `REQ-0001` fixes.
 
 ## Observability
 
@@ -118,7 +123,7 @@ none
 
 - A done task is set up by writing `tasks.json` directly in the test, because this story does not depend on `ttc done`; the file's JSON layout is engineering's choice (`PD-0003` item 13).
 - The wording of argument-shape errors is engineering's (`PD-0003` item 2); the criteria assert only the form `ttc: <message>`.
-- Why ids are never reused: `PD-0003` Options considered (a script or the user's memory could act on the wrong task).
+- Why ids are never reused: `PD-0003` Options considered (a script or the user's memory could act on the wrong task); `PD-0004` item 2 sets the largest id.
 
 > **Immutable once `status: accepted`** — in its product content. The lifecycle
 > fields `status`, `readiness`, and `tickets` are advanced by the delivery roles

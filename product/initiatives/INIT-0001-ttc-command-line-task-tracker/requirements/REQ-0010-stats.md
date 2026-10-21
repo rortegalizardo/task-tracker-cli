@@ -3,7 +3,7 @@ id: REQ-0010
 type: requirement
 title: The ttc stats command prints the totals of open, done and overdue tasks
 status: draft
-revision: 2
+revision: 3
 owner_role: ROLE-product-manager
 created: 2026-10-20
 updated: 2026-10-20
@@ -25,9 +25,9 @@ acceptance:
   - "the pull request delivering this story → the CI `test` check passes"
 capabilities: []
 design_refs: []
-decisions: [PD-0001, PD-0003]
+decisions: [PD-0001, PD-0003, PD-0004, PD-0005]
 depends_on: [REQ-0001, REQ-0002, REQ-0003, REQ-0004, REQ-0007]
-constraints: []
+constraints: ["C1 (technical/assessment.md, round 1)", "C3 (technical/assessment.md, round 1)", "C4 (technical/assessment.md, round 1)", "C6 (technical/assessment.md, round 1)", "C7 (technical/assessment.md, round 1)"]
 observability: []
 rollout: none
 readiness: not-assessed
@@ -79,7 +79,7 @@ Code lives in the repository rortegalizardo/task-tracker-cli (~/Desktop/Projects
 - **Overdue tasks are also open tasks.** An overdue task is counted in `open` as well as in `overdue`. Every task is open or done, so `open` plus `done` is the number of tasks, and `overdue` is never more than `open`.
 - **No tasks.** With no tasks, all three totals are 0. With no `tasks.json`, the output is the same (item 13).
 - **Nothing is written.** `stats` is a command that does not change the list: it never creates `tasks.json` or its folder, and never changes `tasks.json` (item 13). It prints nothing to stderr on success.
-- **Unreadable list.** When `tasks.json` cannot be read, it fails with `ttc: cannot read <path>: <reason>` (item 13).
+- **Unreadable list.** When `tasks.json` cannot be read, it fails with `ttc: cannot read <path>: <reason>` (item 13; `PD-0004` item 8).
 - **Argument rules (item 2).** It takes no argument. An extra argument and any option are errors, because the usage line shows none. Each error prints one line `ttc: <message>` (item 11).
 - **Usage line this story adds (item 12).** `ttc stats`
 
@@ -109,7 +109,11 @@ Code lives in the repository rortegalizardo/task-tracker-cli (~/Desktop/Projects
 
 ## Technical constraints
 
-None yet — filled at DECOMPOSITION from the architect's assessment (technical/assessment.md).
+- **C1** (`technical/assessment.md`, round 1): The runtime is Node 24 with built-in modules only, and no network. The CI job has no install step, so a dependency also fails CI, and the built-in argument parser cannot be used as it is for single-dash arguments such as `-1` and `-home`.
+- **C3** (`technical/assessment.md`, round 1): "Today" is the local calendar date in the process's time zone, and a due date is compared as a calendar date, never as an instant. Tests set the time zone and, where needed, the clock from the test side only; no `ttc` option or environment variable may exist for them.
+- **C4** (`technical/assessment.md`, round 1): Test files run at the same time in separate processes. Every test uses its own data folder, home folder and working folder, and never reads or writes the real home folder of the person running the tests.
+- **C6** (`technical/assessment.md`, round 1): Verification runs on Node 24 on Linux with a UTC clock in CI, and CI is the arbiter. The `engines` field is aligned to Node 24, and other operating systems are not verified.
+- **C7** (`technical/assessment.md`, round 1): Stories after `REQ-0003` merge one at a time, in `depends_on` order, because they share the command list, the usage text and the argument rules. The stored-file layout is the one `REQ-0001` fixes.
 
 ## Observability
 

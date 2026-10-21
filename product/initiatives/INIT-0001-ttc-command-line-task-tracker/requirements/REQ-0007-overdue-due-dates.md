@@ -3,7 +3,7 @@ id: REQ-0007
 type: requirement
 title: The ttc list command marks overdue tasks and can show only them
 status: draft
-revision: 2
+revision: 3
 owner_role: ROLE-product-manager
 created: 2026-10-20
 updated: 2026-10-20
@@ -29,9 +29,9 @@ acceptance:
   - "the pull request delivering this story → the CI `test` check passes"
 capabilities: []
 design_refs: []
-decisions: [PD-0001, PD-0003]
+decisions: [PD-0001, PD-0003, PD-0004, PD-0005]
 depends_on: [REQ-0001, REQ-0002, REQ-0003, REQ-0004]
-constraints: []
+constraints: ["C1 (technical/assessment.md, round 1)", "C3 (technical/assessment.md, round 1)", "C4 (technical/assessment.md, round 1)", "C6 (technical/assessment.md, round 1)", "C7 (technical/assessment.md, round 1)"]
 observability: []
 rollout: none
 readiness: not-assessed
@@ -93,7 +93,7 @@ Code lives in the repository rortegalizardo/task-tracker-cli (~/Desktop/Projects
 - When no task is overdue it prints `No tasks.` and exits 0. When `tasks.json` does not exist it prints the same and creates nothing (item 13).
 - It prints nothing to stderr on success and never changes `tasks.json`.
 
-**Everything else about `list`** is as in the list story: the default view is open tasks, the `--tag` rules, the argument rules and the unreadable-list error (`ttc: cannot read <path>: <reason>`, item 13).
+**Everything else about `list`** is as in the list story: the default view is open tasks, the `--tag` rules, the argument rules and the unreadable-list error (`ttc: cannot read <path>: <reason>`, item 13; `PD-0004` item 8).
 
 **Usage line (item 12).** This story changes the line for `list` to `ttc list [--open|--done|--all|--overdue] [--tag <t>]`. It replaces the line that the list story added; the usage still has one line for `list`.
 
@@ -126,7 +126,11 @@ Code lives in the repository rortegalizardo/task-tracker-cli (~/Desktop/Projects
 
 ## Technical constraints
 
-None yet — filled at DECOMPOSITION from the architect's assessment (technical/assessment.md).
+- **C1** (`technical/assessment.md`, round 1): The runtime is Node 24 with built-in modules only, and no network. The CI job has no install step, so a dependency also fails CI, and the built-in argument parser cannot be used as it is for single-dash arguments such as `-1` and `-home`.
+- **C3** (`technical/assessment.md`, round 1): "Today" is the local calendar date in the process's time zone, and a due date is compared as a calendar date, never as an instant. Tests set the time zone and, where needed, the clock from the test side only; no `ttc` option or environment variable may exist for them.
+- **C4** (`technical/assessment.md`, round 1): Test files run at the same time in separate processes. Every test uses its own data folder, home folder and working folder, and never reads or writes the real home folder of the person running the tests.
+- **C6** (`technical/assessment.md`, round 1): Verification runs on Node 24 on Linux with a UTC clock in CI, and CI is the arbiter. The `engines` field is aligned to Node 24, and other operating systems are not verified.
+- **C7** (`technical/assessment.md`, round 1): Stories after `REQ-0003` merge one at a time, in `depends_on` order, because they share the command list, the usage text and the argument rules. The stored-file layout is the one `REQ-0001` fixes.
 
 ## Observability
 

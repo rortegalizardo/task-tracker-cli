@@ -3,7 +3,7 @@ initiative: INIT-0001
 type: product-definition-contract
 title: Product definition contract — Tasks are tracked locally from the ttc command line
 status: draft
-revision: 2
+revision: 3
 owner_role: ROLE-product-manager
 drafted_by: sonnet-drafting-child
 validated_by: ROLE-product-manager
@@ -11,7 +11,7 @@ created: 2026-10-20
 updated: 2026-10-20
 requirements: [REQ-0001, REQ-0002, REQ-0003, REQ-0004, REQ-0005, REQ-0006, REQ-0007, REQ-0008, REQ-0009, REQ-0010]
 open_questions: []
-decisions: [PD-0001, PD-0003]
+decisions: [PD-0001, PD-0003, PD-0004]
 raw_sources: [initiatives/INIT-0001-ttc-command-line-task-tracker/product/sources/2026-10-20-requester-spec.md]
 ---
 
@@ -99,6 +99,7 @@ From accepted decisions:
 
 - `PD-0001`: the spec is complete and the product manager decides every detail inside it; the initiative has no user-facing visual surface.
 - `PD-0003`: the user-visible behaviour rules and the exact message texts that bind every command.
+- `PD-0004`: the added rules on titles, ids, atomic writes, permissions, supported systems, running `ttc` by name, "unchanged", and reading `tasks.json`.
 
 ## Known facts
 
@@ -139,6 +140,7 @@ none
 
 - `PD-0001` — treats the spec as complete, records its hard rules as constraints 2–9, fixes that there is no visual surface, and fixes that every ticket names its repository.
 - `PD-0003` — supersedes `PD-0002`, which stays on record as superseded. It holds the complete set of user-visible behaviour rules the spec leaves open, with the same item numbers: ids; arguments, including who words the messages it does not quote; titles; tags, whose first character is a letter or a digit; due dates; overdue; `list`; the task line; repeated actions, with the tag shown as stored; success output; errors; help; storage, where the JSON layout is engineering's and `import` does not read the current `tasks.json`; export and import, whose paths are relative to the current folder and whose file may hold only lower-case tags; `stats`; and one process at a time.
+- `PD-0004` — adds to `PD-0003` and changes none of its rules. It fixes the meaning of words `PD-0003` uses and adds rules where `PD-0003` is silent: titles, where only the space character is trimmed, a line break is LF, CR, U+0085, U+2028 or U+2029, and any other control character is refused; ids, whose largest value is 9007199254740991 and which may carry leading zeros; what "atomic" covers, tested at process level, with a symlink replaced by a regular file; owner-only permissions for the data folder `ttc` creates and for `tasks.json`; Linux and macOS as the supported systems, with Windows out of scope; the `ttc` command that an npm install from a clone makes runnable by name; what "unchanged" means after a reported failure and after an interrupted write; and the same checks on reading `tasks.json` as on `import`.
 
 ## Raw-source citations
 
@@ -160,3 +162,5 @@ This restates the out-of-scope section of `initiative.md`.
 - Merging on import: import replaces the whole list (`PD-0003` item 14).
 - Safe concurrent writes from two `ttc` processes at once (`PD-0003` item 16).
 - Publishing the package to a registry.
+- Windows: `ttc` supports Linux and macOS (`PD-0004` item 5).
+- Keeping a symlinked `tasks.json` or export target as a link (`PD-0004` item 3).
