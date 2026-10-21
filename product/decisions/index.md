@@ -7,6 +7,7 @@ not re-open the question.
 
 | ID | Title | Status | Path | Updated |
 | --- | --- | --- | --- | --- |
+| PD-0002 | Fix the user-visible behaviour rules the ttc spec leaves open | accepted | [PD-0002-ttc-behaviour-rules.md](PD-0002-ttc-behaviour-rules.md) | 2026-10-20 |
 | PD-0001 | Treat the requester's spec as complete, record its rules as constraints, and decide every detail inside it | accepted | [PD-0001-spec-is-complete-pm-decides-within-it.md](PD-0001-spec-is-complete-pm-decides-within-it.md) | 2026-10-20 |
 
 Decisions about the memory system itself

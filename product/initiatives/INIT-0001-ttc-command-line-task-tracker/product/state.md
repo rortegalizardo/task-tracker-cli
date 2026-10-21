@@ -3,22 +3,22 @@ id: PSTATE-INIT-0001
 type: product-state
 title: Product definition state for INIT-0001
 status: authoritative
-revision: 2
+revision: 3
 owner_role: ROLE-product-manager
 created: 2026-10-20
 updated: 2026-10-20
 updated_by_role: ROLE-product-manager
 initiative: INIT-0001
-phase: DISCOVERY
+phase: PRODUCT_DEFINITION
 phase_entered: 2026-10-20
 requester: "the requester (repository owner, rortegalizardo), via the parent session, 2026-10-20"
-next_action: "ROLE-product-manager: advance INIT-0001 to PRODUCT_DEFINITION"
+next_action: "ROLE-product-manager: draft the initiative, the REQ- set and the Product Definition Contract (sonnet drafting child), validate, then advance to SOLUTION_EXPLORATION"
 blocked_by: []
 converged: false
 readiness_verdict: none   # none | READY | READY-with-known-issues | NOT READY | void
 stories: []
 design_refs: []
-decisions: [PD-0001]
+decisions: [PD-0001, PD-0002]
 ---
 
 # Product definition state — INIT-0001
@@ -29,10 +29,10 @@ these two files never describe the same thing and never share a writer.
 
 ## Where this stands
 
-DISCOVERY: users, jobs, current state (no `CAP-`), success signals and
-non-goals are written below with sources; `project/mission.md` is hardened from
-the requester's words. No escalation-class ambiguity is open. Next:
-PRODUCT_DEFINITION.
+PRODUCT_DEFINITION: every open detail the spec leaves to the PM is decided in
+`PD-0002`. Next: the initiative's outcome and scope, ten draft `REQ-` records
+(one per spec item) and the Product Definition Contract, drafted by one sonnet
+child and validated against the raw spec.
 
 ## Problem statement
 
@@ -60,7 +60,9 @@ the spec to the product manager (`PD-0001`).
 
 ## Next action
 
-ROLE-product-manager: advance INIT-0001 to PRODUCT_DEFINITION.
+ROLE-product-manager: draft the initiative, the `REQ-` set and the Product
+Definition Contract (sonnet drafting child), validate them, then advance to
+SOLUTION_EXPLORATION.
 
 ## Blocked by
 
@@ -83,19 +85,19 @@ in one decision at PRODUCT_DEFINITION.
 | --- | --- | --- | --- |
 | 2026-10-20 | 1. `package.json` declares `engines >=22`; the spec says Node 24 | pm-resolvable | The spec governs: Node 24 is the runtime (`PD-0001` item 2, constraint 2). Aligning `engines` is engineering's |
 | 2026-10-20 | 2. Who decides the details the spec leaves open | escalation | Answered by the requester in the request itself: the PM decides inside the spec and asks only if the spec contradicts itself (`PD-0001` item 1) |
-| 2026-10-20 | 3. How a task is named by `<id>`, and whether a deleted task's id is reused | pm-resolvable | PM decides at PRODUCT_DEFINITION under `PD-0001` |
-| 2026-10-20 | 4. What `ttc list` shows with no status flag, in what order, and what one line holds | pm-resolvable | PM decides at PRODUCT_DEFINITION under `PD-0001` |
-| 2026-10-20 | 5. What "overdue" means: which day is today, a task due today, a done task | pm-resolvable | PM decides at PRODUCT_DEFINITION under `PD-0001` |
-| 2026-10-20 | 6. What makes a title, a tag and a due date valid | pm-resolvable | PM decides at PRODUCT_DEFINITION under `PD-0001` |
-| 2026-10-20 | 7. Repeated or no-op actions: `done` on a done task, adding a tag twice, removing an absent tag | pm-resolvable | PM decides at PRODUCT_DEFINITION under `PD-0001` |
-| 2026-10-20 | 8. Whether `import` replaces the list or merges into it, and what "validate first" checks | pm-resolvable | PM decides at PRODUCT_DEFINITION under `PD-0001` |
-| 2026-10-20 | 9. What `export` does when the target file already exists | pm-resolvable | PM decides at PRODUCT_DEFINITION under `PD-0001` |
-| 2026-10-20 | 10. What `ttc stats` prints | pm-resolvable | PM decides at PRODUCT_DEFINITION under `PD-0001` |
-| 2026-10-20 | 11. What `ttc help` lists while commands arrive one story at a time | pm-resolvable | PM decides at PRODUCT_DEFINITION under `PD-0001` |
-| 2026-10-20 | 12. Behaviour when the data file or `$TTC_HOME` is missing, or the file is unreadable | pm-resolvable | PM decides at PRODUCT_DEFINITION under `PD-0001` |
-| 2026-10-20 | 13. Exit code and wording of the one-line error | pm-resolvable | PM decides at PRODUCT_DEFINITION under `PD-0001` |
-| 2026-10-20 | 14. What a successful command that changes data prints | pm-resolvable | PM decides at PRODUCT_DEFINITION under `PD-0001` |
-| 2026-10-20 | 15. Two `ttc` processes writing at the same moment | pm-resolvable | Out of scope for INIT-0001 (one person, one command at a time); written into the out-of-scope section at PRODUCT_DEFINITION |
+| 2026-10-20 | 3. How a task is named by `<id>`, and whether a deleted task's id is reused | pm-resolvable | Decided by the PM under `PD-0001`: `PD-0002`  |
+| 2026-10-20 | 4. What `ttc list` shows with no status flag, in what order, and what one line holds | pm-resolvable | Decided by the PM under `PD-0001`: `PD-0002`  |
+| 2026-10-20 | 5. What "overdue" means: which day is today, a task due today, a done task | pm-resolvable | Decided by the PM under `PD-0001`: `PD-0002`  |
+| 2026-10-20 | 6. What makes a title, a tag and a due date valid | pm-resolvable | Decided by the PM under `PD-0001`: `PD-0002`  |
+| 2026-10-20 | 7. Repeated or no-op actions: `done` on a done task, adding a tag twice, removing an absent tag | pm-resolvable | Decided by the PM under `PD-0001`: `PD-0002`  |
+| 2026-10-20 | 8. Whether `import` replaces the list or merges into it, and what "validate first" checks | pm-resolvable | Decided by the PM under `PD-0001`: `PD-0002`  |
+| 2026-10-20 | 9. What `export` does when the target file already exists | pm-resolvable | Decided by the PM under `PD-0001`: `PD-0002`  |
+| 2026-10-20 | 10. What `ttc stats` prints | pm-resolvable | Decided by the PM under `PD-0001`: `PD-0002`  |
+| 2026-10-20 | 11. What `ttc help` lists while commands arrive one story at a time | pm-resolvable | Decided by the PM under `PD-0001`: `PD-0002`  |
+| 2026-10-20 | 12. Behaviour when the data file or `$TTC_HOME` is missing, or the file is unreadable | pm-resolvable | Decided by the PM under `PD-0001`: `PD-0002`  |
+| 2026-10-20 | 13. Exit code and wording of the one-line error | pm-resolvable | Decided by the PM under `PD-0001`: `PD-0002`  |
+| 2026-10-20 | 14. What a successful command that changes data prints | pm-resolvable | Decided by the PM under `PD-0001`: `PD-0002`  |
+| 2026-10-20 | 15. Two `ttc` processes writing at the same moment | pm-resolvable | Out of scope for INIT-0001 (one person, one command at a time); written into the out-of-scope section at PRODUCT_DEFINITION; `PD-0002` item 16 |
 | 2026-10-20 | 16. Whether the initiative has a user-facing visual surface | escalation | Answered by the requester in the request itself: CLI only, no UI, no design roles, no `DES-` (`PD-0001` item 3) |
 
 ## Discovery
@@ -225,6 +227,7 @@ Written at HANDOFF. One row; a second row means a re-handoff after a regression.
 | 2026-10-20 | — | BOOTSTRAP | ROLE-product-manager | Raw request relayed by the parent session | Packet: `readiness: degraded` (`foundation: incomplete`: `project/principles.md` is `draft`), `scope.initiative: null`, profile S; `neighbouring` band read in full: capability, decision, initiative and question indexes all empty. Hooks: none (hydration only) | `e72be89a650ab320`, head `b8ee70d` |
 | 2026-10-20 | BOOTSTRAP | INTAKE | ROLE-product-manager | Packet emitted, scope resolved to none | Triage verdict `new-initiative`: no `CAP-` (index empty), no `PD-` (index empty), no constraint forbids it (constraint 1 agrees with the spec), no duplicate initiative, one outcome named. Entry precondition (`lifecycle-hooks.md` §3.4.1 INTAKE) holds: packet at `degraded` with `neighbouring` read. Degradation repaired per PM §8.5 in this phase: `PD-0001`, constraints rev 2, principles rev 2. Hooks: HOOK-initiative-resolved pass, HOOK-phase-entry pass | `e72be89a650ab320`, head `b8ee70d` |
 | 2026-10-20 | INTAKE | DISCOVERY | ROLE-product-manager | INTAKE exit criteria met: initiative drafted, problem stated with its source, every ambiguity classified, both escalation-class rows answered by the requester (`PD-0001`) | Entry precondition (`lifecycle-hooks.md` §3.4.1 DISCOVERY) holds: draft `INIT-0001`, state at INTAKE with requester, problem statement and a classified ambiguity log. Discovery written with sources; mission hardened (rev 2). No `Q-` raised. Hooks: HOOK-phase-entry pass | `321480b86ed398de`, head `4e5a324` |
+| 2026-10-20 | DISCOVERY | PRODUCT_DEFINITION | ROLE-product-manager | DISCOVERY exit criteria met: problem, user, current state and success signals stated with sources; no open escalation-class ambiguity | Entry precondition (`lifecycle-hooks.md` §3.4.1 PRODUCT_DEFINITION) holds: Discovery has users, jobs with sources (S1), capability mapping `none` (S2), success signals (S3) and non-goals. `PD-0002` records the answers to ambiguity rows 3–15. Hooks: HOOK-phase-entry pass | `d22ef5f6896a83fd`, head `060e431` |
 
 > Every product-side session updates this file before ending — **including
 > sessions that failed**, which record the failure in `next_action` and do not
