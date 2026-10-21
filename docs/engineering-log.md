@@ -13,7 +13,7 @@ only.
 | --- | --- | --- | --- | --- |
 | `ttc add` whole-process time, 10,000 stored tasks | median of 5 runs (after 1 warm-up) under 500 ms in CI, Node 24, ubuntu-latest, stdout to /dev/null | about 75-79 ms locally (macOS arm64, Node 26.11.1, 2026-10-21); CI unknown | in flight (guard test) | RCDEV-834 |
 | `ttc list` whole-process time, 10,000 stored tasks | same as above | about 60 ms locally (same setup); CI unknown | in flight (guard test) | RCDEV-834 |
-| Robustness under random arguments and corrupted data | at least 10,000 generated cases per kind per run, seeded, seed printed on failure; invalid input gives a non-zero exit and one `ttc:` line, never a stack trace; a failed operation leaves `tasks.json` bytes unchanged; valid input behaves as today | no generated tests; `src/cli.js` `run()` already catches every command exception | in flight | RCDEV-833 |
+| Robustness under random arguments and corrupted data | at least 10,000 generated cases per kind per run, seeded, seed printed on failure; invalid input gives a non-zero exit and one `ttc:` line, never a stack trace; a failed operation leaves `tasks.json` bytes unchanged; valid input behaves as today | 10,000 argument-list cases and 10,000 corrupted-data cases per run (`test/fuzz-args.test.js`, `test/fuzz-data.test.js`, in-process, plus 50 per file through a real process), seeded by `TTC_FUZZ_SEED`; about 45 s for the args file and 12-36 s for the data file locally (macOS arm64, Node 26.11.1, 2026-10-21, 6 green full runs) | met | RCDEV-833 |
 | CI syntax check | CI fails on a syntax error in any source or test file, Node built-ins only | only files some test loads are parsed in CI | in flight | RCDEV-832 |
 
 ## Tech-debt register

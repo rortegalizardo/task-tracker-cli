@@ -3,7 +3,7 @@
 const fs = require('node:fs');
 const { parseArgs } = require('../args');
 const { TtcError } = require('../errors');
-const { parseList, writeList, reasonOf } = require('../storage');
+const { decodeUtf8, parseList, writeList, reasonOf } = require('../storage');
 
 module.exports = {
   name: 'import',
@@ -12,12 +12,14 @@ module.exports = {
     const parsed = parseArgs(args, { positionals: ['<file>'], options: {} });
     const file = parsed.positionals[0];
 
-    let text;
+    let bytes;
     try {
-      text = fs.readFileSync(file, 'utf8');
+      bytes = fs.readFileSync(file);
     } catch (err) {
       throw new TtcError('cannot read ' + file + ': ' + reasonOf(err));
     }
+    const text = decodeUtf8(bytes);
+    if (text === null) throw new TtcError('invalid import file ' + file + ': not valid UTF-8');
 
     const result = parseList(text);
     if (result.problem !== undefined) {
