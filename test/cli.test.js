@@ -61,6 +61,7 @@ test('ttc help lists the add, list, export and import usages (RCDEV-830 AC31)', 
   assert.ok(lines.some((l) => l.startsWith('ttc add ')));
   assert.ok(lines.some((l) => l.startsWith('ttc list ')));
   assert.ok(lines.some((l) => l.startsWith('ttc rename ')));
+  assert.ok(lines.some((l) => l.startsWith('ttc delete ')));
   assert.ok(lines.includes('ttc export <file>'));
   assert.ok(lines.includes('ttc import <file>'));
 });
