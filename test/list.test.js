@@ -173,5 +173,5 @@ test('ttc help lists the list usage line (criterion 19)', () => {
   const lines = r.stdout.split('\n').map((l) => l.trim());
   assert.ok(lines.includes('ttc help'));
   assert.ok(lines.includes('ttc add "<title>" [--due YYYY-MM-DD] [--tag <t>]...'));
-  assert.ok(lines.includes('ttc list [--open|--done|--all] [--tag <t>]'));
+  assert.ok(lines.includes('ttc list [--open|--done|--all|--overdue] [--tag <t>]'));
 });
