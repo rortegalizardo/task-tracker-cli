@@ -12,7 +12,7 @@ initiative: INIT-0001
 phase: SOLUTION_EXPLORATION
 phase_entered: 2026-10-20
 requester: "the requester (repository owner, rortegalizardo), via the parent session, 2026-10-20"
-next_action: "ROLE-planner (technical architect, PRODUCT-DISCOVERY mode): write technical/capability-scan.md, impact.md and assessment.md with a feasibility verdict for option A over REQ-0001..REQ-0010"
+next_action: "ROLE-product-manager: advance to SOLUTION_CONVERGENCE; record P1–P7 answers and the chosen option A as PD- records"
 blocked_by: []
 converged: false
 readiness_verdict: none   # none | READY | READY-with-known-issues | NOT READY | void
@@ -165,7 +165,7 @@ package to a registry.
 
 | Option | User-visible difference | Feasibility verdict | Cost / risk | Trade-off |
 | --- | --- | --- | --- | --- |
-| A — the `ttc` command as the spec states it: ten command groups, one story each in the spec's order, behaviour per `PD-0003`, one JSON file at `$TTC_HOME/tasks.json`, Node 24 built-ins only | The whole of outcome O1–O10 | _pending — technical architect_ | _pending_ | None inside the spec: every alternative changes something the requester fixed |
+| A — the `ttc` command as the spec states it: ten command groups, one story each in the spec's order, behaviour per `PD-0003`, one JSON file at `$TTC_HOME/tasks.json`, Node 24 built-ins only | The whole of outcome O1–O10 | `feasible-with-constraints`, band `multi-component` ([`../technical/assessment.md`](../technical/assessment.md)) | Constraints C1–C7, risks R1–R6 in the assessment; seven product answers needed (P1–P7) | None inside the spec: every alternative changes something the requester fixed |
 
 **Single option, justified as a decision already made** (§12.5 item 3, item
 6). The requester fixed the solution shape, not only the problem: the exact
@@ -179,14 +179,16 @@ parser, and `PD-0001` item 1 rules those out. There is no visual surface, so
 no design directions are explored and no design role is dispatched
 (`PD-0001` item 3).
 
-_Recommended option and why:_ A, the only option inside the spec, subject to
-the technical architect's feasibility verdict.
+_Recommended option and why:_ A, the only option inside the spec. Its verdict
+is `feasible-with-constraints`; the constraints are accepted, and P1–P7 are
+product answers the PM gives at SOLUTION_CONVERGENCE under `PD-0001` item 1.
 
 ## Consultation log
 
 | Date | Delegate role | Question | Answer / verdict | Recorded as |
 | --- | --- | --- | --- | --- |
 | 2026-10-20 | sonnet drafting child (§9b; vendor claude, model sonnet) | `RUN: INIT-0001 step=product_definition` — draft the initiative, ten `REQ-` records (one per spec item, `depends_on` per the spec order) and the Product Definition Contract from the raw spec, `PD-0001` and `PD-0002` | Draft bundle returned with 7 `TODO(PM)` gaps against `PD-0002`. PM validated against the raw spec: gaps settled by `PD-0003` (supersedes `PD-0002`); one repair dispatch (same child) applied `PD-0003`, removed cross-story help wording, fixed `REQ-0010` `depends_on`. Tokens-scale L, usage n/a | `initiative.md` rev 2, `REQ-0001`…`REQ-0010` (draft), `product-definition-contract.md`, `PD-0003` |
+| 2026-10-20 | technical architect (`ROLE-planner`, PRODUCT-DISCOVERY; vendor claude, model opus) | `RUN: INIT-0001 step=solution_exploration` — is option A feasible over `REQ-0001`…`REQ-0010`, and what constrains it? (scan and impact written as the assessment's required inputs, one dispatch per §9c.2) | `feasible-with-constraints`, `multi-component`; C1–C7 (C2, C5 `PD-` candidates); risks R1–R6; P1–P7 for the PM. Tokens-scale M, usage n/a | [`../technical/capability-scan.md`](../technical/capability-scan.md), [`../technical/impact.md`](../technical/impact.md), [`../technical/assessment.md`](../technical/assessment.md); Options table |
 
 ## Escalation log
 
