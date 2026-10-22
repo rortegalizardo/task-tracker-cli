@@ -96,3 +96,47 @@ test('TTC_HOME naming a regular file fails the write and keeps the file (criteri
   );
   assert.equal(fs.readFileSync(file, 'utf8'), 'keep me');
 });
+
+test('a first write fsyncs the temp file, the data folder, then the parent of every folder it made (AC-6)', (t) => {
+  const paths = new Map();
+  const synced = [];
+  const openSync = fs.openSync;
+  const fsyncSync = fs.fsyncSync;
+  t.mock.method(fs, 'openSync', (p, ...rest) => {
+    const fd = openSync(p, ...rest);
+    paths.set(fd, path.resolve(String(p)));
+    return fd;
+  });
+  t.mock.method(fs, 'fsyncSync', (fd) => {
+    synced.push(paths.get(fd));
+    return fsyncSync(fd);
+  });
+  const cliRun = require('../src/cli').run;
+  const cases = [
+    ['writeList', (dir) => writeList(listOf('x'), { TTC_HOME: dir })],
+    [
+      'ttc add',
+      (dir) => {
+        const before = process.env.TTC_HOME;
+        process.env.TTC_HOME = dir;
+        try {
+          const out = { write() {} };
+          assert.equal(cliRun(['add', 'x'], { stdout: out, stderr: out }), 0);
+        } finally {
+          if (before === undefined) delete process.env.TTC_HOME;
+          else process.env.TTC_HOME = before;
+        }
+      },
+    ],
+  ];
+  for (const [name, write] of cases) {
+    const base = fs.realpathSync(tmpDir());
+    const dir = path.join(base, 'a', 'b', 'data');
+    synced.length = 0;
+    write(dir);
+    assert.equal(synced.length, 5, name);
+    assert.match(path.basename(synced[0]), /^\.tasks\.json\.[1-9][0-9]*\.[0-9a-f]{12}\.tmp$/, name);
+    assert.equal(path.dirname(synced[0]), dir, name);
+    assert.deepEqual(synced.slice(1), [dir, path.join(base, 'a', 'b'), path.join(base, 'a'), base], name);
+  }
+});

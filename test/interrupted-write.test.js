@@ -44,6 +44,25 @@ for (const step of STEPS) {
   });
 }
 
+// A write killed after the rename and before the folder fsync (AC-5): the
+// rename already made the new list whole, so that is what the file holds.
+const NEW_LIST = { nextId: 3, tasks: [{ id: 2, title: 'new task written by the fixture', status: 'open', due: null, tags: ['x'] }] };
+
+test('a write killed at after-rename leaves the whole new list over an old one (AC-5)', () => {
+  const dir = path.join(tmpDir(), 'data');
+  fs.mkdirSync(dir);
+  const file = path.join(dir, 'tasks.json');
+  fs.writeFileSync(file, JSON.stringify(OLD_LIST, null, 2) + '\n');
+  interrupt(dir, 'after-rename');
+  assert.deepEqual(JSON.parse(fs.readFileSync(file, 'utf8')), NEW_LIST);
+});
+
+test('a write killed at after-rename leaves the whole new list when there was none (AC-5)', () => {
+  const dir = path.join(tmpDir(), 'data');
+  interrupt(dir, 'after-rename');
+  assert.deepEqual(JSON.parse(fs.readFileSync(path.join(dir, 'tasks.json'), 'utf8')), NEW_LIST);
+});
+
 test('a failing rename throws TtcError, keeps the file and leaves no temp file (criteria 20-21)', (t) => {
   const dir = tmpDir();
   const file = path.join(dir, 'tasks.json');

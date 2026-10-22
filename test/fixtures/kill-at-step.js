@@ -38,6 +38,9 @@ function killAtStep(step) {
     case 'before-rename':
       fs.renameSync = kill;
       break;
+    case 'after-rename':
+      wrap('renameSync', kill);
+      break;
     default:
       throw new Error('unknown step: ' + step);
   }

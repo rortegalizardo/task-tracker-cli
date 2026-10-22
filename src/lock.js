@@ -6,14 +6,16 @@
 // the process id of its owner. A lock whose owner is gone is taken over; the
 // takeover is done by one process at a time, under a second short-lived guard
 // file. The lock is released on every path, and a folder this call created is
-// removed again when nothing else lives in it.
+// removed again when nothing else lives in it. Once the lock is held, temp
+// files left by writers that died are removed, and after the work the parent
+// of each folder this call created is flushed.
 //
 // fs.* is always called through the module object, so tests can patch it.
 
 const fs = require('node:fs');
 const path = require('node:path');
 const { TtcError } = require('./errors');
-const { dataPaths, reasonOf } = require('./storage');
+const { dataPaths, reasonOf, makeDataFolder, syncNewFolders, removeLeftoverTemps } = require('./storage');
 
 const WAIT_LIMIT_MS = 10000; // how long a changing command waits for a live lock
 const EMPTY_LOCK_MS = 500; // an unreadable or pid-less lock is stale after this age
@@ -95,9 +97,7 @@ function takeOver(lock, guard, fail) {
 
 function ensureFolder(dir, file, made) {
   try {
-    const now = fs.mkdirSync(dir, { recursive: true, mode: 0o700 });
-    // Only a folder this call created; the umask cannot weaken it.
-    if (now !== undefined) fs.chmodSync(dir, 0o700);
+    const now = makeDataFolder(dir);
     return made === undefined ? now : made;
   } catch (err) {
     throw new TtcError('cannot write ' + file + ': ' + reasonOf(err));
@@ -175,7 +175,14 @@ function withLock(fn, env = process.env) {
   try {
     state.made = ensureFolder(dir, file, undefined);
     acquire(dir, file, lock, guard, state);
-    return fn();
+    removeLeftoverTemps(dir); // lock held: no live writer of ours can be mid-write
+    const result = fn();
+    try {
+      syncNewFolders(dir, state.made);
+    } catch (err) {
+      throw new TtcError('cannot write ' + file + ': ' + reasonOf(err));
+    }
+    return result;
   } finally {
     release(dir, lock, state);
   }
