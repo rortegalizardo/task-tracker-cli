@@ -189,8 +189,10 @@ const OUT_OF_ORDER = { nextId: 5, tasks: [
   { id: 4, title: 'Fourth', status: 'open', due: null, tags: [] },
 ] };
 
+// The seeded lists have no notes (version 1 on disk); export writes version 3.
 function canonical(list) {
-  return JSON.stringify({ version: 2, nextId: list.nextId, tasks: list.tasks }, null, 2) + '\n';
+  const tasks = list.tasks.map((t) => ({ ...t, note: null }));
+  return JSON.stringify({ version: 3, nextId: list.nextId, tasks }, null, 2) + '\n';
 }
 
 function listing(dir) {

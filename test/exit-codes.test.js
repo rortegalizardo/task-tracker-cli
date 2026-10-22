@@ -28,7 +28,7 @@ function envFor(sb) {
 }
 
 function task(id, title, status = 'open') {
-  return { id, title, status, due: null, tags: [] };
+  return { id, title, status, due: null, tags: [], note: null };
 }
 
 function seed(sb, tasks) {
@@ -132,7 +132,7 @@ for (const row of table) {
 test('exit code: list fails on a file from a newer ttc and leaves it unchanged', TIMEOUT, async () => {
   const sb = sandbox();
   fs.mkdirSync(sb.dataDir, { recursive: true });
-  fs.writeFileSync(sb.file, '{"version": 3, "nextId": 1, "tasks": []}');
+  fs.writeFileSync(sb.file, '{"version": 4, "nextId": 1, "tasks": []}');
   const before = fs.readFileSync(sb.file);
   assertFailure(await ttc(sb, ['list']), /newer ttc/);
   assert.deepEqual(fs.readFileSync(sb.file), before);

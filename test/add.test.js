@@ -62,9 +62,9 @@ test('add to a new list stores task 1 (criterion 1)', () => {
   const sb = sandbox();
   assertOk(add(sb, 'Buy milk'), 1);
   assert.deepEqual(stored(sb), {
-    version: 2,
+    version: 3,
     nextId: 2,
-    tasks: [{ id: 1, title: 'Buy milk', status: 'open', due: null, tags: [] }],
+    tasks: [{ id: 1, title: 'Buy milk', status: 'open', due: null, tags: [], note: null }],
   });
 });
 

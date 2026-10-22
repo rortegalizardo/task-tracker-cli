@@ -206,20 +206,27 @@ function parseJson(text) {
 }
 
 // A stored or imported document: an optional "version" key (a whole number
-// from 1 to 2; anything else, newer versions included, fails), then the list
-// body. Rest syntax keeps a parsed "__proto__" key as an ordinary key.
+// from 1 to 3; anything else, newer versions included, fails), then the list
+// body. No key is version 1. Versions 1 and 2 tasks have five keys; version 3
+// tasks also have "note" (null or a valid one-line text). The result is always
+// the version 3 shape (older tasks get note null). Rest syntax keeps a parsed
+// "__proto__" key as an ordinary key.
 function checkList(doc) {
   if (!isObject(doc)) invalid();
+  let format = 1;
   if (Object.hasOwn(doc, 'version')) {
     const v = doc.version;
-    if (!Number.isInteger(v) || v < 1 || v > 2) invalid();
+    if (!Number.isInteger(v) || v < 1 || v > 3) invalid();
+    format = v;
   }
   const { version, ...data } = doc;
   if (!hasOnly(data, ['nextId', 'tasks']) || !Array.isArray(data.tasks)) invalid();
   const ids = new Set();
   let highest = 0;
   for (const t of data.tasks) {
-    if (!isObject(t) || !hasOnly(t, ['id', 'title', 'status', 'due', 'tags'])) invalid();
+    const keys = ['id', 'title', 'status', 'due', 'tags'];
+    if (format === 3) keys.push('note');
+    if (!isObject(t) || !hasOnly(t, keys)) invalid();
     if (!Number.isSafeInteger(t.id) || t.id < 1 || ids.has(t.id)) invalid();
     ids.add(t.id);
     highest = Math.max(highest, t.id);
@@ -236,10 +243,24 @@ function checkList(doc) {
       if (typeof tag !== 'string' || !/^[a-z0-9][a-z0-9_-]{0,31}$/.test(tag) || seen.has(tag)) invalid();
       seen.add(tag);
     }
+    if (format === 3) {
+      if (!Object.hasOwn(t, 'note')) invalid();
+      if (t.note !== null) checkNote(t.note);
+    }
   }
+  if (format < 3) data.tasks = data.tasks.map((t) => ({ ...t, note: null }));
   if (!Number.isInteger(data.nextId) || data.nextId < 1 || data.nextId > MAX_NEXT_ID) invalid();
   if (data.nextId <= highest) invalid();
   return data;
+}
+
+// A stored note follows the title rules.
+function checkNote(n) {
+  if (typeof n !== 'string' || n === '') invalid();
+  if (n.startsWith(' ') || n.endsWith(' ')) invalid();
+  for (const ch of n) {
+    if (isBadTitleChar(ch.codePointAt(0))) invalid();
+  }
 }
 
 function listFromBytes(bytes) {
@@ -257,8 +278,8 @@ function readStored(tree) {
 }
 
 function canonical(list) {
-  const tasks = list.tasks.map((t) => ({ id: t.id, title: t.title, status: t.status, due: t.due, tags: t.tags }));
-  return JSON.stringify({ version: 2, nextId: list.nextId, tasks }, null, 2) + '\n';
+  const tasks = list.tasks.map((t) => ({ id: t.id, title: t.title, status: t.status, due: t.due, tags: t.tags, note: t.note }));
+  return JSON.stringify({ version: 3, nextId: list.nextId, tasks }, null, 2) + '\n';
 }
 
 // Any write replaces tasks.json whole with the canonical text.
@@ -358,7 +379,7 @@ const COMMANDS = {
     const list = readStored(ctx.tree);
     if (list.nextId > MAX_SAFE) invalid();
     const id = list.nextId;
-    list.tasks.push({ id, title, status: 'open', due, tags });
+    list.tasks.push({ id, title, status: 'open', due, tags, note: null });
     list.nextId = id + 1;
     writeStored(ctx.tree, list);
     ctx.out = 'Added task ' + id + '\n';

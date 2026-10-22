@@ -230,18 +230,32 @@ for (const args of [['import'], ['import', 'a.json', 'b.json'], ['import', 'a.js
   });
 }
 
-test('import of a version 1 and a version 2 file both store version 2, and export -> import -> export is byte-identical (RCDEV-837)', () => {
+test('import of a version 1, a version 2 and a version 3 file all store version 3, and export -> import -> export is byte-identical (RCDEV-837, RCDEV-841)', () => {
   const body = { nextId: 3, tasks: [{ id: 2, title: 'Pay rent', status: 'done', due: '2099-12-31', tags: ['home'] }] };
-  for (const doc of [body, { version: 2, ...body }]) {
+  const v3 = { version: 3, nextId: 3, tasks: [{ ...body.tasks[0], note: 'bank, transfer' }] };
+  for (const doc of [body, { version: 2, ...body }, v3]) {
     const sb = sandbox();
     fs.writeFileSync(path.join(sb.work, 'in.json'), JSON.stringify(doc, null, 2) + '\n');
     assertImported(ttc(sb, ['import', 'in.json']), 1, 'in.json');
-    assert.ok(fs.readFileSync(sb.file, 'utf8').startsWith('{\n  "version": 2,\n'));
+    assert.ok(fs.readFileSync(sb.file, 'utf8').startsWith('{\n  "version": 3,\n'));
     assert.equal(ttc(sb, ['export', 'a.json']).status, 0);
     assertImported(ttc(sb, ['import', 'a.json']), 1, 'a.json');
     assert.equal(ttc(sb, ['export', 'b.json']).status, 0);
     const a = fs.readFileSync(path.join(sb.work, 'a.json'));
-    assert.ok(a.toString().startsWith('{\n  "version": 2,\n'));
+    assert.ok(a.toString().startsWith('{\n  "version": 3,\n'));
     assert.deepEqual(fs.readFileSync(path.join(sb.work, 'b.json')), a);
   }
+});
+
+test('a version 3 file whose note has a line break is refused as a whole (AC-5)', () => {
+  const sb = sandbox();
+  seed(sb, KEEP);
+  const before = fs.readFileSync(sb.file);
+  const doc = { version: 3, nextId: 2, tasks: [{ id: 1, title: 'Keep', status: 'open', due: null, tags: [], note: 'a\nb' }] };
+  fs.writeFileSync(path.join(sb.work, 'bad.json'), JSON.stringify(doc, null, 2) + '\n');
+  const r = ttc(sb, ['import', 'bad.json']);
+  assert.equal(r.status, 1);
+  assert.equal(r.stdout, '');
+  assert.match(r.stderr, /^ttc: invalid import file bad\.json: [^\n]+\n$/);
+  assert.deepEqual(fs.readFileSync(sb.file), before);
 });

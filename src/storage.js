@@ -3,17 +3,17 @@
 // The stored list: where it lives, how it is read and checked, and how it is
 // written whole and atomically.
 //
-// Stored layout, format version 2 (the current one; later stories' tests write
+// Stored layout, format version 3 (the current one; later stories' tests write
 // it directly):
 //
-//   { "version": 2, "nextId": <int>, "tasks": [ { "id": <int>, "title": <string>, "status": "open"|"done", "due": "YYYY-MM-DD"|null, "tags": [<string>...] } ] }
+//   { "version": 3, "nextId": <int>, "tasks": [ { "id": <int>, "title": <string>, "status": "open"|"done", "due": "YYYY-MM-DD"|null, "tags": [<string>...], "note": <string>|null } ] }
 //
 // Key order is as shown. Storage keeps the task order and tag order it is
 // given; sorting for display belongs to the list command.
 //
-// Version 1 is the same layout without the "version" key (an explicit
-// "version": 1 is also version 1). It is still read; the next changing command
-// writes version 2. A version above the current one is refused, and a bad
+// Version 2 is the same layout without the "note" key on tasks. Version 1 is
+// version 2 without the "version" key (an explicit "version": 1 is also
+// version 1). Both are still read; the next changing command writes version 3. A version above the current one is refused, and a bad
 // "version" value is an invalid list. The in-memory list is always
 // { nextId, tasks }: the version belongs to the file, not to the list.
 //
@@ -29,7 +29,7 @@ const os = require('node:os');
 const path = require('node:path');
 const crypto = require('node:crypto');
 const { TtcError } = require('./errors');
-const { titleProblem, tagProblem, isValidDate } = require('./rules');
+const { titleProblem, noteProblem, tagProblem, isValidDate } = require('./rules');
 
 const MAX_NEXT_ID = 2 ** 53; // 9007199254740992
 const TASKS_FILE = 'tasks.json';
@@ -48,7 +48,9 @@ function onlyKeys(obj, keys) {
 }
 
 // Returns null, or the first problem as a non-empty single-line string.
-function validateList(data) {
+// `withNote` is true for the current format (every task has "note") and false
+// for versions 1 and 2 (no task may have it).
+function validateList(data, withNote = true) {
   if (!isPlainObject(data)) return 'the list is not an object';
   if (!onlyKeys(data, ['nextId', 'tasks'])) return 'the list has an unknown key';
   if (!Array.isArray(data.tasks)) return 'tasks is not an array';
@@ -59,7 +61,9 @@ function validateList(data) {
     const task = data.tasks[i];
     const position = 'task at position ' + (i + 1);
     if (!isPlainObject(task)) return position + ' is not an object';
-    if (!onlyKeys(task, ['id', 'title', 'status', 'due', 'tags'])) {
+    const keys = ['id', 'title', 'status', 'due', 'tags'];
+    if (withNote) keys.push('note');
+    if (!onlyKeys(task, keys)) {
       return position + ' has an unknown key';
     }
     if (!Number.isSafeInteger(task.id) || task.id < 1) {
@@ -86,6 +90,10 @@ function validateList(data) {
       if (tags.has(tag)) return label + ': tag ' + JSON.stringify(tag) + ' is repeated';
       tags.add(tag);
     }
+    if (withNote && task.note !== null) {
+      const np = noteProblem(task.note);
+      if (np !== null) return label + ': ' + np;
+    }
   }
 
   if (!Number.isInteger(data.nextId) || data.nextId < 1 || data.nextId > MAX_NEXT_ID) {
@@ -101,17 +109,25 @@ function validateList(data) {
 // (every entry but the first) turns a valid document of the previous version
 // into this version; it is pure. parseList walks this list and nothing else.
 
-// Version 1: today's body, with or without an explicit "version": 1.
+// Version 1: the body without notes, with or without an explicit "version": 1.
 function validateV1(doc) {
   if (!isPlainObject(doc)) return 'the list is not an object';
   const { version, ...body } = doc;
-  return validateList(body);
+  return validateList(body, false);
 }
 
 // Version 2: "version": 2 plus the same body.
 function validateV2(doc) {
   if (!isPlainObject(doc)) return 'the list is not an object';
   if (doc.version !== 2) return 'the version is not 2';
+  const { version, ...body } = doc;
+  return validateList(body, false);
+}
+
+// Version 3: "version": 3 plus the same body, with a note on every task.
+function validateV3(doc) {
+  if (!isPlainObject(doc)) return 'the list is not an object';
+  if (doc.version !== 3) return 'the version is not 3';
   const { version, ...body } = doc;
   return validateList(body);
 }
@@ -124,9 +140,16 @@ function migrateV1ToV2(doc) {
   return { version: 2, ...body };
 }
 
+// Version 2 -> 3: every task gains "note": null, last. Does not mutate `doc`.
+function migrateV2ToV3(doc) {
+  const { version, nextId, tasks } = doc;
+  return { version: 3, nextId, tasks: tasks.map((t) => ({ ...t, note: null })) };
+}
+
 const FORMATS = [
   { version: 1, validate: validateV1 },
   { version: 2, validate: validateV2, upgrade: migrateV1ToV2 },
+  { version: 3, validate: validateV3, upgrade: migrateV2ToV3 },
 ];
 
 const CURRENT_VERSION = FORMATS[FORMATS.length - 1].version;
@@ -169,7 +192,7 @@ function serializeList(list) {
   const canonical = {
     version: CURRENT_VERSION,
     nextId: list.nextId,
-    tasks: list.tasks.map((t) => ({ id: t.id, title: t.title, status: t.status, due: t.due, tags: t.tags })),
+    tasks: list.tasks.map((t) => ({ id: t.id, title: t.title, status: t.status, due: t.due, tags: t.tags, note: t.note })),
   };
   return JSON.stringify(canonical, null, 2) + '\n';
 }
@@ -370,6 +393,7 @@ module.exports = {
   FORMATS,
   CURRENT_VERSION,
   migrateV1ToV2,
+  migrateV2ToV3,
   serializeList,
   decodeUtf8,
   parseList,

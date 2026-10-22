@@ -1,7 +1,8 @@
 'use strict';
 
-// Pure validation rules: the stored form (titleProblem, tagProblem,
-// isValidDate) and the user-typed input forms (inputTitle, inputTag).
+// Pure validation rules: the stored form (titleProblem, noteProblem,
+// tagProblem, isValidDate) and the user-typed input forms (inputTitle,
+// inputNote, inputTag). A note follows exactly the title rules.
 
 const { TtcError } = require('./errors');
 
@@ -12,15 +13,27 @@ function isControlOrBreak(ch) {
   return c <= 0x1f || (c >= 0x7f && c <= 0x9f) || c === 0x2028 || c === 0x2029;
 }
 
-// Returns null, or a non-empty reason, for a title in stored form.
-function titleProblem(t) {
-  if (typeof t !== 'string') return 'title is not text';
-  if (t === '') return 'title is empty';
-  if (t.startsWith(' ') || t.endsWith(' ')) return 'title has a space at its start or end';
+// Returns null, or a non-empty reason, for a one-line text (`noun` is "title"
+// or "note") in stored form.
+function lineProblem(noun, t) {
+  if (typeof t !== 'string') return noun + ' is not text';
+  if (t === '') return noun + ' is empty';
+  if (t.startsWith(' ') || t.endsWith(' ')) return noun + ' has a space at its start or end';
   if ([...t].some(isControlOrBreak)) {
-    return 'title has a line break or control character';
+    return noun + ' has a line break or control character';
   }
   return null;
+}
+
+// Returns null, or a non-empty reason, for a title in stored form.
+function titleProblem(t) {
+  return lineProblem('title', t);
+}
+
+// Returns null, or a non-empty reason, for a note in stored form (the note
+// itself, not null: callers allow null).
+function noteProblem(n) {
+  return lineProblem('note', n);
 }
 
 // Stored form only: lower case, digits, "_" and "-", 1 to 32 characters.
@@ -49,23 +62,31 @@ function isValidDate(s) {
 
 const LINE_BREAKS = new Set([0x0a, 0x0d, 0x85, 0x2028, 0x2029]);
 
-// A user-typed title to its stored form, or a TtcError. Only U+0020 is
+// A user-typed one-line text to its stored form, or a TtcError. Only U+0020 is
 // removed from both ends (not String.prototype.trim, which strips tabs too).
-function inputTitle(raw) {
+function inputLine(noun, raw) {
   let start = 0;
   let end = raw.length;
   while (start < end && raw[start] === ' ') start++;
   while (end > start && raw[end - 1] === ' ') end--;
-  const title = raw.slice(start, end);
-  const chars = [...title];
+  const text = raw.slice(start, end);
+  const chars = [...text];
   // Line breaks first: LF, CR and U+0085 are also control characters.
-  if (title === '' || chars.some((ch) => LINE_BREAKS.has(ch.codePointAt(0)))) {
-    throw new TtcError('title must be one non-empty line');
+  if (text === '' || chars.some((ch) => LINE_BREAKS.has(ch.codePointAt(0)))) {
+    throw new TtcError(noun + ' must be one non-empty line');
   }
   if (chars.some(isControlOrBreak)) {
-    throw new TtcError('title must not contain control characters');
+    throw new TtcError(noun + ' must not contain control characters');
   }
-  return title;
+  return text;
+}
+
+function inputTitle(raw) {
+  return inputLine('title', raw);
+}
+
+function inputNote(raw) {
+  return inputLine('note', raw);
 }
 
 // A user-typed tag to its stored (lower case) form, or a TtcError. ASCII only,
@@ -75,4 +96,12 @@ function inputTag(raw) {
   throw new TtcError('invalid tag: ' + raw);
 }
 
-module.exports = { titleProblem, tagProblem, isValidDate, inputTitle, inputTag };
+module.exports = {
+  titleProblem,
+  noteProblem,
+  tagProblem,
+  isValidDate,
+  inputTitle,
+  inputNote,
+  inputTag,
+};

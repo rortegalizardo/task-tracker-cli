@@ -30,7 +30,7 @@ module.exports = {
       const list = readList();
       if (list.nextId > MAX_ID) throw new TtcError('no task id is left');
       const newId = list.nextId;
-      list.tasks.push({ id: newId, title, status: 'open', due, tags });
+      list.tasks.push({ id: newId, title, status: 'open', due, tags, note: null });
       list.nextId = newId + 1;
       writeList(list);
       return newId;
