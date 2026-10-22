@@ -7,6 +7,23 @@ Install from a clone with `npm install --global .`, then run `ttc help`.
 `npm run test:perf` runs only the perf check (median `ttc add`, `ttc list` and filtered `ttc list` time on 10,000 tasks, must be under 500 ms).
 `npm run lint` checks every source and test file for syntax errors.
 
+## Task notes
+
+Each task can have one note. It is optional and one line long. A note follows the same rules as a title: spaces are trimmed from both ends of typed text, the note cannot be empty, and it cannot contain a line break or a control character.
+
+```
+ttc add "<title>" [--due YYYY-MM-DD] [--tag <t>]... [--note "<text>"]
+ttc note <id> ["<text>" | --clear]
+```
+
+- `ttc add ... --note "<text>"`: adds the task with that note. Without `--note` the task has no note.
+- `ttc note <id>`: prints the note, or `Task <id> has no note` when there is none. It never changes anything.
+- `ttc note <id> "<text>"`: sets the note, replacing any earlier one, and prints `Set note on task <id>`.
+- `ttc note <id> --clear`: removes the note and prints `Cleared note on task <id>`. On a task with no note it is a no-op: it prints `Task <id> has no note` and changes nothing.
+- Giving both text and `--clear` is an error.
+
+Notes are not shown in `ttc list` lines or in `ttc stats`. `--search` matches them (see below), and `ttc export` includes them.
+
 ## Listing and filtering tasks
 
 ```
@@ -17,11 +34,11 @@ ttc list [--open|--done|--all|--overdue] [--tag <t>] [--due-from YYYY-MM-DD] [--
 - `--tag <t>`: only tasks with that tag.
 - `--due-from YYYY-MM-DD`: only tasks due on or after that date.
 - `--due-to YYYY-MM-DD`: only tasks due on or before that date. The range is inclusive at both ends, and either option works alone as an open-ended range.
-- `--search <text>`: only tasks whose title contains the text. The match is a literal substring, ignoring upper and lower case. There are no wildcards and no regular expressions. An empty text is an error.
+- `--search <text>`: only tasks whose title or note contains the text. The match is a literal substring, ignoring upper and lower case. There are no wildcards and no regular expressions. An empty text is an error.
 
 Every option can be given at most once. All options combine with AND: a task is listed only if it passes every option given. When `--due-from` or `--due-to` is given, tasks with no due date are left out.
 
-Example: `ttc list --all --due-from 2026-01-01 --due-to 2026-01-31 --search rent` lists every task, open or done, due in January 2026 whose title contains "rent".
+Example: `ttc list --all --due-from 2026-01-01 --due-to 2026-01-31 --search rent` lists every task, open or done, due in January 2026 whose title or note contains "rent".
 
 ## Exporting tasks
 
@@ -43,12 +60,12 @@ Unlike `ttc list`, the default status for `ttc export` is `--all`. So `ttc expor
 
 ### JSON format
 
-The same format as `tasks.json`, holding only the matching tasks. It keeps the list's own next id and the stored order of the tasks. `ttc export <file>` with no other option writes the whole list, the same bytes as a plain backup.
+The same format as `tasks.json`, holding only the matching tasks. Notes are included (format version 3). It keeps the list's own next id and the stored order of the tasks. `ttc export <file>` with no other option writes the whole list, the same bytes as a plain backup.
 
 ### CSV format
 
-- Header line `id,title,status,due,tags`, then one row per matching task in ascending id order.
-- `status` is `open` or `done`. `due` is `YYYY-MM-DD`, or empty when the task has no due date. `tags` are in alphabetical order, separated by single spaces.
+- Header line `id,title,status,due,tags,note`, then one row per matching task in ascending id order.
+- `status` is `open` or `done`. `due` is `YYYY-MM-DD`, or empty when the task has no due date. `tags` are in alphabetical order, separated by single spaces. `note` is the task's note, or empty when the task has none.
 - A field is quoted (RFC 4180) only when it contains a comma, a double quote or a line break; inner double quotes are doubled.
 - Every line, the last one included, ends with CRLF. The text is UTF-8 without a BOM.
 - With no matching task, only the header line is written.
@@ -56,15 +73,29 @@ The same format as `tasks.json`, holding only the matching tasks. It keeps the l
 Example: `ttc export --format csv --tag home --open` prints
 
 ```
-id,title,status,due,tags
-1,"Pay ""rent"", now",open,2026-01-15,bills home
-4,Buy milk,open,,home
+id,title,status,due,tags,note
+1,"Pay ""rent"", now",open,2026-01-15,bills home,"bank transfer, ref 7"
+4,Buy milk,open,,home,
 ```
 
 ### Cautions
 
 - A filtered JSON export is a valid import file. Importing it with `ttc import` replaces the whole list with only those tasks; import never merges. `ttc import` does not read CSV.
 - Values are written as stored. A spreadsheet may treat a CSV cell that starts with `=`, `+`, `-` or `@` as a formula, so check a file from an untrusted source before opening it there.
+
+## Data file format
+
+`tasks.json` is format version 3:
+
+```
+{ "version": 3, "nextId": <int>, "tasks": [ { "id", "title", "status", "due", "tags", "note" } ] }
+```
+
+`note` is a string or `null`.
+
+- Files written by older ttc (version 1 and version 2) are read as-is by read-only commands, and rewritten as version 3 by the next changing command.
+- `ttc import` accepts versions 1, 2 and 3.
+- A file from a newer ttc is refused with one `ttc: cannot read` line and left unchanged.
 
 ## Exit codes
 
