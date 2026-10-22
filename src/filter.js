@@ -19,13 +19,14 @@ const FILTER_OPTIONS = {
 };
 
 // Validates the options parseArgs returned and returns the filter:
-// { view, tag, dueFrom, dueTo, search } (absent values are null).
-function parseFilter(options) {
+// { view, tag, dueFrom, dueTo, search } (absent values are null). `defaultView`
+// is the status view when no status option is given.
+function parseFilter(options, defaultView = '--open') {
   const given = STATUS_OPTIONS.filter((o) => Object.hasOwn(options, o));
   if (given.length > 1) {
     throw new TtcError('options cannot be combined: ' + given.join(' '));
   }
-  const view = given.length === 1 ? given[0] : '--open';
+  const view = given.length === 1 ? given[0] : defaultView;
 
   const tag = Object.hasOwn(options, '--tag') ? inputTag(options['--tag']) : null;
 

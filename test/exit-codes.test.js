@@ -100,6 +100,8 @@ const table = [
   { name: 'tag ok', args: () => ['tag', '1', '+t'], tasks: one, ok: true },
   { name: 'tag fail (no such task)', args: () => ['tag', '99999', '+t'], tasks: one },
   { name: 'export ok', args: (sb) => ['export', path.join(sb.base, 'out.json')], tasks: one, ok: true },
+  { name: 'export ok (stdout)', args: () => ['export'], tasks: one, ok: true },
+  { name: 'export fail (bad format)', args: () => ['export', '--format', 'xml'], tasks: one },
   { name: 'export fail (a folder)', args: (sb) => ['export', sb.base], tasks: one },
   {
     name: 'import ok',
@@ -159,6 +161,21 @@ test('stdout closed after 10 bytes of `list --all` on 10,000 tasks exits 1', TIM
   const sb = sandbox();
   bigSeed(sb);
   const r = await ttc(sb, ['list', '--all'], {
+    early: (child) => {
+      let received = 0;
+      child.stdout.on('data', (d) => {
+        received += d.length;
+        if (received >= 10) child.stdout.destroy();
+      });
+    },
+  });
+  assertCutOff(r);
+});
+
+test('stdout closed after 10 bytes of `export --format csv` on 10,000 tasks exits 1', TIMEOUT, async () => {
+  const sb = sandbox();
+  bigSeed(sb);
+  const r = await ttc(sb, ['export', '--format', 'csv'], {
     early: (child) => {
       let received = 0;
       child.stdout.on('data', (d) => {
