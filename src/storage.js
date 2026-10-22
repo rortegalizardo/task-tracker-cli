@@ -21,10 +21,11 @@ const { TtcError } = require('./errors');
 const { titleProblem, tagProblem, isValidDate } = require('./rules');
 
 const MAX_NEXT_ID = 2 ** 53; // 9007199254740992
+const TASKS_FILE = 'tasks.json';
 
 function dataPaths(env = process.env) {
   const dir = env.TTC_HOME ? env.TTC_HOME : path.join(os.homedir(), '.ttc');
-  return { dir, file: path.join(dir, 'tasks.json') };
+  return { dir, file: path.join(dir, TASKS_FILE) };
 }
 
 function isPlainObject(v) {
@@ -159,15 +160,23 @@ function readList(env) {
   return parsed.list;
 }
 
+// The name replaceFile gives its temp file: a dot, the target's basename, the
+// writer's pid, 12 random hex characters, ".tmp".
+function tempName(base, pid) {
+  return '.' + base + '.' + pid + '.' + crypto.randomBytes(6).toString('hex') + '.tmp';
+}
+
+// Matches the temp names of tasks.json only; group 1 is the writer's pid.
+const TASKS_TEMP = new RegExp(
+  '^\\.' + TASKS_FILE.replace(/\./g, '\\.') + '\\.([1-9][0-9]*)\\.[0-9a-f]{12}\\.tmp$',
+);
+
 // The atomic primitive: write `text` to a temp file next to `file`, flush it,
 // rename it over `file`, then flush the folder. A symlink at `file` is replaced
 // by a regular file; its target is left alone. Also used by export (RCDEV-830).
 function replaceFile(file, text, mode) {
   const dir = path.dirname(file);
-  const tmp = path.join(
-    dir,
-    '.' + path.basename(file) + '.' + process.pid + '.' + crypto.randomBytes(6).toString('hex') + '.tmp',
-  );
+  const tmp = path.join(dir, tempName(path.basename(file), process.pid));
   let created = false;
   try {
     const fd = fs.openSync(tmp, 'wx', mode ?? 0o666);
@@ -203,17 +212,76 @@ function replaceFile(file, text, mode) {
   }
 }
 
+// Creates the data folder (and missing parents) with mode 0700. Returns what
+// mkdir returned: the outermost folder it created, or undefined when the
+// folder already existed. Throws raw fs errors; callers wrap them.
+function makeDataFolder(dir) {
+  const made = fs.mkdirSync(dir, { recursive: true, mode: 0o700 });
+  // Only a folder this call created; the umask cannot weaken it.
+  if (made !== undefined) fs.chmodSync(dir, 0o700);
+  return made;
+}
+
+// Flushes the parent of every folder makeDataFolder created, innermost first,
+// so the new folders survive a power cut. `made` is makeDataFolder's result;
+// undefined means nothing was created and nothing is flushed.
+function syncNewFolders(dir, made) {
+  if (made === undefined) return;
+  const stop = path.resolve(made);
+  let current = path.resolve(dir);
+  for (;;) {
+    const parent = path.dirname(current);
+    if (parent === current) return; // filesystem root: nothing above it
+    const fd = fs.openSync(parent, 'r');
+    try {
+      fs.fsyncSync(fd);
+    } finally {
+      fs.closeSync(fd);
+    }
+    if (current === stop) return;
+    current = parent;
+  }
+}
+
+// Removes temp files of tasks.json left by writers that died: names matching
+// the temp shape whose pid belongs to no running process. Call it only while
+// holding the lock. Never throws and never reports; a failure to list or to
+// remove just leaves the file for the next command.
+function removeLeftoverTemps(dir) {
+  let names;
+  try {
+    names = fs.readdirSync(dir);
+  } catch {
+    return;
+  }
+  for (const name of names) {
+    const m = TASKS_TEMP.exec(name);
+    if (m === null) continue;
+    try {
+      process.kill(Number(m[1]), 0);
+      continue; // alive
+    } catch (err) {
+      if (err.code !== 'ESRCH') continue; // EPERM or anything else: keep
+    }
+    try {
+      fs.unlinkSync(path.join(dir, name));
+    } catch {
+      // best effort
+    }
+  }
+}
+
 // Validates, then replaces tasks.json whole. Never writes a list it could not
-// read back.
+// read back. Creates the data folder if missing and flushes the parent of each
+// folder it created.
 function writeList(list, env) {
   const problem = validateList(list);
   if (problem !== null) throw new TtcError('cannot write a list that is not valid: ' + problem);
   const { dir, file } = dataPaths(env);
   try {
-    const made = fs.mkdirSync(dir, { recursive: true, mode: 0o700 });
-    // Only a folder this call created; the umask cannot weaken it.
-    if (made !== undefined) fs.chmodSync(dir, 0o700);
+    const made = makeDataFolder(dir);
     replaceFile(file, serializeList(list), 0o600);
+    syncNewFolders(dir, made);
   } catch (err) {
     throw new TtcError('cannot write ' + file + ': ' + reasonOf(err));
   }
@@ -228,5 +296,8 @@ module.exports = {
   reasonOf,
   readList,
   replaceFile,
+  makeDataFolder,
+  syncNewFolders,
+  removeLeftoverTemps,
   writeList,
 };
