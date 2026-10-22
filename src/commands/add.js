@@ -4,6 +4,7 @@ const { parseArgs, MAX_ID } = require('../args');
 const { TtcError } = require('../errors');
 const { inputTitle, inputTag, isValidDate } = require('../rules');
 const { readList, writeList } = require('../storage');
+const { withLock } = require('../lock');
 
 module.exports = {
   name: 'add',
@@ -24,13 +25,16 @@ module.exports = {
     const typed = parsed.options['--tag'] || [];
     const tags = [...new Set(typed.map(inputTag))];
 
-    // Every check is done before the first read or write.
-    const list = readList();
-    if (list.nextId > MAX_ID) throw new TtcError('no task id is left');
-    const id = list.nextId;
-    list.tasks.push({ id, title, status: 'open', due, tags });
-    list.nextId = id + 1;
-    writeList(list);
+    // Every check is done before the lock, the read and the write.
+    const id = withLock(() => {
+      const list = readList();
+      if (list.nextId > MAX_ID) throw new TtcError('no task id is left');
+      const newId = list.nextId;
+      list.tasks.push({ id: newId, title, status: 'open', due, tags });
+      list.nextId = newId + 1;
+      writeList(list);
+      return newId;
+    });
 
     ctx.stdout.write('Added task ' + id + '\n');
   },
