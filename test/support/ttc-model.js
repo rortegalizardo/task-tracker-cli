@@ -343,11 +343,13 @@ function filterOf(options, defaultView, today) {
       if (from !== null && t.due < from) return false;
       if (to !== null && t.due > to) return false;
     }
-    return search === null || t.title.toLowerCase().includes(search.toLowerCase());
+    if (search === null) return true;
+    const needle = search.toLowerCase();
+    return t.title.toLowerCase().includes(needle) || (t.note !== null && t.note.toLowerCase().includes(needle));
   };
 }
 
-// CSV for the export: header id,title,status,due,tags; rows in id order; every
+// CSV for the export: header id,title,status,due,tags,note; rows in id order; every
 // line ends CRLF; a field is quoted only when it holds , " CR or LF.
 function csvField(value) {
   const text = String(value);
@@ -357,8 +359,8 @@ function csvField(value) {
 function csvText(tasks) {
   const rows = [...tasks]
     .sort((a, b) => a.id - b.id)
-    .map((t) => [t.id, t.title, t.status, t.due === null ? '' : t.due, [...t.tags].sort().join(' ')].map(csvField).join(',') + '\r\n');
-  return 'id,title,status,due,tags\r\n' + rows.join('');
+    .map((t) => [t.id, t.title, t.status, t.due === null ? '' : t.due, [...t.tags].sort().join(' '), t.note === null ? '' : t.note].map(csvField).join(',') + '\r\n');
+  return 'id,title,status,due,tags,note\r\n' + rows.join('');
 }
 
 const COMMANDS = {

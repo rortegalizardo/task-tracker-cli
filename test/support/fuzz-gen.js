@@ -199,9 +199,17 @@ function buildUnits(r, cmd, list, junkP, importTarget) {
   const title = () => (junk() ? r.pick(BAD_TITLES) : typedTitle(r));
   const tag = () => (junk() ? r.pick(BAD_TAGS) : mixCase(r, validTag(r)));
   const date = () => (junk() ? r.pick(BAD_DATES) : validDate(r));
-  // Mostly a word or a slice of one, so matches occur against generated titles.
+  // Mostly a word or a slice of one, so matches occur against generated titles;
+  // sometimes a slice of a task's note, so note-only hits occur too.
   const search = () => {
     if (junk()) return '';
+    const noted = list === null ? [] : list.tasks.filter((t) => t.note !== null);
+    if (noted.length > 0 && r.chance(0.3)) {
+      const chars = Array.from(r.pick(noted).note);
+      const start = r.int(0, chars.length - 1);
+      const slice = chars.slice(start, start + r.int(1, 6)).join('');
+      if (!slice.startsWith('-')) return mixCase(r, slice);
+    }
     const word = r.pick(WORDS);
     if (r.chance(0.5)) return mixCase(r, word);
     const chars = Array.from(word);

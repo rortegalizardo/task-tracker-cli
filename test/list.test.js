@@ -248,6 +248,19 @@ test('list --search matches open titles by case-insensitive literal substring (A
   listedF(['--search', 'Rent'], fmt(1, 2, 4, 6));
 });
 
+test('list --search finds a task by its note alone, in any letter case (AC-3)', () => {
+  const sb = sandbox();
+  seed(sb, { version: 3, nextId: 3, tasks: [
+    { id: 1, title: 'Pay rent', status: 'open', due: null, tags: [], note: 'landlord prefers bank transfer' },
+    { id: 2, title: 'Read', status: 'open', due: null, tags: [], note: null },
+  ] });
+  for (const needle of ['transfer', 'TRANSFER', 'Transfer']) {
+    const r = ttc(sb, 'list', '--search', needle);
+    assert.equal(r.status, 0);
+    assert.equal(r.stdout, '#1 [ ] Pay rent\n');
+  }
+});
+
 test('--search combines with --tag, a status view and a due range by AND (AC-3)', () => {
   listedF(['--search', 'RENT', '--tag', 'bills', '--done', '--due-from', '2026-01-01', '--due-to', '2026-01-31'], fmt(3));
   listedF(['--search', 'rent', '--tag', 'home'], fmt(1, 4, 6));
