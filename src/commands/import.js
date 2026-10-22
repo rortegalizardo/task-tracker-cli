@@ -4,6 +4,7 @@ const fs = require('node:fs');
 const { parseArgs } = require('../args');
 const { TtcError } = require('../errors');
 const { decodeUtf8, parseList, writeList, reasonOf } = require('../storage');
+const { withLock } = require('../lock');
 
 module.exports = {
   name: 'import',
@@ -28,7 +29,7 @@ module.exports = {
 
     // The stored list is replaced whole and never read, so a broken tasks.json
     // does not stop an import. Nothing is written before this point.
-    writeList(result.list);
+    withLock(() => writeList(result.list));
 
     ctx.stdout.write('Imported ' + result.list.tasks.length + ' tasks from ' + file + '\n');
   },
