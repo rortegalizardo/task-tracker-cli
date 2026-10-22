@@ -1,14 +1,14 @@
 'use strict';
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { FORMATS, CURRENT_VERSION, migrateV1ToV2, parseList, serializeList } = require('../src/storage');
+const { FORMATS, CURRENT_VERSION, migrateV1ToV2, migrateV2ToV3, parseList, serializeList } = require('../src/storage');
 
 const body = { nextId: 2, tasks: [{ id: 1, title: 'A', status: 'open', due: null, tags: [] }] };
-const list = { nextId: 2, tasks: body.tasks };
+const list = { nextId: 2, tasks: [{ ...body.tasks[0], note: null }] };
 
-test('the registry ends at version 2', () => {
-  assert.equal(CURRENT_VERSION, 2);
-  assert.deepEqual(FORMATS.map((f) => f.version), [1, 2]);
+test('the registry ends at version 3', () => {
+  assert.equal(CURRENT_VERSION, 3);
+  assert.deepEqual(FORMATS.map((f) => f.version), [1, 2, 3]);
 });
 
 test('migrateV1ToV2 puts version 2 first and does not touch its input', () => {
@@ -22,18 +22,30 @@ test('migrateV1ToV2 puts version 2 first and does not touch its input', () => {
   }
 });
 
-test('parseList reads version 1 (no key or explicit) and version 2 as the same list', () => {
+test('migrateV2ToV3 adds note null last to every task and does not touch its input', () => {
+  const doc = { version: 2, ...body };
+  const before = JSON.stringify(doc);
+  const out = migrateV2ToV3(doc);
+  assert.deepEqual(Object.keys(out), ['version', 'nextId', 'tasks']);
+  assert.equal(out.version, 3);
+  assert.deepEqual(Object.keys(out.tasks[0]), ['id', 'title', 'status', 'due', 'tags', 'note']);
+  assert.equal(out.tasks[0].note, null);
+  assert.equal(JSON.stringify(doc), before);
+});
+
+test('parseList reads version 1 (no key or explicit), version 2 and version 3 as the same list', () => {
   for (const text of [
     JSON.stringify(body),
     JSON.stringify({ version: 1, ...body }),
     JSON.stringify({ version: 2, ...body }),
+    JSON.stringify({ version: 3, nextId: 2, tasks: list.tasks }),
   ]) {
     assert.deepEqual(parseList(text), { list });
   }
 });
 
 test('parseList refuses a newer version before checking the layout', () => {
-  for (const v of ['3', '1000']) {
+  for (const v of ['4', '1000']) {
     const { problem, list: l } = parseList('{"version":' + v + ',"anything":true}');
     assert.equal(l, undefined);
     assert.match(problem, new RegExp('newer ttc \\(format version ' + v + ';'));
@@ -48,6 +60,6 @@ test('parseList refuses a version that is not a whole number of 1 or more', () =
   }
 });
 
-test('serializeList writes version 2 first', () => {
-  assert.ok(serializeList(list).startsWith('{\n  "version": 2,\n  "nextId": '));
+test('serializeList writes version 3 first', () => {
+  assert.ok(serializeList(list).startsWith('{\n  "version": 3,\n  "nextId": '));
 });
