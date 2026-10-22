@@ -1,7 +1,8 @@
 'use strict';
 
 // Perf guard (RCDEV-834): with 10,000 stored tasks, the median whole-process
-// time of `ttc list` and of `ttc add` must stay under LIMIT_MS.
+// time of `ttc list`, of `ttc list` with the date-range and search filters
+// (RCDEV-839), and of `ttc add` must stay under LIMIT_MS.
 //
 // This file is deliberately not named *.test.js, so the unit suite glob never
 // picks it up. `npm run test:perf` runs it alone, after the unit suite.
@@ -108,6 +109,15 @@ test('seed: 10,000 tasks stored in a temp dir and accepted by ttc', () => {
 
 test('ttc list', (t) => {
   measure(t, 'ttc list', ['list'], () => {});
+});
+
+test('ttc list filtered', (t) => {
+  measure(
+    t,
+    'ttc list filtered',
+    ['list', '--all', '--search', 'rent', '--due-from', '2024-01-01', '--due-to', '2027-12-31'],
+    () => {},
+  );
 });
 
 test('ttc add', (t) => {
