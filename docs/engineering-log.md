@@ -15,20 +15,22 @@ only.
 | `ttc list` whole-process time, 10,000 stored tasks | same as above | about 60 ms locally (same setup); CI unknown | guard in place (RCDEV-834 Done, 2026-10-22) | RCDEV-834 |
 | Robustness under random arguments and corrupted data | at least 10,000 generated cases per kind per run, seeded, seed printed on failure; invalid input gives a non-zero exit and one `ttc:` line, never a stack trace; a failed operation leaves `tasks.json` bytes unchanged; valid input behaves as today | 10,000 argument-list cases and 10,000 corrupted-data cases per run (`test/fuzz-args.test.js`, `test/fuzz-data.test.js`, in-process, plus 50 per file through a real process), seeded by `TTC_FUZZ_SEED`; about 45 s for the args file and 12-36 s for the data file locally (macOS arm64, Node 26.11.1, 2026-10-21, 6 green full runs) | met | RCDEV-833 |
 | CI syntax check | CI fails on a syntax error in any source or test file, Node built-ins only | only files some test loads are parsed in CI | met (RCDEV-832 Done, 2026-10-22) | RCDEV-832 |
-| Concurrent changing commands lose no change | 20 `ttc add` started at once on one `TTC_HOME` keep 20 of 20 tasks, ids 1-20, repeated 5 times per CI run; a lock held by a live process past 10 s gives one `ttc:` line and exit 1 with the file unchanged; a lock left by a killed process blocks nothing | 1, 2 and 2 of 20 tasks kept in 3 runs, every process exit 0 (macOS arm64, Node 26.11.1, `main` cc20f93, 2026-10-22); no lock exists | in flight | RCDEV-835 |
-| Killed writes leave no leftovers; first write durable | after a killed write, the next changing command leaves no ttc temp file in `TTC_HOME`; creating `TTC_HOME` fsyncs the parent of each folder created | 4 killed writes left 4 `.tasks.json.<pid>.<hex>.tmp` files, still there after the next `ttc add` (2026-10-22); parent of a new data folder never fsynced | in flight | RCDEV-836 |
-| Versioned data file with automatic migration | every write and export is version 2 (`"version": 2` first key); version 1 (no key) works as today and is rewritten as version 2 by the next changing command; a newer version gives one `ttc: cannot read` line, exit 1, bytes unchanged | no version marker; unknown keys rejected (`validateList`), so a future layout change would make every existing file unreadable | in flight | RCDEV-837 |
-| Exit codes consistent and documented | 0 on success, 1 on every failure on every path (output-stream errors and exceptions outside `run()` included), never a stack trace; README "Exit codes" section; `ttc help` unchanged | handled failures exit 1 with one line; EPIPE prints a stack trace; nothing documented (2026-10-22) | in flight | RCDEV-838 |
+| Concurrent changing commands lose no change | 20 `ttc add` started at once on one `TTC_HOME` keep 20 of 20 tasks, ids 1-20, repeated 5 times per CI run; a lock held by a live process past 10 s gives one `ttc:` line and exit 1 with the file unchanged; a lock left by a killed process blocks nothing | 1, 2 and 2 of 20 tasks kept in 3 runs, every process exit 0 (macOS arm64, Node 26.11.1, `main` cc20f93, 2026-10-22); no lock exists | met (RCDEV-835 Done, 2026-10-22) | RCDEV-835 |
+| Killed writes leave no leftovers; first write durable | after a killed write, the next changing command leaves no ttc temp file in `TTC_HOME`; creating `TTC_HOME` fsyncs the parent of each folder created | 4 killed writes left 4 `.tasks.json.<pid>.<hex>.tmp` files, still there after the next `ttc add` (2026-10-22); parent of a new data folder never fsynced | met (RCDEV-836 Done, 2026-10-22) | RCDEV-836 |
+| Versioned data file with automatic migration | every write and export is version 2 (`"version": 2` first key); version 1 (no key) works as today and is rewritten as version 2 by the next changing command; a newer version gives one `ttc: cannot read` line, exit 1, bytes unchanged | no version marker; unknown keys rejected (`validateList`), so a future layout change would make every existing file unreadable | met (RCDEV-837 Done, 2026-10-22); RCDEV-841 adds version 3 | RCDEV-837 |
+| Exit codes consistent and documented | 0 on success, 1 on every failure on every path (output-stream errors and exceptions outside `run()` included), never a stack trace; README "Exit codes" section; `ttc help` unchanged | handled failures exit 1 with one line; EPIPE prints a stack trace; nothing documented (2026-10-22) | met (RCDEV-838 Done, 2026-10-22); RCDEV-839, RCDEV-840 and RCDEV-841 keep it for their new failures | RCDEV-838 |
+| Filtered `ttc list` whole-process time, 10,000 stored tasks | `ttc list --all --search <word> --due-from <d> --due-to <d>`: same bar as plain `list` (median of 5 under 500 ms in CI) | unknown, the filters do not exist yet; plain `list` about 60 ms locally (2026-10-21) | in flight | RCDEV-839 |
 
 ## Tech-debt register
 
 | Item | Evidence | Status | Ticket |
 | --- | --- | --- | --- |
-| Output-stream errors print a Node stack trace | `ttc list --all \| head -c 10` on a 10,000-task list prints an unhandled `EPIPE` error with stack frames (2026-10-21); `bin/ttc.js` has no handler for stdout/stderr `error` events; reconfirmed on `main` cc20f93 (2026-10-22) | in flight | RCDEV-838 |
+| Output-stream errors print a Node stack trace | `ttc list --all \| head -c 10` on a 10,000-task list prints an unhandled `EPIPE` error with stack frames (2026-10-21); `bin/ttc.js` has no handler for stdout/stderr `error` events; reconfirmed on `main` cc20f93 (2026-10-22) | fixed (RCDEV-838 Done, 2026-10-22) | RCDEV-838 |
 | JSON nested too deep to parse is reported as "not valid JSON" | a 200,000-deep nested array (valid JSON) gives `ttc: cannot read ...: not valid JSON` (2026-10-21); one line and exit 1, so it meets the error rule, but the reason is imprecise | deferred | none |
-| Leftover temp files from killed writes are never removed | each killed write leaves a `.tasks.json.<pid>.<hex>.tmp` up to the list size (about 1.9 MB at 10,000 tasks) in `TTC_HOME`; 4 of them survived the next `ttc add` (2026-10-22) | in flight | RCDEV-836 |
+| Leftover temp files from killed writes are never removed | each killed write leaves a `.tasks.json.<pid>.<hex>.tmp` up to the list size (about 1.9 MB at 10,000 tasks) in `TTC_HOME`; 4 of them survived the next `ttc add` (2026-10-22) | fixed (RCDEV-836 Done, 2026-10-22) | RCDEV-836 |
 | Lock cannot detect process-id reuse | the planned lock (RCDEV-835) treats a holder whose process id is alive as live; if a dead holder's id is reused by an unrelated process, the next command waits the full 10 s and fails once; Node built-ins give no portable process start time | deferred (known limit) | none |
 | Temp files next to an export target are not swept | a killed `ttc export` can leave `.<name>.<pid>.<hex>.tmp` in the user's chosen folder; the target itself stays whole | deferred | none |
+| CSV export writes cell values as stored, with no formula escaping | a title or note starting with `=`, `+`, `-` or `@` may run as a formula when the CSV is opened in a spreadsheet; titles can come from someone else's import file; escaping would change the data, so RCDEV-840 writes values verbatim and the README warns | deferred (known limit) | none |
 
 ## 2026-10-21 — harden ttc: robustness, performance and CI syntax check
 
@@ -186,3 +188,80 @@ in the README, and all four candidates accepted as proposed.
 - RCDEV-836: blocked by RCDEV-835
 - RCDEV-837: blocked by RCDEV-835
 - RCDEV-838: blocked by RCDEV-835, RCDEV-837
+
+## 2026-10-22 — task search and export: list filters, filtered JSON/CSV export, notes
+
+**Prompt:** Add task search and export to ttc: `ttc list` filters by status,
+tag, and due-date range, plus free-text search over titles and notes; a new
+`ttc export` command writes the filtered tasks as JSON or CSV to stdout or a
+file; every new flag documented in README and --help. Consistent with existing
+exit codes. No new runtime dependencies.
+
+**Baseline found:** (main at 70ddae0)
+- `ttc list` already filters by status (`--open|--done|--all|--overdue`, one
+  at a time, default `--open`) and by one `--tag` (PD-0003 item 7); the filter
+  logic is inline in `src/commands/list.js`. No due-date range, no search.
+- A task holds id, title, status, due and tags only (format version 2,
+  `src/storage.js`). There is no notes field, so "search over notes" had
+  nothing to search.
+- `ttc export <file>` already exists: whole list, `tasks.json` format, written
+  atomically, `Exported <n> tasks to <file>`; it is the backup `ttc import`
+  restores (PD-0003 items 10, 14). No filters, no CSV, no stdout.
+- `ttc help` / `ttc --help` print one usage line per command (PD-0003 item
+  12); the README documents install, tests and exit codes only.
+- Exit codes: 0 / 1 on every path, documented in the README (RCDEV-838).
+- The generated robustness tests carry a model of every command and its usage
+  line (`test/support/ttc-model.js`, `fuzz-gen.js`), so every new option must
+  be added there. The perf guard times plain `add` and `list` only.
+- Linear: no existing issue in Task Tracker CLI covers search, CSV or notes.
+- Constraints that bind (`product/project/constraints.md`): built-ins only
+  (1), atomic writes (5), one-line errors with non-zero exit (6), `node:test`
+  tests and CI (7), every ticket names its repo (9).
+
+**Requester confirmation:** asked once (Q1, triage B3 objective,
+`~/Factory/Artifacts/projects/TTC/tickets/ENG-0003/requester-questions.md`):
+accept 1 and 2 with search over titles only (A), or also add notes (B). The
+requester answered, verbatim, "B: accept 1, 2 and 3".
+
+**Candidates considered:**
+- **Accepted — list date-range filter and title search** (RCDEV-839):
+  `--due-from`, `--due-to` (inclusive, undated tasks drop out),
+  `--search <text>` (case-insensitive literal substring), all AND-combined,
+  in one shared filter module; usage line, README section, robustness model,
+  exit-code rows, and a filtered case in the perf guard. Medium. No
+  dependencies.
+- **Accepted — filtered JSON/CSV export to stdout or a file** (RCDEV-840):
+  extends the existing `ttc export` rather than adding a command; same
+  filters with default `--all`; `--format json|csv`; no `<file>` means
+  stdout, data only. JSON stays the `tasks.json` format, byte-identical with
+  no filter, so a filtered export is still importable and replaces the whole
+  list (README caution). CSV per RFC 4180, header `id,title,status,due,tags`.
+  Medium. Blocked by RCDEV-839.
+- **Accepted — task notes, searched with titles** (RCDEV-841): one one-line
+  note per task, format version 3 (adds `"note"`, v2 -> v3 migration),
+  `ttc note <id> ["<text>" | --clear]`, `ttc add --note`, import/export and a
+  CSV `note` column, `--search` over title or note; `list` lines unchanged.
+  Medium-large. Blocked by RCDEV-839 and RCDEV-840. The requester's accepted
+  set listed only RCDEV-839 as its blocker; RCDEV-840 was added as a
+  sequencing call (escalation-policy §3 route 3) because this ticket adds a
+  column to the CSV that RCDEV-840 creates, and both edit `export.js`, the
+  README and the robustness model.
+- **Rejected — replace `ttc export` with a new command:** it would break the
+  whole-list backup that `ttc import` restores (PD-0003 item 14); extending
+  the command delivers everything asked.
+- **Rejected — per-command `--help` with flag descriptions:** `ttc --help`
+  already lists every command's flags in its usage lines; the README carries
+  their meaning. Would change if the requester wants descriptions in the
+  terminal.
+- **Deferred — CSV formula escaping:** values are written as stored and the
+  README warns; escaping would change exported data. Tech-debt register row.
+
+Product record: the three tickets extend PD-0003 items 7, 8, 10, 12, 13 and
+14 (new options, usage lines, messages, a stored field). The requester
+accepted them at intake; each ticket asks the product manager to record the
+amendment through the engineering -> product channel, and none waits on it.
+
+**Ticket dependencies (Linear "blocked by"):**
+- RCDEV-839: none
+- RCDEV-840: blocked by RCDEV-839
+- RCDEV-841: blocked by RCDEV-839, RCDEV-840
