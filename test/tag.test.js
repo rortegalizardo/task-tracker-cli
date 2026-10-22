@@ -238,7 +238,7 @@ test('ttc help lists the tag usage line (criterion 21)', () => {
   assert.equal(r.status, 0);
   const lines = r.stdout.split('\n').map((l) => l.trim());
   assert.ok(lines.includes('ttc help'));
-  assert.ok(lines.includes('ttc add "<title>" [--due YYYY-MM-DD] [--tag <t>]...'));
+  assert.ok(lines.includes('ttc add "<title>" [--due YYYY-MM-DD] [--tag <t>]... [--note "<text>"]'));
   assert.ok(lines.includes('ttc list [--open|--done|--all|--overdue] [--tag <t>] [--due-from YYYY-MM-DD] [--due-to YYYY-MM-DD] [--search <text>]'));
   assert.ok(lines.includes('ttc tag <id> +<t> | -<t>'));
 });

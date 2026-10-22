@@ -260,7 +260,24 @@ test('ttc help lists the add usage line (criterion 23)', () => {
   assert.equal(r.status, 0);
   const lines = r.stdout.split('\n').map((l) => l.trim());
   assert.ok(lines.includes('ttc help'));
-  assert.ok(lines.includes('ttc add "<title>" [--due YYYY-MM-DD] [--tag <t>]...'));
+  assert.ok(lines.includes('ttc add "<title>" [--due YYYY-MM-DD] [--tag <t>]... [--note "<text>"]'));
+});
+
+test('add --note stores the note typed and trimmed', () => {
+  const sb = sandbox();
+  assertOk(add(sb, 'Pay rent', '--note', '  bank transfer  '), 1);
+  assert.equal(stored(sb).tasks[0].note, 'bank transfer');
+});
+
+test('add --note with only spaces is refused before any write', () => {
+  const sb = sandbox();
+  seed(sb, SEED);
+  const before = fs.readFileSync(sb.file);
+  const r = add(sb, 'Pay rent', '--note', '  ');
+  assert.equal(r.status, 1);
+  assert.equal(r.stdout, '');
+  assert.match(r.stderr, /^ttc: [^\n]+\n$/);
+  assert.deepEqual(fs.readFileSync(sb.file), before);
 });
 
 test('TTC_HOME as a regular file fails and keeps the file (criterion 24)', () => {

@@ -58,13 +58,14 @@ test('ttc help lists the add, list, export and import usages (RCDEV-830 AC31)', 
   assert.equal(r.status, 0);
   const lines = usageLines(r.stdout);
   assert.ok(lines.includes('ttc help'));
-  assert.ok(lines.some((l) => l.startsWith('ttc add ')));
+  assert.ok(lines.includes('ttc add "<title>" [--due YYYY-MM-DD] [--tag <t>]... [--note "<text>"]'));
   assert.ok(lines.some((l) => l.startsWith('ttc list ')));
   assert.ok(lines.some((l) => l.startsWith('ttc rename ')));
   assert.ok(lines.some((l) => l.startsWith('ttc delete ')));
   assert.ok(lines.some((l) => l.startsWith('ttc done ')));
   assert.ok(lines.some((l) => l.startsWith('ttc reopen ')));
   assert.ok(lines.some((l) => l.startsWith('ttc tag ')));
+  assert.equal(lines.indexOf('ttc note <id> ["<text>" | --clear]'), lines.findIndex((l) => l.startsWith('ttc tag ')) + 1);
   assert.ok(lines.includes(
     'ttc export [<file>] [--format json|csv] [--open|--done|--all|--overdue] [--tag <t>] [--due-from YYYY-MM-DD] [--due-to YYYY-MM-DD] [--search <text>]',
   ));

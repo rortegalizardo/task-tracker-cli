@@ -33,7 +33,7 @@ test('a version 2 file is not rewritten by read-only commands, and the next chan
   const sb = sandbox();
   fs.writeFileSync(sb.file, JSON.stringify(V2, null, 2) + '\n');
   const before = fs.readFileSync(sb.file);
-  for (const args of [['list'], ['stats'], ['export']]) {
+  for (const args of [['list'], ['stats'], ['export'], ['note', '1']]) {
     const r = ttc(sb, ...args);
     assert.equal(r.status, 0, r.stderr);
     assert.deepEqual(fs.readFileSync(sb.file), before, args.join(' '));
