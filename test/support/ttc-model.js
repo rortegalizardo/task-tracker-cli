@@ -287,6 +287,9 @@ const LIST = new Map([
   ['--all', {}],
   ['--overdue', {}],
   ['--tag', { value: true }],
+  ['--due-from', { value: true }],
+  ['--due-to', { value: true }],
+  ['--search', { value: true }],
 ]);
 const VIEWS = ['--open', '--done', '--all', '--overdue'];
 
@@ -320,6 +323,13 @@ const COMMANDS = {
     if (given.length > 1) invalid();
     const view = given.length === 1 ? given[0] : '--open';
     const tag = options.has('--tag') ? typedTag(options.get('--tag')) : null;
+    const from = options.has('--due-from') ? options.get('--due-from') : null;
+    const to = options.has('--due-to') ? options.get('--due-to') : null;
+    if (from !== null && !isDate(from)) invalid();
+    if (to !== null && !isDate(to)) invalid();
+    if (from !== null && to !== null && from > to) invalid();
+    const search = options.has('--search') ? options.get('--search') : null;
+    if (search === '') invalid();
     const list = readStored(ctx.tree);
     const shown = list.tasks
       .filter((t) => {
@@ -328,6 +338,11 @@ const COMMANDS = {
         return t.status === (view === '--done' ? 'done' : 'open');
       })
       .filter((t) => tag === null || t.tags.includes(tag))
+      .filter((t) => {
+        if (from === null && to === null) return true;
+        return t.due !== null && (from === null || t.due >= from) && (to === null || t.due <= to);
+      })
+      .filter((t) => search === null || t.title.toLowerCase().includes(search.toLowerCase()))
       .sort((a, b) => a.id - b.id);
     ctx.out = shown.length === 0 ? 'No tasks.\n' : shown.map((t) => taskLine(t, ctx.today) + '\n').join('');
   },

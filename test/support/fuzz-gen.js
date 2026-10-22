@@ -179,6 +179,15 @@ function buildUnits(r, cmd, list, junkP, importTarget) {
   const title = () => (junk() ? r.pick(BAD_TITLES) : typedTitle(r));
   const tag = () => (junk() ? r.pick(BAD_TAGS) : mixCase(r, validTag(r)));
   const date = () => (junk() ? r.pick(BAD_DATES) : validDate(r));
+  // Mostly a word or a slice of one, so matches occur against generated titles.
+  const search = () => {
+    if (junk()) return '';
+    const word = r.pick(WORDS);
+    if (r.chance(0.5)) return mixCase(r, word);
+    const chars = Array.from(word);
+    const start = r.int(0, chars.length - 1);
+    return mixCase(r, chars.slice(start, start + r.int(1, 4)).join(''));
+  };
   const pos = (token) => ({ tokens: [token] });
   const opt = (name, value, repeat = false) => ({ tokens: value === undefined ? [name] : [name, value], opt: name, value: value !== undefined, repeat });
 
@@ -193,6 +202,9 @@ function buildUnits(r, cmd, list, junkP, importTarget) {
     case 'list':
       if (r.chance(0.6)) options.push(opt(r.pick(['--open', '--done', '--all', '--overdue'])));
       if (r.chance(0.3)) options.push(opt('--tag', tag()));
+      if (r.chance(0.25)) options.push(opt('--due-from', date()));
+      if (r.chance(0.25)) options.push(opt('--due-to', date()));
+      if (r.chance(0.25)) options.push(opt('--search', search()));
       break;
     case 'done':
     case 'reopen':
