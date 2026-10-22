@@ -19,8 +19,9 @@ function sourceFiles(dir) {
   return out;
 }
 
-test('package.json declares no runtime dependencies (criterion 23)', () => {
+test('package.json declares no dependencies or devDependencies (criterion 23, AC-9)', () => {
   assert.deepEqual(Object.keys(pkg.dependencies ?? {}), []);
+  assert.deepEqual(Object.keys(pkg.devDependencies ?? {}), []);
 });
 
 test('no source file imports a network module (criterion 24)', () => {
