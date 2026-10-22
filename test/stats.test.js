@@ -197,7 +197,7 @@ test('ttc help lists ttc stats and the other usages (criterion 11)', () => {
     'ttc stats',
     'ttc help',
     'ttc add "<title>" [--due YYYY-MM-DD] [--tag <t>]...',
-    'ttc list [--open|--done|--all|--overdue] [--tag <t>]',
+    'ttc list [--open|--done|--all|--overdue] [--tag <t>] [--due-from YYYY-MM-DD] [--due-to YYYY-MM-DD] [--search <text>]',
     'ttc done <id>',
     'ttc reopen <id>',
   ]) {
