@@ -23,6 +23,49 @@ Every option can be given at most once. All options combine with AND: a task is 
 
 Example: `ttc list --all --due-from 2026-01-01 --due-to 2026-01-31 --search rent` lists every task, open or done, due in January 2026 whose title contains "rent".
 
+## Exporting tasks
+
+```
+ttc export [<file>] [--format json|csv] [--open|--done|--all|--overdue] [--tag <t>] [--due-from YYYY-MM-DD] [--due-to YYYY-MM-DD] [--search <text>]
+```
+
+- `[<file>]`: where to write the export. Optional. Without it, the export goes to standard output.
+- `--format json|csv`: the output format. The default is `json`. The value is case-sensitive; anything else is an error.
+- `--open`, `--done`, `--all`, `--overdue`, `--tag`, `--due-from`, `--due-to` and `--search` mean the same as for `ttc list` (see "Listing and filtering tasks" above), and combine with AND in the same way.
+
+Unlike `ttc list`, the default status for `ttc export` is `--all`. So `ttc export <file>` still exports the whole list, open and done tasks alike.
+
+### Standard output or a file
+
+- No file: only the exported content is written to standard output. Nothing else is printed and no file is written. `-` is not a stdout alias; it is an ordinary file name.
+- With a file: the file is written atomically. The path is relative to the current folder, an existing file is replaced, and a missing parent folder is an error. Then `Exported <n> tasks to <file>` is printed, where `<n>` is the number of tasks written.
+- A bad option, an invalid filter or a write failure prints one `ttc: ` line, writes nothing to standard output and changes no file.
+
+### JSON format
+
+The same format as `tasks.json`, holding only the matching tasks. It keeps the list's own next id and the stored order of the tasks. `ttc export <file>` with no other option writes the whole list, the same bytes as a plain backup.
+
+### CSV format
+
+- Header line `id,title,status,due,tags`, then one row per matching task in ascending id order.
+- `status` is `open` or `done`. `due` is `YYYY-MM-DD`, or empty when the task has no due date. `tags` are in alphabetical order, separated by single spaces.
+- A field is quoted (RFC 4180) only when it contains a comma, a double quote or a line break; inner double quotes are doubled.
+- Every line, the last one included, ends with CRLF. The text is UTF-8 without a BOM.
+- With no matching task, only the header line is written.
+
+Example: `ttc export --format csv --tag home --open` prints
+
+```
+id,title,status,due,tags
+1,"Pay ""rent"", now",open,2026-01-15,bills home
+4,Buy milk,open,,home
+```
+
+### Cautions
+
+- A filtered JSON export is a valid import file. Importing it with `ttc import` replaces the whole list with only those tasks; import never merges. `ttc import` does not read CSV.
+- Values are written as stored. A spreadsheet may treat a CSV cell that starts with `=`, `+`, `-` or `@` as a formula, so check a file from an untrusted source before opening it there.
+
 ## Exit codes
 
 - `0`: the command did what was asked. This includes `ttc help`, `No tasks.`, and repeated or no-op actions (for example `done` on a task that is already done).
