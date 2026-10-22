@@ -243,7 +243,7 @@ test('export --format csv --tag home --open prints the header and the open home 
   assert.equal(r.stderr, '');
   assert.equal(
     r.stdout,
-    'id,title,status,due,tags\r\n1,Another open home,open,2026-02-01,home work\r\n4,Open home,open,,home\r\n',
+    'id,title,status,due,tags,note\r\n1,Another open home,open,2026-02-01,home work,\r\n4,Open home,open,,home,\r\n',
   );
 });
 
@@ -261,8 +261,32 @@ test('export <file> --format csv with a due range and a search writes only the m
   assertExported(r, 2, 'out.csv');
   assert.equal(
     fs.readFileSync(path.join(sb.work, 'out.csv'), 'utf8'),
-    'id,title,status,due,tags\r\n1,Pay rent,open,2026-01-05,\r\n5,Rent bike,done,2026-01-31,fun\r\n',
+    'id,title,status,due,tags,note\r\n1,Pay rent,open,2026-01-05,,\r\n5,Rent bike,done,2026-01-31,fun,\r\n',
   );
+});
+
+test('export --search finds a task by its note alone and keeps its note (AC-3)', () => {
+  const sb = sandbox();
+  seed(sb, { version: 3, nextId: 3, tasks: [
+    { id: 1, title: 'Pay rent', status: 'open', due: null, tags: [], note: 'Bank TRANSFER, ref 7' },
+    { id: 2, title: 'Read', status: 'open', due: null, tags: [], note: null },
+  ] });
+  const r = ttc(sb, ['export', '--search', 'transfer']);
+  assert.equal(r.status, 0);
+  assert.deepEqual(JSON.parse(r.stdout).tasks, [
+    { id: 1, title: 'Pay rent', status: 'open', due: null, tags: [], note: 'Bank TRANSFER, ref 7' },
+  ]);
+});
+
+test('export --format csv writes a note with a comma quoted and no note as an empty last field (AC-6)', () => {
+  const sb = sandbox();
+  seed(sb, { version: 3, nextId: 3, tasks: [
+    { id: 1, title: 'Pay rent', status: 'open', due: null, tags: [], note: 'Bank TRANSFER, ref 7' },
+    { id: 2, title: 'Read', status: 'open', due: null, tags: [], note: null },
+  ] });
+  const r = ttc(sb, ['export', '--format', 'csv']);
+  assert.equal(r.status, 0);
+  assert.equal(r.stdout, 'id,title,status,due,tags,note\r\n1,Pay rent,open,,,"Bank TRANSFER, ref 7"\r\n2,Read,open,,,\r\n');
 });
 
 test('export --done prints a valid tasks.json with only the done tasks and the original nextId', () => {

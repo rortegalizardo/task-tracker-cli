@@ -45,9 +45,10 @@ function parseFilter(options, defaultView = '--open') {
 }
 
 // The predicate for a parsed filter: true when a task passes the status view,
-// the tag, the due range and the title search (all AND-combined). Stored dates
-// are YYYY-MM-DD, so string comparison gives date order. The search is a
-// literal, case-insensitive substring match.
+// the tag, the due range and the search (all AND-combined). Stored dates are
+// YYYY-MM-DD, so string comparison gives date order. The search is a literal,
+// case-insensitive substring match against the title or, when there is one,
+// the note.
 function taskFilter(filter, today) {
   const { view, tag, dueFrom, dueTo, search } = filter;
   const needle = search === null ? null : search.toLowerCase();
@@ -63,7 +64,11 @@ function taskFilter(filter, today) {
       if (dueFrom !== null && task.due < dueFrom) return false;
       if (dueTo !== null && task.due > dueTo) return false;
     }
-    if (needle !== null && !task.title.toLowerCase().includes(needle)) return false;
+    if (needle !== null) {
+      const inTitle = task.title.toLowerCase().includes(needle);
+      const inNote = task.note !== null && task.note.toLowerCase().includes(needle);
+      if (!inTitle && !inNote) return false;
+    }
     return true;
   };
 }
