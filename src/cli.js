@@ -1,11 +1,7 @@
 'use strict';
 
-const { TtcError } = require('./errors');
+const { oneLine, failureLine } = require('./errors');
 const commands = require('./commands');
-
-function oneLine(text) {
-  return String(text).replace(/[\r\n\u0085\u2028\u2029]+/g, ' ');
-}
 
 function run(argv, { stdout, stderr }) {
   try {
@@ -23,8 +19,7 @@ function run(argv, { stdout, stderr }) {
     stdout.write(out);
     return 0;
   } catch (err) {
-    const message = err instanceof TtcError ? err.message : (err && err.message) || String(err);
-    stderr.write('ttc: ' + oneLine(message) + '\n');
+    stderr.write(failureLine(err));
     return 1;
   }
 }

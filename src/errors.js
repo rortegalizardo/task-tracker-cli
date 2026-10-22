@@ -9,4 +9,14 @@ class TtcError extends Error {
   }
 }
 
-module.exports = { TtcError };
+function oneLine(text) {
+  return String(text).replace(/[\r\n\u0085\u2028\u2029]+/g, ' ');
+}
+
+// The single stderr line every failure prints: "ttc: <message>\n".
+function failureLine(err) {
+  const message = err instanceof TtcError ? err.message : (err && err.message) || String(err);
+  return 'ttc: ' + oneLine(message) + '\n';
+}
+
+module.exports = { TtcError, oneLine, failureLine };
