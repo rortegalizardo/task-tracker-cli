@@ -229,3 +229,19 @@ for (const args of [['import'], ['import', 'a.json', 'b.json'], ['import', 'a.js
     assert.deepEqual(fs.readFileSync(sb.file), before);
   });
 }
+
+test('import of a version 1 and a version 2 file both store version 2, and export -> import -> export is byte-identical (RCDEV-837)', () => {
+  const body = { nextId: 3, tasks: [{ id: 2, title: 'Pay rent', status: 'done', due: '2099-12-31', tags: ['home'] }] };
+  for (const doc of [body, { version: 2, ...body }]) {
+    const sb = sandbox();
+    fs.writeFileSync(path.join(sb.work, 'in.json'), JSON.stringify(doc, null, 2) + '\n');
+    assertImported(ttc(sb, ['import', 'in.json']), 1, 'in.json');
+    assert.ok(fs.readFileSync(sb.file, 'utf8').startsWith('{\n  "version": 2,\n'));
+    assert.equal(ttc(sb, ['export', 'a.json']).status, 0);
+    assertImported(ttc(sb, ['import', 'a.json']), 1, 'a.json');
+    assert.equal(ttc(sb, ['export', 'b.json']).status, 0);
+    const a = fs.readFileSync(path.join(sb.work, 'a.json'));
+    assert.ok(a.toString().startsWith('{\n  "version": 2,\n'));
+    assert.deepEqual(fs.readFileSync(path.join(sb.work, 'b.json')), a);
+  }
+});

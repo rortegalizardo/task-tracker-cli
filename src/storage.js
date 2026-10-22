@@ -3,12 +3,23 @@
 // The stored list: where it lives, how it is read and checked, and how it is
 // written whole and atomically.
 //
-// Stored layout (fixed by C7; later stories' tests write it directly):
+// Stored layout, format version 2 (the current one; later stories' tests write
+// it directly):
 //
-//   { "nextId": <int>, "tasks": [ { "id": <int>, "title": <string>, "status": "open"|"done", "due": "YYYY-MM-DD"|null, "tags": [<string>...] } ] }
+//   { "version": 2, "nextId": <int>, "tasks": [ { "id": <int>, "title": <string>, "status": "open"|"done", "due": "YYYY-MM-DD"|null, "tags": [<string>...] } ] }
 //
 // Key order is as shown. Storage keeps the task order and tag order it is
 // given; sorting for display belongs to the list command.
+//
+// Version 1 is the same layout without the "version" key (an explicit
+// "version": 1 is also version 1). It is still read; the next changing command
+// writes version 2. A version above the current one is refused, and a bad
+// "version" value is an invalid list. The in-memory list is always
+// { nextId, tasks }: the version belongs to the file, not to the list.
+//
+// A future format is added in the "Formats" section below by registering one
+// FORMATS entry: its validator and the step that upgrades the previous
+// version's document. parseList does not change.
 //
 // fs.* and os.homedir() are always called through the module objects, so
 // tests can patch them.
@@ -83,6 +94,62 @@ function validateList(data) {
   return null;
 }
 
+// ---- Formats ---------------------------------------------------------------
+// One entry per stored format version, oldest first. `validate(doc)` returns
+// null or the first problem for a document of that version. `upgrade(doc)`
+// (every entry but the first) turns a valid document of the previous version
+// into this version; it is pure. parseList walks this list and nothing else.
+
+// Version 1: today's body, with or without an explicit "version": 1.
+function validateV1(doc) {
+  if (!isPlainObject(doc)) return 'the list is not an object';
+  const { version, ...body } = doc;
+  return validateList(body);
+}
+
+// Version 2: "version": 2 plus the same body.
+function validateV2(doc) {
+  if (!isPlainObject(doc)) return 'the list is not an object';
+  if (doc.version !== 2) return 'the version is not 2';
+  const { version, ...body } = doc;
+  return validateList(body);
+}
+
+// Version 1 -> 2: the same body with "version": 2 first. Does not mutate `doc`.
+// Object rest and spread define own keys, so a parsed "__proto__" key stays an
+// ordinary key for validateList to refuse.
+function migrateV1ToV2(doc) {
+  const { version, ...body } = doc;
+  return { version: 2, ...body };
+}
+
+const FORMATS = [
+  { version: 1, validate: validateV1 },
+  { version: 2, validate: validateV2, upgrade: migrateV1ToV2 },
+];
+
+const CURRENT_VERSION = FORMATS[FORMATS.length - 1].version;
+
+// The format version a parsed document claims: { version } or { problem }.
+// No "version" key is version 1; so is anything that is not an object, so the
+// version 1 check reports it as before. The version is judged before any
+// layout check, because a newer file may have any layout.
+function fileVersion(data) {
+  if (!isPlainObject(data) || !Object.hasOwn(data, 'version')) return { version: 1 };
+  const v = data.version;
+  if (!Number.isInteger(v) || v < 1) {
+    return { problem: 'the version is not a whole number of 1 or more' };
+  }
+  if (v > CURRENT_VERSION) {
+    return {
+      problem:
+        'it was written by a newer ttc (format version ' + v + '; this ttc reads up to version ' + CURRENT_VERSION + ')',
+    };
+  }
+  return { version: v };
+}
+// ---- end of Formats --------------------------------------------------------
+
 function reasonOf(err) {
   switch (err.code) {
     case 'EISDIR': return 'it is a folder';
@@ -95,18 +162,21 @@ function reasonOf(err) {
   }
 }
 
-// The one serialization of a list: documented key order, two-space indent, a
-// final line break. Used by writeList and export.
+// The one serialization of a list, always in the current format: documented
+// key order, two-space indent, a final line break. Used by writeList and export.
 function serializeList(list) {
   const canonical = {
+    version: CURRENT_VERSION,
     nextId: list.nextId,
     tasks: list.tasks.map((t) => ({ id: t.id, title: t.title, status: t.status, due: t.due, tags: t.tags })),
   };
   return JSON.stringify(canonical, null, 2) + '\n';
 }
 
-// The one parse path for stored lists and import files. Returns { list } or
-// { problem }; never throws. A whole number JSON.parse would round (above
+// The one parse path for stored lists and import files: detect the version,
+// check the document as that version, upgrade it step by step to the current
+// version, check it again, and return the list without its version. Returns
+// { list } or { problem }; never throws. A whole number JSON.parse would round (above
 // 2^53-1) becomes NaN, so the id and nextId checks refuse it.
 function parseList(text) {
   let data;
@@ -125,9 +195,16 @@ function parseList(text) {
   } catch {
     return { problem: 'not valid JSON' };
   }
-  const problem = validateList(data);
+  const found = fileVersion(data);
+  if (found.problem !== undefined) return { problem: found.problem };
+  let doc = data;
+  let problem = FORMATS[found.version - 1].validate(doc);
   if (problem !== null) return { problem };
-  return { list: data };
+  for (const format of FORMATS.slice(found.version)) doc = format.upgrade(doc);
+  problem = FORMATS[FORMATS.length - 1].validate(doc);
+  if (problem !== null) return { problem };
+  const { version, ...list } = doc;
+  return { list };
 }
 
 // The text of `bytes`, or null when they are not strict UTF-8. A byte order
@@ -222,6 +299,9 @@ function writeList(list, env) {
 module.exports = {
   dataPaths,
   validateList,
+  FORMATS,
+  CURRENT_VERSION,
+  migrateV1ToV2,
   serializeList,
   decodeUtf8,
   parseList,
