@@ -11,7 +11,7 @@
 // and never an absolute path or "..".
 
 const MAX_SAFE = Number.MAX_SAFE_INTEGER;
-const COMMANDS = ['help', 'add', 'list', 'done', 'reopen', 'rename', 'delete', 'tag', 'export', 'import', 'stats'];
+const COMMANDS = ['help', 'add', 'list', 'done', 'reopen', 'rename', 'delete', 'tag', 'note', 'export', 'import', 'stats'];
 
 const DIR = { kind: 'dir' };
 const file = (bytes) => ({ kind: 'file', bytes: Buffer.isBuffer(bytes) ? bytes : Buffer.from(bytes, 'utf8') });
@@ -226,6 +226,7 @@ function buildUnits(r, cmd, list, junkP, importTarget) {
       positionals.push(pos(title()));
       if (r.chance(0.5)) options.push(opt('--due', date()));
       for (let i = r.chance(0.5) ? r.int(1, 3) : 0; i > 0; i--) options.push(opt('--tag', tag(), true));
+      if (r.chance(0.3)) options.push(opt('--note', title()));
       break;
     case 'list':
       filterOptions();
@@ -245,6 +246,11 @@ function buildUnits(r, cmd, list, junkP, importTarget) {
       positionals.push(pos(id()), pos(signed));
       break;
     }
+    case 'note':
+      positionals.push(pos(id()));
+      if (r.chance(0.6)) positionals.push(pos(title()));
+      if (r.chance(0.3)) options.push(opt('--clear'));
+      break;
     case 'export':
       if (r.chance(0.7)) positionals.push(pos(r.pick(EXPORT_TARGETS)));
       if (r.chance(0.5)) options.push(opt('--format', junk() ? r.pick(BAD_FORMATS) : r.pick(['json', 'csv'])));

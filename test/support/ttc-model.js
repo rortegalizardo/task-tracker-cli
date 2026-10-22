@@ -18,13 +18,14 @@ const STORED = 'home/tasks.json';
 
 const USAGE = [
   'ttc help',
-  'ttc add "<title>" [--due YYYY-MM-DD] [--tag <t>]...',
+  'ttc add "<title>" [--due YYYY-MM-DD] [--tag <t>]... [--note "<text>"]',
   'ttc list [--open|--done|--all|--overdue] [--tag <t>] [--due-from YYYY-MM-DD] [--due-to YYYY-MM-DD] [--search <text>]',
   'ttc done <id>',
   'ttc reopen <id>',
   'ttc rename <id> "<title>"',
   'ttc delete <id>',
   'ttc tag <id> +<t> | -<t>',
+  'ttc note <id> ["<text>" | --clear]',
   'ttc export [<file>] [--format json|csv] [--open|--done|--all|--overdue] [--tag <t>] [--due-from YYYY-MM-DD] [--due-to YYYY-MM-DD] [--search <text>]',
   'ttc import <file>',
   'ttc stats',
@@ -302,7 +303,8 @@ function isLate(t, today) {
   return t.status === 'open' && t.due !== null && t.due < today;
 }
 
-const ADD = new Map([['--due', { value: true }], ['--tag', { value: true, repeat: true }]]);
+const ADD = new Map([['--due', { value: true }], ['--tag', { value: true, repeat: true }], ['--note', { value: true }]]);
+const NOTE = new Map([['--clear', {}]]);
 const LIST = new Map([
   ['--open', {}],
   ['--done', {}],
@@ -376,10 +378,11 @@ const COMMANDS = {
       if (!isDate(due)) invalid();
     }
     const tags = [...new Set((options.get('--tag') || []).map(typedTag))];
+    const note = options.has('--note') ? typedTitle(options.get('--note')) : null;
     const list = readStored(ctx.tree);
     if (list.nextId > MAX_SAFE) invalid();
     const id = list.nextId;
-    list.tasks.push({ id, title, status: 'open', due, tags, note: null });
+    list.tasks.push({ id, title, status: 'open', due, tags, note });
     list.nextId = id + 1;
     writeStored(ctx.tree, list);
     ctx.out = 'Added task ' + id + '\n';
@@ -445,6 +448,34 @@ const COMMANDS = {
       writeStored(ctx.tree, list);
       ctx.out = 'Removed tag ' + tag + ' from task ' + id + '\n';
     }
+  },
+
+  note(args, ctx) {
+    const { positionals, options } = grammar(args, { positionals: 2, optional: 1, options: NOTE });
+    const id = parseId(positionals[0]);
+    const clear = options.has('--clear');
+    if (clear && positionals.length === 2) invalid();
+    const text = positionals.length === 2 ? typedTitle(positionals[1]) : null;
+    const list = readStored(ctx.tree);
+    const task = list.tasks.find((t) => t.id === id);
+    if (task === undefined) invalid();
+    if (!clear && text === null) {
+      ctx.out = task.note === null ? 'Task ' + id + ' has no note\n' : task.note + '\n';
+      return;
+    }
+    if (!clear) {
+      task.note = text;
+      writeStored(ctx.tree, list);
+      ctx.out = 'Set note on task ' + id + '\n';
+      return;
+    }
+    if (task.note === null) {
+      ctx.out = 'Task ' + id + ' has no note\n';
+      return;
+    }
+    task.note = null;
+    writeStored(ctx.tree, list);
+    ctx.out = 'Cleared note on task ' + id + '\n';
   },
 
   export(args, ctx) {
