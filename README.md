@@ -4,8 +4,24 @@ Task tracker CLI. Node.js, built-in libraries only.
 
 Install from a clone with `npm install --global .`, then run `ttc help`.
 `npm test` runs the whole suite (unit tests, then the perf check).
-`npm run test:perf` runs only the perf check (median `ttc add` / `ttc list` time on 10,000 tasks, must be under 500 ms).
+`npm run test:perf` runs only the perf check (median `ttc add`, `ttc list` and filtered `ttc list` time on 10,000 tasks, must be under 500 ms).
 `npm run lint` checks every source and test file for syntax errors.
+
+## Listing and filtering tasks
+
+```
+ttc list [--open|--done|--all|--overdue] [--tag <t>] [--due-from YYYY-MM-DD] [--due-to YYYY-MM-DD] [--search <text>]
+```
+
+- Status view: `--open` (the default), `--done`, `--all` or `--overdue`. Give at most one of them.
+- `--tag <t>`: only tasks with that tag.
+- `--due-from YYYY-MM-DD`: only tasks due on or after that date.
+- `--due-to YYYY-MM-DD`: only tasks due on or before that date. The range is inclusive at both ends, and either option works alone as an open-ended range.
+- `--search <text>`: only tasks whose title contains the text. The match is a literal substring, ignoring upper and lower case. There are no wildcards and no regular expressions. An empty text is an error.
+
+Every option can be given at most once. All options combine with AND: a task is listed only if it passes every option given. When `--due-from` or `--due-to` is given, tasks with no due date are left out.
+
+Example: `ttc list --all --due-from 2026-01-01 --due-to 2026-01-31 --search rent` lists every task, open or done, due in January 2026 whose title contains "rent".
 
 ## Exit codes
 
