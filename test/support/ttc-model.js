@@ -25,7 +25,7 @@ const USAGE = [
   'ttc rename <id> "<title>"',
   'ttc delete <id>',
   'ttc tag <id> +<t> | -<t>',
-  'ttc export <file>',
+  'ttc export [<file>] [--format json|csv] [--open|--done|--all|--overdue] [--tag <t>] [--due-from YYYY-MM-DD] [--due-to YYYY-MM-DD] [--search <text>]',
   'ttc import <file>',
   'ttc stats',
 ];
@@ -139,7 +139,8 @@ function typedTag(raw) {
 
 // ---- argument grammar ------------------------------------------------------
 
-// spec = { positionals: n, options: Map(name -> { value, repeat }) }
+// spec = { positionals: n, optional?: k, options: Map(name -> { value, repeat }) }
+// The last `optional` of the n positionals may be omitted.
 function grammar(args, spec) {
   const positionals = [];
   const options = new Map();
@@ -167,7 +168,7 @@ function grammar(args, spec) {
       options.set(arg, next);
     }
   }
-  if (positionals.length < spec.positionals) invalid();
+  if (positionals.length < spec.positionals - (spec.optional || 0)) invalid();
   return { positionals, options };
 }
 
@@ -292,6 +293,52 @@ const LIST = new Map([
   ['--search', { value: true }],
 ]);
 const VIEWS = ['--open', '--done', '--all', '--overdue'];
+const EXPORT = new Map([...LIST, ['--format', { value: true }]]);
+
+// The filter checks shared by list and export, in order: more than one status
+// option, tag, dates, date order, empty search. Returns the task predicate.
+// `defaultView` is the status view when no status option is given.
+function filterOf(options, defaultView, today) {
+  const given = VIEWS.filter((v) => options.has(v));
+  if (given.length > 1) invalid();
+  const view = given.length === 1 ? given[0] : defaultView;
+  const tag = options.has('--tag') ? typedTag(options.get('--tag')) : null;
+  const from = options.has('--due-from') ? options.get('--due-from') : null;
+  const to = options.has('--due-to') ? options.get('--due-to') : null;
+  if (from !== null && !isDate(from)) invalid();
+  if (to !== null && !isDate(to)) invalid();
+  if (from !== null && to !== null && from > to) invalid();
+  const search = options.has('--search') ? options.get('--search') : null;
+  if (search === '') invalid();
+  return (t) => {
+    if (view === '--overdue') {
+      if (!isLate(t, today)) return false;
+    } else if (view !== '--all' && t.status !== (view === '--done' ? 'done' : 'open')) {
+      return false;
+    }
+    if (tag !== null && !t.tags.includes(tag)) return false;
+    if (from !== null || to !== null) {
+      if (t.due === null) return false;
+      if (from !== null && t.due < from) return false;
+      if (to !== null && t.due > to) return false;
+    }
+    return search === null || t.title.toLowerCase().includes(search.toLowerCase());
+  };
+}
+
+// CSV for the export: header id,title,status,due,tags; rows in id order; every
+// line ends CRLF; a field is quoted only when it holds , " CR or LF.
+function csvField(value) {
+  const text = String(value);
+  return /[,"\r\n]/.test(text) ? '"' + text.replace(/"/g, '""') + '"' : text;
+}
+
+function csvText(tasks) {
+  const rows = [...tasks]
+    .sort((a, b) => a.id - b.id)
+    .map((t) => [t.id, t.title, t.status, t.due === null ? '' : t.due, [...t.tags].sort().join(' ')].map(csvField).join(',') + '\r\n');
+  return 'id,title,status,due,tags\r\n' + rows.join('');
+}
 
 const COMMANDS = {
   help(args, ctx) {
@@ -319,31 +366,9 @@ const COMMANDS = {
 
   list(args, ctx) {
     const { options } = grammar(args, { positionals: 0, options: LIST });
-    const given = VIEWS.filter((v) => options.has(v));
-    if (given.length > 1) invalid();
-    const view = given.length === 1 ? given[0] : '--open';
-    const tag = options.has('--tag') ? typedTag(options.get('--tag')) : null;
-    const from = options.has('--due-from') ? options.get('--due-from') : null;
-    const to = options.has('--due-to') ? options.get('--due-to') : null;
-    if (from !== null && !isDate(from)) invalid();
-    if (to !== null && !isDate(to)) invalid();
-    if (from !== null && to !== null && from > to) invalid();
-    const search = options.has('--search') ? options.get('--search') : null;
-    if (search === '') invalid();
+    const keep = filterOf(options, '--open', ctx.today);
     const list = readStored(ctx.tree);
-    const shown = list.tasks
-      .filter((t) => {
-        if (view === '--all') return true;
-        if (view === '--overdue') return isLate(t, ctx.today);
-        return t.status === (view === '--done' ? 'done' : 'open');
-      })
-      .filter((t) => tag === null || t.tags.includes(tag))
-      .filter((t) => {
-        if (from === null && to === null) return true;
-        return t.due !== null && (from === null || t.due >= from) && (to === null || t.due <= to);
-      })
-      .filter((t) => search === null || t.title.toLowerCase().includes(search.toLowerCase()))
-      .sort((a, b) => a.id - b.id);
+    const shown = list.tasks.filter(keep).sort((a, b) => a.id - b.id);
     ctx.out = shown.length === 0 ? 'No tasks.\n' : shown.map((t) => taskLine(t, ctx.today) + '\n').join('');
   },
 
@@ -402,14 +427,23 @@ const COMMANDS = {
   },
 
   export(args, ctx) {
-    const { positionals } = grammar(args, plain(1));
-    const file = positionals[0];
+    const { positionals, options } = grammar(args, { positionals: 1, optional: 1, options: EXPORT });
+    const format = options.has('--format') ? options.get('--format') : 'json';
+    if (format !== 'json' && format !== 'csv') invalid();
+    const keep = filterOf(options, '--all', ctx.today);
     const list = readStored(ctx.tree);
+    const matching = list.tasks.filter(keep);
+    const text = format === 'csv' ? csvText(matching) : canonical({ nextId: list.nextId, tasks: matching });
+    if (positionals.length === 0) {
+      ctx.out = text;
+      return;
+    }
+    const file = positionals[0];
     if (file === '') invalid();
     if (kindOf(ctx.tree, path.posix.dirname(file)) !== 'dir') invalid();
     if (kindOf(ctx.tree, file) === 'dir') invalid();
-    putFile(ctx.tree, file, canonical(list));
-    ctx.out = 'Exported ' + list.tasks.length + ' tasks to ' + file + '\n';
+    putFile(ctx.tree, file, text);
+    ctx.out = 'Exported ' + matching.length + ' tasks to ' + file + '\n';
   },
 
   import(args, ctx) {

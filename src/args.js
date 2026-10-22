@@ -4,10 +4,11 @@ const { TtcError } = require('./errors');
 
 const MAX_ID = Number.MAX_SAFE_INTEGER; // 9007199254740991
 
-// spec = { positionals: ['<id>', ...], options: { '--due': { value: true }, '--tag': { value: true, repeat: true }, '--all': { value: false } } }
+// spec = { positionals: ['<id>', '[<file>]', ...], options: { '--due': { value: true }, '--tag': { value: true, repeat: true }, '--all': { value: false } } }
 // Returns { positionals: string[], options: { name: string | string[] | true } }.
 // An argument that starts with "--" is an option; every other argument is a
-// positional, including "-x" and "-1".
+// positional, including "-x" and "-1". A positional name written in brackets
+// ('[<file>]') may be omitted; only names without brackets are required.
 function parseArgs(args, spec) {
   const positionals = [];
   const options = {};
@@ -46,7 +47,8 @@ function parseArgs(args, spec) {
     }
   }
 
-  if (positionals.length < names.length) {
+  const required = names.filter((n) => !n.startsWith('[')).length;
+  if (positionals.length < required) {
     throw new TtcError('missing argument: ' + names[positionals.length]);
   }
   return { positionals, options };
