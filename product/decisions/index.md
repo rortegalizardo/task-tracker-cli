@@ -7,6 +7,7 @@ not re-open the question.
 
 | ID | Title | Status | Path | Updated |
 | --- | --- | --- | --- | --- |
+| PD-0008 | A changing command that saves its change and then cannot print its confirmation exits 1, and the change stays saved | accepted | [PD-0008-ttc-failure-after-saved-change.md](PD-0008-ttc-failure-after-saved-change.md) | 2026-10-22 |
 | PD-0007 | The ttc tickets live in a new Linear project, Task Tracker CLI, in team RC Development | accepted | [PD-0007-ttc-linear-project.md](PD-0007-ttc-linear-project.md) | 2026-10-20 |
 | PD-0006 | Titles in a stored or imported file must be in stored form, and an import may give ids again | accepted | [PD-0006-ttc-file-titles-and-ids-after-import.md](PD-0006-ttc-file-titles-and-ids-after-import.md) | 2026-10-20 |
 | PD-0005 | Build ttc as option A, the ten-story command the spec states, under the architect's constraints | accepted | [PD-0005-ttc-chosen-option-a.md](PD-0005-ttc-chosen-option-a.md) | 2026-10-20 |
