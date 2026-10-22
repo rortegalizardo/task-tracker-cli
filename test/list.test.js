@@ -175,3 +175,99 @@ test('ttc help lists the list usage line (criterion 19)', () => {
   assert.ok(lines.includes('ttc add "<title>" [--due YYYY-MM-DD] [--tag <t>]...'));
   assert.ok(lines.includes('ttc list [--open|--done|--all|--overdue] [--tag <t>] [--due-from YYYY-MM-DD] [--due-to YYYY-MM-DD] [--search <text>]'));
 });
+
+// Due-range and title-search filters (RCDEV-839).
+const F = {
+  nextId: 8,
+  tasks: [
+    { id: 1, title: 'Pay rent', status: 'open', due: '2025-12-31', tags: ['home'] },
+    { id: 2, title: 'RENT due', status: 'open', due: '2026-01-01', tags: ['bills'] },
+    { id: 3, title: 'Rental car', status: 'done', due: '2026-01-15', tags: ['bills', 'home'] },
+    { id: 4, title: 'Parent call', status: 'open', due: '2026-01-31', tags: ['home'] },
+    { id: 5, title: 'Call Ann', status: 'done', due: '2026-02-01', tags: ['bills'] },
+    { id: 6, title: 'Water rent', status: 'open', due: null, tags: ['home'] },
+    { id: 7, title: 'Plan trip', status: 'done', due: null, tags: [] },
+  ],
+};
+
+// Local calendar date, as the CLI computes "today" (open tasks past due show !overdue).
+function today() {
+  const d = new Date();
+  return [d.getFullYear(), String(d.getMonth() + 1).padStart(2, '0'), String(d.getDate()).padStart(2, '0')].join('-');
+}
+
+function fmt(...ids) {
+  return ids.map((id) => {
+    const t = F.tasks.find((x) => x.id === id);
+    const parts = [`#${t.id}`, t.status === 'done' ? '[x]' : '[ ]', t.title];
+    if (t.due !== null) parts.push('due:' + t.due);
+    if (t.status === 'open' && t.due !== null && t.due < today()) parts.push('!overdue');
+    for (const tag of [...t.tags].sort()) parts.push('+' + tag);
+    return parts.join(' ') + '\n';
+  }).join('');
+}
+
+function listedF(args, stdout) {
+  const sb = sandbox();
+  seed(sb, F);
+  const before = fs.readFileSync(sb.file);
+  const r = ttc(sb, 'list', ...args);
+  assert.equal(r.status, 0);
+  assert.equal(r.stderr, '');
+  assert.equal(r.stdout, stdout);
+  assert.deepEqual(fs.readFileSync(sb.file), before);
+}
+
+function failsF(args, line) {
+  const sb = sandbox();
+  seed(sb, F);
+  const before = fs.readFileSync(sb.file);
+  const r = ttc(sb, 'list', ...args);
+  assert.equal(r.status, 1);
+  assert.equal(r.stdout, '');
+  assert.equal(r.stderr, line + '\n');
+  assert.deepEqual(fs.readFileSync(sb.file), before);
+}
+
+test('list --all --due-from/--due-to shows the January tasks, ends included, no undated (AC-1)', () => {
+  listedF(['--all', '--due-from', '2026-01-01', '--due-to', '2026-01-31'], fmt(2, 3, 4));
+});
+
+test('--due-from alone and --due-to alone are open-ended and drop undated tasks (AC-2)', () => {
+  listedF(['--all', '--due-from', '2026-01-15'], fmt(3, 4, 5));
+  listedF(['--all', '--due-to', '2026-01-15'], fmt(1, 2, 3));
+});
+
+test('equal --due-from and --due-to is allowed (AC-4)', () => {
+  listedF(['--all', '--due-from', '2026-01-15', '--due-to', '2026-01-15'], fmt(3));
+});
+
+test('list --search matches open titles by case-insensitive literal substring (AC-3)', () => {
+  listedF(['--search', 'rent'], fmt(1, 2, 4, 6));
+  listedF(['--search', 'RENT'], fmt(1, 2, 4, 6));
+  listedF(['--search', 'Rent'], fmt(1, 2, 4, 6));
+});
+
+test('--search combines with --tag, a status view and a due range by AND (AC-3)', () => {
+  listedF(['--search', 'RENT', '--tag', 'bills', '--done', '--due-from', '2026-01-01', '--due-to', '2026-01-31'], fmt(3));
+  listedF(['--search', 'rent', '--tag', 'home'], fmt(1, 4, 6));
+  listedF(['--search', 'rent', '--due-from', '2026-01-01'], fmt(2, 4));
+});
+
+test('--search treats regex characters literally (AC-3)', () => {
+  listedF(['--all', '--search', '.*'], 'No tasks.\n');
+  listedF(['--all', '--search', 'r.nt'], 'No tasks.\n');
+});
+
+for (const [args, line] of [
+  [['--due-from', '2026-13-01'], 'ttc: invalid date: 2026-13-01'],
+  [['--due-to', '2026-02-30'], 'ttc: invalid date: 2026-02-30'],
+  [['--due-from', '2026-02-01', '--due-to', '2026-01-01'], 'ttc: --due-from 2026-02-01 is later than --due-to 2026-01-01'],
+  [['--search', ''], 'ttc: --search text must not be empty'],
+  [['--search'], 'ttc: option needs a value: --search'],
+  [['--due-from', '2026-01-01', '--due-from', '2026-01-02'], 'ttc: option given twice: --due-from'],
+]) {
+  test(`list ${JSON.stringify(args)} fails with the exact line (AC-4)`, () => {
+    failsF(args, line);
+  });
+}

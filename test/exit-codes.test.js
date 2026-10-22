@@ -88,6 +88,7 @@ const table = [
   { name: 'add fail (bad due)', args: () => ['add', 'x', '--due', '2026-13-01'] },
   { name: 'list ok', args: () => ['list'], ok: true },
   { name: 'list fail (both filters)', args: () => ['list', '--open', '--done'] },
+  { name: 'list fail (bad due-from)', args: () => ['list', '--due-from', '2026-13-01'] },
   { name: 'done ok', args: () => ['done', '1'], tasks: one, ok: true },
   { name: 'done fail (no such task)', args: () => ['done', '99999'], tasks: one },
   { name: 'reopen ok', args: () => ['reopen', '1'], tasks: oneDone, ok: true },
