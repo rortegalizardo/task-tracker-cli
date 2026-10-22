@@ -140,12 +140,22 @@ function messyText(r, list) {
     for (const k of r.shuffle(Object.keys(o))) out[k] = o[k];
     return out;
   };
-  const obj = reorder({ nextId: list.nextId, tasks: list.tasks.map((t) => reorder({ ...t })) });
+  const withVersion = r.chance(0.3) ? { version: r.pick([1, 2]) } : {};
+  const obj = reorder({ ...withVersion, nextId: list.nextId, tasks: list.tasks.map((t) => reorder({ ...t })) });
   const ws = () => r.string(r.int(0, 2), ' \n\t\r');
   return ws() + JSON.stringify(obj, null, r.pick([undefined, 1, 2, 3, 4, '\t'])) + ws();
 }
 
+// Valid stored lists come in three forms: no version key (version 1 as written
+// before RCDEV-837), "version": 1 first, and "version": 2 first (canonical).
+function versionedText(list, version) {
+  return JSON.stringify({ version, nextId: list.nextId, tasks: list.tasks }, null, 2) + '\n';
+}
+
 function listBytes(r, list) {
+  const form = r.pick(['plain', 'v1', 'v2']);
+  if (form === 'v1') return Buffer.from(versionedText(list, 1), 'utf8');
+  if (form === 'v2') return Buffer.from(versionedText(list, 2), 'utf8');
   return Buffer.from(r.chance(0.5) ? canonicalText(list) : messyText(r, list), 'utf8');
 }
 
@@ -362,6 +372,11 @@ function viaJson(r, obj) {
   return Buffer.from(stringifyRaw(obj, r.pick([2, 2, undefined, '\t'])), 'utf8');
 }
 
+// `version` first in some cases, last in others.
+function withVersion(r, list, version) {
+  return viaJson(r, r.chance(0.5) ? { version, ...list } : { ...list, version });
+}
+
 function insertKey(r, list, where, entry) {
   const text = canonicalText(list);
   const at = where === 'top' ? text.indexOf('{') + 1 : text.indexOf('"id"');
@@ -402,6 +417,9 @@ const DAMAGE = {
   'wt-status': (r, list) => viaJson(r, mutateTask(r, list, 'status', ['OPEN', 'Done', '', 1, null, 'closed', 'open ', true])),
   'wt-due': (r, list) => viaJson(r, mutateTask(r, list, 'due', [20240101, 0, true, [], {}, false])),
   'wt-tags': (r, list) => viaJson(r, mutateTask(r, list, 'tags', ['x', null, [1], [null], {}, [['a']], 0])),
+  'wt-version': (r, list) => withVersion(r, list, r.pick(['2', '1', null, true, false, [], {}, 'x', 2.5, 1.5])),
+  'version-range': (r, list) =>
+    withVersion(r, list, new Raw(r.pick(['0', '-1', '-0', '3', '4', '1000', '9007199254740992', '9007199254740993', '1e400', '2.0']))),
   'key-top': (r, list) => insertKey(r, list, 'top', r.pick(['"extra": 1', '"__proto__": {}', '"nextid": 3', '"Tasks": []', '"": 0'])),
   'key-task': (r, list) => insertKey(r, list, 'task', r.pick(['"extra": 1', '"__proto__": null', '"Id": 7', '"": 0', '"tags2": []'])),
   'dup-id': (r, list) => {

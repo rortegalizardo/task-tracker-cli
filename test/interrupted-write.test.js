@@ -46,7 +46,7 @@ for (const step of STEPS) {
 
 // A write killed after the rename and before the folder fsync (AC-5): the
 // rename already made the new list whole, so that is what the file holds.
-const NEW_LIST = { nextId: 3, tasks: [{ id: 2, title: 'new task written by the fixture', status: 'open', due: null, tags: ['x'] }] };
+const NEW_LIST = { version: 2, nextId: 3, tasks: [{ id: 2, title: 'new task written by the fixture', status: 'open', due: null, tags: ['x'] }] };
 
 test('a write killed at after-rename leaves the whole new list over an old one (AC-5)', () => {
   const dir = path.join(tmpDir(), 'data');

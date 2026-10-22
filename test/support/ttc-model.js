@@ -204,8 +204,17 @@ function parseJson(text) {
   }
 }
 
-function checkList(data) {
-  if (!isObject(data) || !hasOnly(data, ['nextId', 'tasks']) || !Array.isArray(data.tasks)) invalid();
+// A stored or imported document: an optional "version" key (a whole number
+// from 1 to 2; anything else, newer versions included, fails), then the list
+// body. Rest syntax keeps a parsed "__proto__" key as an ordinary key.
+function checkList(doc) {
+  if (!isObject(doc)) invalid();
+  if (Object.hasOwn(doc, 'version')) {
+    const v = doc.version;
+    if (!Number.isInteger(v) || v < 1 || v > 2) invalid();
+  }
+  const { version, ...data } = doc;
+  if (!hasOnly(data, ['nextId', 'tasks']) || !Array.isArray(data.tasks)) invalid();
   const ids = new Set();
   let highest = 0;
   for (const t of data.tasks) {
@@ -248,7 +257,7 @@ function readStored(tree) {
 
 function canonical(list) {
   const tasks = list.tasks.map((t) => ({ id: t.id, title: t.title, status: t.status, due: t.due, tags: t.tags }));
-  return JSON.stringify({ nextId: list.nextId, tasks }, null, 2) + '\n';
+  return JSON.stringify({ version: 2, nextId: list.nextId, tasks }, null, 2) + '\n';
 }
 
 // Any write replaces tasks.json whole with the canonical text.
