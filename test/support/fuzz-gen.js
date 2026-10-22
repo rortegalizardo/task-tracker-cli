@@ -21,7 +21,7 @@ const STORED = 'home/tasks.json';
 
 const WORDS = [
   'buy', 'milk', 'write', 'report', 'call', 'mom', 'fix', 'bug', 'plan', 'trip', 'review', 'pr',
-  'x', 'Ünï', '日本語', 'naïve', '😀', '𝒳', 'a  b', '\u00a0pad', 'pad\u00a0', '\u3000', 'q"uote', 'back\\slash',
+  'x', 'Ünï', '日本語', 'naïve', '😀', '𝒳', 'a  b', '\u00a0pad', 'pad\u00a0', '\u3000', 'q"uote', 'back\\slash', 'a,b', '=SUM(1)', '"q",x',
   '{json}', '[1,2]', '#1', 'due:2024-01-01', '!overdue', '+tag', '-x', '\ufeffbom', '\u200bzw',
 ];
 
@@ -168,6 +168,7 @@ function validIdToken(r, list) {
   return String(r.int(1, 40));
 }
 
+const BAD_FORMATS = ['xml', 'CSV', ''];
 const EXPORT_TARGETS = ['out.json', 'out.json', 'out.json', 'existing.json', 'existing.json', 'nodir/out.json', 'adir', '', 'a b.json', '-x.json'];
 const IMPORT_TARGETS = ['import.json', 'import.json', 'import.json', 'import.json', 'import.json', 'import.json', 'missing.json', 'adir', ''];
 
@@ -193,6 +194,14 @@ function buildUnits(r, cmd, list, junkP, importTarget) {
 
   const positionals = [];
   const options = [];
+  // The filter options shared by list and export.
+  const filterOptions = () => {
+    if (r.chance(0.6)) options.push(opt(r.pick(['--open', '--done', '--all', '--overdue'])));
+    if (r.chance(0.3)) options.push(opt('--tag', tag()));
+    if (r.chance(0.25)) options.push(opt('--due-from', date()));
+    if (r.chance(0.25)) options.push(opt('--due-to', date()));
+    if (r.chance(0.25)) options.push(opt('--search', search()));
+  };
   switch (cmd) {
     case 'add':
       positionals.push(pos(title()));
@@ -200,11 +209,7 @@ function buildUnits(r, cmd, list, junkP, importTarget) {
       for (let i = r.chance(0.5) ? r.int(1, 3) : 0; i > 0; i--) options.push(opt('--tag', tag(), true));
       break;
     case 'list':
-      if (r.chance(0.6)) options.push(opt(r.pick(['--open', '--done', '--all', '--overdue'])));
-      if (r.chance(0.3)) options.push(opt('--tag', tag()));
-      if (r.chance(0.25)) options.push(opt('--due-from', date()));
-      if (r.chance(0.25)) options.push(opt('--due-to', date()));
-      if (r.chance(0.25)) options.push(opt('--search', search()));
+      filterOptions();
       break;
     case 'done':
     case 'reopen':
@@ -222,7 +227,9 @@ function buildUnits(r, cmd, list, junkP, importTarget) {
       break;
     }
     case 'export':
-      positionals.push(pos(r.pick(EXPORT_TARGETS)));
+      if (r.chance(0.7)) positionals.push(pos(r.pick(EXPORT_TARGETS)));
+      if (r.chance(0.5)) options.push(opt('--format', junk() ? r.pick(BAD_FORMATS) : r.pick(['json', 'csv'])));
+      filterOptions();
       break;
     case 'import':
       positionals.push(pos(importTarget ?? r.pick(IMPORT_TARGETS)));
