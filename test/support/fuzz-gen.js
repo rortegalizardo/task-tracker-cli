@@ -11,7 +11,7 @@
 // and never an absolute path or "..".
 
 const MAX_SAFE = Number.MAX_SAFE_INTEGER;
-const COMMANDS = ['help', 'add', 'list', 'done', 'reopen', 'important', 'unimportant', 'rename', 'delete', 'tag', 'note', 'export', 'import', 'stats'];
+const COMMANDS = ['help', 'add', 'list', 'done', 'reopen', 'important', 'unimportant', 'postpone', 'rename', 'delete', 'tag', 'note', 'export', 'import', 'stats'];
 
 const DIR = { kind: 'dir' };
 const file = (bytes) => ({ kind: 'file', bytes: Buffer.isBuffer(bytes) ? bytes : Buffer.from(bytes, 'utf8') });
@@ -252,6 +252,7 @@ function buildUnits(r, cmd, list, junkP, importTarget) {
     case 'reopen':
     case 'important':
     case 'unimportant':
+    case 'postpone':
     case 'delete':
       positionals.push(pos(id()));
       break;

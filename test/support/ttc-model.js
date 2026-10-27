@@ -2,7 +2,7 @@
 
 // The test-owned reference model (the oracle) for ttc. It is written from the
 // documented rules (src/args.js and src/storage.js headers, PD-0002, PD-0003,
-// PD-0009, PD-0010, C7) and never requires anything under src/.
+// PD-0009, PD-0010, PD-0011, C7) and never requires anything under src/.
 //
 // expect({ argv, files, today }) returns { ok: false } or
 // { ok: true, stdout, files }. `files` maps paths relative to the case folder
@@ -24,6 +24,7 @@ const USAGE = [
   'ttc reopen <id>',
   'ttc important <id>',
   'ttc unimportant <id>',
+  'ttc postpone <id>',
   'ttc rename <id> "<title>"',
   'ttc delete <id>',
   'ttc tag <id> +<t> | -<t>',
@@ -107,6 +108,27 @@ function isBadTitleChar(cp) {
 
 function isLeap(y) {
   return (y % 4 === 0 && y % 100 !== 0) || y % 400 === 0;
+}
+
+// The calendar day after a valid date before 9999-12-31, counted from the
+// month lengths (PD-0011 item 6); not Date.
+function nextDay(s) {
+  let y = Number(s.slice(0, 4));
+  let m = Number(s.slice(5, 7));
+  let d = Number(s.slice(8, 10));
+  const lengths = [31, isLeap(y) ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+  if (d < lengths[m - 1]) {
+    d += 1;
+  } else {
+    d = 1;
+    if (m < 12) {
+      m += 1;
+    } else {
+      m = 1;
+      y += 1;
+    }
+  }
+  return String(y).padStart(4, '0') + '-' + String(m).padStart(2, '0') + '-' + String(d).padStart(2, '0');
 }
 
 function isDate(s) {
@@ -412,6 +434,20 @@ const COMMANDS = {
     setImportant(args, ctx, true, (id) => 'Marked task ' + id + ' as important', (id) => 'Task ' + id + ' is already important'),
   unimportant: (args, ctx) =>
     setImportant(args, ctx, false, (id) => 'Removed important mark from task ' + id, (id) => 'Task ' + id + ' is not important'),
+
+  postpone(args, ctx) {
+    const { positionals } = grammar(args, plain(1));
+    const id = parseId(positionals[0]);
+    const list = readStored(ctx.tree);
+    const task = list.tasks.find((t) => t.id === id);
+    if (task === undefined) invalid();
+    if (task.due === null) invalid();
+    if (task.due === '9999-12-31') invalid();
+    const later = task.due < ctx.today ? ctx.today : task.due;
+    task.due = nextDay(later);
+    writeStored(ctx.tree, list);
+    ctx.out = 'Postponed task ' + id + ' to ' + task.due + '\n';
+  },
 
   rename(args, ctx) {
     const { positionals } = grammar(args, plain(2));

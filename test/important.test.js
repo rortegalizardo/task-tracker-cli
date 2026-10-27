@@ -280,6 +280,7 @@ test('AC-15: help lists the new usages in order', () => {
         '  ttc reopen <id>',
         '  ttc important <id>',
         '  ttc unimportant <id>',
+        '  ttc postpone <id>',
         '  ttc rename <id> "<title>"',
         '  ttc delete <id>',
         '  ttc tag <id> +<t> | -<t>',
