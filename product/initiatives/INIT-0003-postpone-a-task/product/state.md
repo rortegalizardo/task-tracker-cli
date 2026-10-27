@@ -3,20 +3,20 @@ id: PSTATE-INIT-0003
 type: product-state
 title: Product definition state for INIT-0003
 status: authoritative
-revision: 3
+revision: 4
 owner_role: ROLE-product-manager
 created: 2026-10-27
 updated: 2026-10-27
 updated_by_role: ROLE-product-manager
 initiative: INIT-0003
-phase: PRODUCT_DEFINITION
+phase: SOLUTION_EXPLORATION
 phase_entered: 2026-10-27
 requester: "the requester (repository owner, rortegalizardo), via the driving session, 2026-10-27"
-next_action: "ROLE-product-manager: write outcome, out of scope, draft REQ- and the Product Definition Contract; advance PRODUCT_DEFINITION -> SOLUTION_EXPLORATION"
+next_action: "ROLE-planner (PRODUCT-DISCOVERY): one product-feasibility-assessment dispatch (capability scan, impact, assessment) for options A and B; then ROLE-product-manager records the verdicts in ## Options"
 blocked_by: []
 converged: false
 readiness_verdict: none   # none | READY | READY-with-known-issues | NOT READY | void
-stories: []
+stories: [REQ-0012]
 design_refs: []
 decisions: []
 ---
@@ -29,7 +29,7 @@ these two files never describe the same thing and never share a writer.
 
 ## Where this stands
 
-PRODUCT_DEFINITION. Discovery complete; definition not yet written.
+SOLUTION_EXPLORATION. Outcome O1–O3, out of scope, draft `REQ-0012` and the Product Definition Contract written; architect consult next.
 
 ## Problem statement
 
@@ -46,7 +46,7 @@ Consequences records "No way to change a due date".
 
 ## Next action
 
-ROLE-product-manager: write outcome, out of scope, draft REQ- and the Product Definition Contract; advance PRODUCT_DEFINITION -> SOLUTION_EXPLORATION.
+ROLE-planner (PRODUCT-DISCOVERY): one product-feasibility-assessment dispatch (capability scan, impact, assessment) for options A and B; then ROLE-product-manager records the verdicts in ## Options.
 
 ## Blocked by
 
@@ -147,6 +147,7 @@ Dispatch log: `phase | delegate | vendor | model | tokens-scale | ledger run | a
 
 | `REQ-` | Title | Status | `CAP-` | `DES-` | Sequencing note |
 | --- | --- | --- | --- | --- | --- |
+| REQ-0012 | A task is postponed from the ttc command line in one short command | draft (rev 1) | CAP-0001 | none — no user-facing visual surface | none — on the frontier |
 
 ## Coverage validation
 
@@ -192,6 +193,7 @@ _Assembled at ENGINEERING_READY._
 | 2026-10-27 | BOOTSTRAP | INTAKE | ROLE-product-manager | Packet emitted, scope resolved to none | Triage verdict `new-initiative`: no `CAP-` does this (no command changes a due date, `src/commands/`); no `PD-` settles it; no constraint forbids it; no initiative covers it (INIT-0001 excluded it, INIT-0002 is the important mark); one outcome named. Raw request committed verbatim. `INIT-0003` allocated (counter 2 -> 3, checked against `origin/main` `ae4417c`). Size: small (≤3 stories expected). Hooks: HOOK-initiative-resolved pass, HOOK-phase-entry pass | `444a288e2444d5ce`, head `ae4417c` |
 | 2026-10-27 | INTAKE | DISCOVERY | ROLE-product-manager | INTAKE exit criteria met: one initiative, one problem, one named requester, ambiguity rows A1–A11 all classified (`pm-resolvable`) | Entry precondition (`lifecycle-hooks.md` §3.4.1 DISCOVERY) holds: `initiative.md` at `status: draft`; state at INTAKE with requester, problem statement and a classified ambiguity log. Discovery written (J1–J3, P1–P2, S2 `CAP-0001`, S3 signals 1–5, non-goals). No `Q-` raised. Hooks: HOOK-phase-entry pass | `444a288e2444d5ce`, head `7ba472c` |
 | 2026-10-27 | DISCOVERY | PRODUCT_DEFINITION | ROLE-product-manager | DISCOVERY exit criteria met: problem, user, current state and success signals stated with sources; no open escalation-class ambiguity | Entry precondition (`lifecycle-hooks.md` §3.4.1 PRODUCT_DEFINITION) holds: Discovery has the target user, jobs J1–J3 and problems P1–P2 each with a source (S1), mapping `CAP-0001` (S2), success signals 1–5 (S3) and known non-goals. Hooks: HOOK-phase-entry pass | `444a288e2444d5ce`, head `8978f33` |
+| 2026-10-27 | PRODUCT_DEFINITION | SOLUTION_EXPLORATION | ROLE-product-manager | PRODUCT_DEFINITION exit criteria met: outcome O1–O3, out of scope (9 items), success measures 1–6, draft `REQ-0012` covering O1–O3, Product Definition Contract citing the raw request | Entry precondition (`lifecycle-hooks.md` §3.4.1 SOLUTION_EXPLORATION) holds: F1 `initiative.md` rev 2 has an outcome and a non-empty out-of-scope section; one `status: draft` `REQ-`; F2 draft-mode coverage (inline, deterministic): J1 -> `REQ-0012` Requirement, J2 -> Scope bullet 1 ("one short command"), J3 -> Non-goals and the initiative out of scope; no `R1` defect. `requirement` counter 11 -> 12, checked against `origin/main`. No scope `PD-` needed yet: A1–A11 are recorded in the chosen-option `PD-`. Hooks: HOOK-phase-entry pass | `444a288e2444d5ce`, head `b6c0a3e` |
 
 > Every product-side session updates this file before ending — **including
 > sessions that failed**, which record the failure in `next_action` and do not
