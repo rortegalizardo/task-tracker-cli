@@ -3,7 +3,7 @@ id: PSTATE-INIT-0003
 type: product-state
 title: Product definition state for INIT-0003
 status: authoritative
-revision: 6
+revision: 7
 owner_role: ROLE-product-manager
 created: 2026-10-27
 updated: 2026-10-27
@@ -12,7 +12,7 @@ initiative: INIT-0003
 phase: DECOMPOSITION
 phase_entered: 2026-10-27
 requester: "the requester (repository owner, rortegalizardo), via the driving session, 2026-10-27"
-next_action: "ROLE-product-manager: write REQ-0012 behavior and acceptance criteria (rev 2), then dispatch ROLE-planner for coherence round 1 of 2 (terminal unless blocking)"
+next_action: "ROLE-planner (PRODUCT-DISCOVERY): story-set-technical-coherence round 1 of 2 (full pass, terminal unless blocking) on draft {REQ-0012 rev 2}"
 blocked_by: []
 converged: false
 readiness_verdict: none   # none | READY | READY-with-known-issues | NOT READY | void
@@ -29,7 +29,7 @@ these two files never describe the same thing and never share a writer.
 
 ## Where this stands
 
-DECOMPOSITION. `PD-0011` (option B) and the Solution Contract recorded; `REQ-0012` behavior next.
+DECOMPOSITION. `REQ-0012` rev 2 written (draft: behavior, AC-1..AC-14, technical constraints, rollout `none`); coherence round 1 next.
 
 ## Problem statement
 
@@ -46,7 +46,7 @@ Consequences records "No way to change a due date".
 
 ## Next action
 
-ROLE-product-manager: write REQ-0012 behavior and acceptance criteria (rev 2), then dispatch ROLE-planner for coherence round 1 of 2 (terminal unless blocking).
+ROLE-planner (PRODUCT-DISCOVERY): story-set-technical-coherence round 1 of 2 (full pass, terminal unless blocking) on draft {REQ-0012 rev 2}.
 
 ## Blocked by
 
@@ -166,7 +166,7 @@ Dispatch log: `phase | delegate | vendor | model | tokens-scale | ledger run | a
 
 | `REQ-` | Title | Status | `CAP-` | `DES-` | Sequencing note |
 | --- | --- | --- | --- | --- | --- |
-| REQ-0012 | A task is postponed from the ttc command line in one short command | draft (rev 1) | CAP-0001 | none — no user-facing visual surface | none — on the frontier |
+| REQ-0012 | A task is postponed from the ttc command line in one short command | draft (rev 2) | CAP-0001 | none — no user-facing visual surface | none — on the frontier |
 
 ## Coverage validation
 
