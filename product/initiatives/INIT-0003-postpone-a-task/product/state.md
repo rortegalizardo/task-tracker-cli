@@ -3,7 +3,7 @@ id: PSTATE-INIT-0003
 type: product-state
 title: Product definition state for INIT-0003
 status: authoritative
-revision: 9
+revision: 10
 owner_role: ROLE-product-manager
 created: 2026-10-27
 updated: 2026-10-27
@@ -227,7 +227,36 @@ with no findings rows is invalid output.
 
 ## Handoff packet
 
-_Assembled at ENGINEERING_READY._
+Assembled 2026-10-27 at ENGINEERING_READY by `ROLE-product-manager` against the `READY` verdict of 2026-10-27 (Readiness log, round 1; digest `(REQ-0012, 3, 2026-10-27)`, INIT-0003 rev 3, unchanged on disk). Drafted inline under the size rule (§9d.2): a transcription of existing records.
+
+- **Repository:** `rortegalizardo/task-tracker-cli` (`~/Desktop/Projects/task-tracker-cli`), default branch `main` (`project/constraints.md` row 9).
+- **Outcome:** A person using `ttc` can postpone a task with one short command that needs nothing but the task, after which the task is due later than it was and is not overdue; see the task's new due date in that command's output; and keep everything else as it is today: the task's title, status, tags, note, important mark and id, every other task, the order of `ttc list`, and data files written by older ttc (`initiative.md` `## Outcome`, O1–O3).
+- **Stories, in suggested sequence:**
+  1. `REQ-0012` — the only story; `depends_on: [none]`, on the frontier.
+- **Design references and export paths:** none — no user-facing visual surface (`PD-0011` item 13; `project/constraints.md` row 8).
+- **Decisions in force:** `PD-0003`, `PD-0004`, `PD-0008`, `PD-0010`, `PD-0011` (chosen option B: `ttc postpone <id>`, one day after the later of the due date and today).
+- **Binding technical constraints** (all from `technical/assessment.md`, round 1; carried in `REQ-0012` `## Technical constraints`; C6 applied to option A only):
+  - C1 — no stored-format change: the new date is held in the existing `due` field and `tasks.json` stays version 4; a version 1–3 file is written as version 4 by the postpone, as by every changing command.
+  - C2 — the latest storable due date is `9999-12-31`; a postpone past it is refused with fixed product text before anything is written, never left to the write guard or the runtime's own error.
+  - C3 — the new date counts calendar days, not 24-hour periods, so it is the same in every time zone and across daylight-saving changes; it rolls months, years and leap days by the Gregorian rule ttc's date check uses; "today" is the same local date the overdue rule uses.
+  - C4 — the command inherits, unchanged, the argument, id, lock, atomic-write, refusal-writes-nothing and failure-after-save rules of the existing changing commands; there is no no-op case.
+  - C5 — the success line, the two refusals and the usage line are fixed text; tests assert them exactly.
+  - C7 — the test oracle (`test/support/ttc-model.js`, `fuzz-gen.js`) gains the command and its own calendar-day count, written from the decided rules, not from the new code; tests run against the real date with `TZ` set, as the overdue tests do.
+  - C8 — the perf guard (10,000 tasks, median < 500 ms) must still pass.
+- **Explicitly out of scope** (copied from `initiative.md` `## Scope`, Out of scope):
+  - Hiding or snoozing a task until a later date: the task stays listed as it is today, with its new due date.
+  - Choosing how far to postpone: each `ttc postpone` moves the task one day.
+  - Setting a task's due date to any chosen date, or clearing it.
+  - Giving a due date to a task that has none.
+  - Postponing several tasks in one command.
+  - Counting, storing or showing how often a task was postponed.
+  - Skipping weekends or holidays, or any time of day: postponing counts calendar days.
+  - Reminders or notifications.
+  - Recurring tasks.
+  - Any change to the output of `ttc list`, `ttc stats` or `ttc export` other than the postponed task's new due date.
+- **Open questions (non-blocking):** none. The verdict carries no conditions or known issues.
+- **Delivery manifest:** `product/initiatives/INIT-0003-postpone-a-task/delivery/manifest.md`
+- **Tickets** (Linear team RC Development, project Task Tracker CLI, `PD-0007`; mapping authority `delivery/tickets.md`): written at HANDOFF.
 
 ## Handoff log
 
