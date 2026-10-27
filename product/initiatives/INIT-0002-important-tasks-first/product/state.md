@@ -3,16 +3,16 @@ id: PSTATE-INIT-0002
 type: product-state
 title: Product definition state for INIT-0002
 status: authoritative
-revision: 1
+revision: 2
 owner_role: ROLE-product-manager
 created: 2026-10-26
 updated: 2026-10-26
 updated_by_role: ROLE-product-manager
 initiative: INIT-0002
-phase: INTAKE
+phase: DISCOVERY
 phase_entered: 2026-10-26
 requester: "the requester (repository owner, rortegalizardo), via the driving session, 2026-10-26"
-next_action: "ROLE-product-manager: SKILL-advance-product-phase (INTAKE -> DISCOVERY)"
+next_action: "ROLE-product-manager: SKILL-advance-product-phase (DISCOVERY -> PRODUCT_DEFINITION)"
 blocked_by: []
 converged: false
 readiness_verdict: none   # none | READY | READY-with-known-issues | NOT READY | void
@@ -29,8 +29,7 @@ these two files never describe the same thing and never share a writer.
 
 ## Where this stands
 
-INTAKE. The ask is a new initiative: the product has no way to mark a task as
-important today. Size: small (≤3 stories expected; target 1).
+DISCOVERY. Problem, user, current state and success signals are written with sources below. No architect consult: the size rule (§9d.1) allows none at DISCOVERY. Size: small (≤3 stories expected; target 1).
 
 ## Problem statement
 
@@ -44,7 +43,7 @@ command or stored field marks a task as important (`src/commands/list.js`,
 
 ## Next action
 
-ROLE-product-manager: SKILL-advance-product-phase (INTAKE -> DISCOVERY).
+ROLE-product-manager: SKILL-advance-product-phase (DISCOVERY -> PRODUCT_DEFINITION).
 
 ## Blocked by
 
@@ -74,7 +73,54 @@ No row is a stakeholder or taste question under escalation-policy §2 A, so no
 
 ## Discovery
 
-_Written at DISCOVERY._
+**Target user.** One person who keeps their own task list with `ttc` on their
+own machine: the requester. ttc has one user and no shared list
+(`CAP-0001` Boundaries; INIT-0001 out of scope). Source: S1 below.
+
+**Jobs and problems, with sources.**
+
+| # | Job or problem | Source |
+| --- | --- | --- |
+| J1 | Mark some tasks as more important than others. | Request, verbatim: "mark some tasks as more important than others" (`sources/2026-10-26-requester-request.md`) |
+| J2 | See the important tasks first when listing, before the rest. | Request, verbatim: "see the important ones first when I list" (same file) |
+| J3 | Keep the feature simple: little to learn, nothing else changes. | Request, verbatim: "Keep it simple." (same file) |
+| P1 | Today every task is equal. `ttc list` sorts only by ascending id, so an important task shows wherever its id puts it. | `src/commands/list.js` (sort `a.id - b.id`), head `6ea6439` |
+| P2 | No command, option or stored field marks a task as important. | `src/commands/` (add, list, status, tag, note, rename, delete, export, import, stats, help); README "Data file format" (`{ id, title, status, due, tags, note }`), head `6ea6439` |
+
+**Current-state capability mapping (S2).** `CAP-0001` — local task tracking
+from the `ttc` command line. This initiative extends it. `CAP-0001` is still
+`draft` and does not yet describe behaviour that shipped (notes, search,
+export filters). The current-state evidence for this initiative is the code and
+README at head `6ea6439`:
+
+- `ttc list [--open|--done|--all|--overdue] [--tag <t>] [--due-from ...] [--due-to ...] [--search <text>]`
+  prints one line per task, `#<id> [ ]|[x] <title> [due:<date>] [!overdue] [+<tag>]...`,
+  in ascending id order, or `No tasks.` (`src/commands/list.js`).
+- `ttc add "<title>" [--due YYYY-MM-DD] [--tag <t>]... [--note "<text>"]` prints `Added task <id>` (`src/commands/add.js`).
+- Pair commands with a no-op message: `done`/`reopen` print `Completed task <id>` /
+  `Task <id> is already done` (`src/commands/status.js`).
+- `tasks.json` is format version 3; older versions are read and rewritten as
+  version 3 by the next changing command; a newer version is refused (README
+  "Data file format").
+- `ttc export` JSON is the stored format; CSV has the header
+  `id,title,status,due,tags,note` (README "Exporting tasks").
+
+**Success signals (S3).**
+
+1. After a user marks tasks as important, `ttc list` shows every marked task
+   before every unmarked one, in every view and with every filter.
+2. One command marks a task and one command unmarks it; `ttc add` can mark a
+   new task.
+3. A user can tell from a list line whether a task is marked.
+4. A list with no marked task prints exactly what it prints today.
+5. A data file written by older ttc still works, and no task in it is marked.
+
+**Known non-goals.** Several importance levels; filtering the list to
+important tasks only; counting them in `ttc stats`; a CSV column; any other
+sort order or sort option; reminders.
+
+Sources: S1 = the request file above; INIT-0001 `initiative.md` out of scope;
+S2/S3 = the code and README at head `6ea6439`.
 
 ## Options
 
@@ -136,6 +182,7 @@ _Written at ENGINEERING_READY._
 | --- | --- | --- | --- | --- | --- | --- |
 | 2026-10-26 | — | BOOTSTRAP | ROLE-product-manager | Raw request relayed by the driving session | Packet: `readiness: ready`, `scope.initiative: null`, profile S, no areas. `neighbouring` read in full: `CAP-0001` (draft) lists "priorities" among INIT-0001's exclusions, not as a decision; no `PD-` (accepted or rejected) concerns importance or priority; no open `Q-`. Note: `CAP-0001` is still draft and predates shipped behaviour (notes, search, export filters from RCDEV-839..841); code and README at head `6ea6439` are the current-state evidence. Hooks: HOOK-canonical-root pass, HOOK-hydrate pass | `b14f2ea367f1add1`, head `6ea6439` |
 | 2026-10-26 | BOOTSTRAP | INTAKE | ROLE-product-manager | Packet emitted, scope resolved to none | Triage verdict `new-initiative`: no `CAP-` does this (grep of `src/`, `bin/`, README for priority/important: none); no `PD-` settles it; no constraint forbids it; no initiative covers it (INIT-0001 excluded "Priorities"); one outcome named. Raw request committed verbatim. `INIT-0002` allocated (counter 1 -> 2, checked against `origin/main` `6ea6439`). Size: small (≤3 stories expected). Hooks: HOOK-initiative-resolved pass, HOOK-phase-entry pass | `b14f2ea367f1add1`, head `6ea6439` |
+| 2026-10-26 | INTAKE | DISCOVERY | ROLE-product-manager | INTAKE exit criteria met: one initiative, one problem, one named requester, ambiguity rows A1–A9 all classified (`pm-resolvable`) | Entry precondition (`lifecycle-hooks.md` §3.4.1 DISCOVERY) holds: `initiative.md` at `status: draft`; state at INTAKE with requester, problem statement and a classified ambiguity log. Discovery written (J1–J3, P1–P2, S2 `CAP-0001`, S3 signals 1–5, non-goals). No `Q-` raised. Hooks: HOOK-phase-entry pass | `b14f2ea367f1add1`, head `68a070b` |
 
 > Every product-side session updates this file before ending — **including
 > sessions that failed**, which record the failure in `next_action` and do not
