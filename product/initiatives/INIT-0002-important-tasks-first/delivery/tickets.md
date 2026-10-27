@@ -10,7 +10,7 @@ column is the only authoritative story-to-ticket mapping. The global union is
 
 | Ticket | Title | Initiative | Requirements | Depends on | Branch | PR | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| RCDEV-856 | Important tasks are marked from the ttc command line and listed first | INIT-0002 | REQ-0011 |  |  |  | Backlog |
+| RCDEV-856 | Important tasks are marked from the ttc command line and listed first | INIT-0002 | REQ-0011 |  |  |  | Done |
 
 Empty `Depends on` = on the executable frontier. Tracker keys verbatim.
 Status is advisory once older than `freshness_window`.

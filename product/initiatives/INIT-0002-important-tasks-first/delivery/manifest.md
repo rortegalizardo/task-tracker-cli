@@ -6,18 +6,18 @@ status: authoritative
 revision: 1
 owner_role: ROLE-orchestrator
 created: 2026-10-26
-updated: 2026-10-26
-updated_by_role: ROLE-product-manager
+updated: 2026-10-27
+updated_by_role: ROLE-orchestrator
 initiative: INIT-0002
 manifest_version: 1
-band_owner: product
+band_owner: delivery
 issued_on: 2026-10-26
 issued_from_verdict: READY@2026-10-26
 story_set_digest: "REQ-0011@3/2026-10-26; INIT-0002@3"
-accepted_on: none
+accepted_on: 2026-10-27
 dispatch_unit: ticket
 max_parallelism: 5
-completion: pending
+completion: complete
 stories: [REQ-0011]
 ---
 
@@ -66,16 +66,21 @@ none — dependencies are the only ordering
 
 | Unit | Stories | Depends on | State | Attempts | Last outcome | Dispatch ref | Wave | Updated |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| RCDEV-856 | REQ-0011 | none | complete | 1 | RCDEV-856 — SHIP — release.md (PR #32 merged as 1f40678) — done | INIT-0002 / orch-RCDEV-856 / PR #32 | 0 | 2026-10-27 |
 
 ## Waves
 
 | Wave | Units | Eligible-now count |
 | --- | --- | --- |
+| 0 | RCDEV-856 | 0 |
 
 ## Dispatch ledger
 
 | Date | Unit | Event | Detail |
 | --- | --- | --- | --- |
+| 2026-10-27 | RCDEV-856 | dispatched | cap 5 (manifest max_parallelism, no override); 06:10:27Z; launcher, default models |
+| 2026-10-27 | RCDEV-856 | completed | PR #32 MERGED 2026-10-27T06:33:09Z, merge commit 1f406784499ab4ddc1071452369e463ce3f213a8, head 7e82f512 (gh pr view) |
+| 2026-10-27 | — | completion | complete: every unit complete |
 
 ## Completion
 
