@@ -10,6 +10,6 @@ killAtStep(step);
 
 const list = {
   nextId: 3,
-  tasks: [{ id: 2, title: 'new task written by the fixture', status: 'open', due: null, tags: ['x'], note: null }],
+  tasks: [{ id: 2, title: 'new task written by the fixture', status: 'open', due: null, tags: ['x'], note: null, important: false }],
 };
 writeList(list, { TTC_HOME: path.resolve(dataDir) });

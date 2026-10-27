@@ -53,7 +53,7 @@ function buildList() {
     title = title.slice(0, target).replace(/ +$/, '');
     // A short word-built note on every third task.
     const note = i % 3 === 0 ? WORDS[(i * 5) % WORDS.length] + ' ' + WORDS[(i * 11 + 4) % WORDS.length] : null;
-    tasks.push({ id: i, title, status: done ? 'done' : 'open', due, tags, note });
+    tasks.push({ id: i, title, status: done ? 'done' : 'open', due, tags, note, important: i % 7 === 0 });
   }
   return { nextId: TASK_COUNT + 1, tasks };
 }

@@ -12,7 +12,7 @@ function tmpDir() {
 }
 
 function task(id, extra = {}) {
-  return { id, title: 'Task ' + id, status: 'open', due: null, tags: [], note: null, ...extra };
+  return { id, title: 'Task ' + id, status: 'open', due: null, tags: [], note: null, important: false, ...extra };
 }
 
 function readFails(env, file) {
@@ -40,7 +40,7 @@ test('no tasks.json reads as an empty list and creates nothing (criterion 9)', (
 test('a read returns exactly the list in tasks.json and ignores other files (criterion 15)', () => {
   const dir = tmpDir();
   const list = { nextId: 5, tasks: [task(2, { due: '2024-02-29', tags: ['home', 'a_b-1'], note: 'bank, transfer' }), task(4, { status: 'done' })] };
-  fs.writeFileSync(path.join(dir, 'tasks.json'), JSON.stringify({ version: 3, ...list }));
+  fs.writeFileSync(path.join(dir, 'tasks.json'), JSON.stringify({ version: 4, ...list }));
   fs.writeFileSync(path.join(dir, '.tasks.json.1.abc.tmp'), 'junk');
   assert.deepEqual(readList({ TTC_HOME: dir }), list);
 });
@@ -86,7 +86,7 @@ for (const [name, list] of Object.entries(BAD_LISTS)) {
   test(`reading fails when ${name} (criterion 19)`, () => {
     const dir = tmpDir();
     const file = path.join(dir, 'tasks.json');
-    const text = JSON.stringify({ version: 3, ...list });
+    const text = JSON.stringify({ version: 4, ...list });
     fs.writeFileSync(file, text);
     readFails({ TTC_HOME: dir }, file);
     assert.equal(fs.readFileSync(file, 'utf8'), text);
@@ -97,7 +97,7 @@ test('reading fails when the next id is 9007199254740993, which JSON.parse would
   const dir = tmpDir();
   const file = path.join(dir, 'tasks.json');
   // A JS number cannot hold this value, so the raw text is built by replacement.
-  const text = JSON.stringify({ version: 3, nextId: 3, tasks: [task(1), task(2)] }).replace('"nextId":3', '"nextId":9007199254740993');
+  const text = JSON.stringify({ version: 4, nextId: 3, tasks: [task(1), task(2)] }).replace('"nextId":3', '"nextId":9007199254740993');
   assert.ok(text.includes('9007199254740993'));
   fs.writeFileSync(file, text);
   readFails({ TTC_HOME: dir }, file);

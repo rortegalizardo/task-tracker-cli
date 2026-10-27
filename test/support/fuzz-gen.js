@@ -11,7 +11,7 @@
 // and never an absolute path or "..".
 
 const MAX_SAFE = Number.MAX_SAFE_INTEGER;
-const COMMANDS = ['help', 'add', 'list', 'done', 'reopen', 'rename', 'delete', 'tag', 'note', 'export', 'import', 'stats'];
+const COMMANDS = ['help', 'add', 'list', 'done', 'reopen', 'important', 'unimportant', 'rename', 'delete', 'tag', 'note', 'export', 'import', 'stats'];
 
 const DIR = { kind: 'dir' };
 const file = (bytes) => ({ kind: 'file', bytes: Buffer.isBuffer(bytes) ? bytes : Buffer.from(bytes, 'utf8') });
@@ -103,7 +103,7 @@ function genTags(r) {
 }
 
 // A valid stored list: ids with gaps, mixed status, due, tags and note (null
-// or a valid one-line text), nextId sometimes at 2^53-1 or 2^53. cfg = { min, max }.
+// or a valid one-line text) and important mark, nextId sometimes at 2^53-1 or 2^53. cfg = { min, max }.
 function genList(r, cfg = {}) {
   const n = r.int(cfg.min ?? 0, cfg.max ?? 30);
   const tasks = [];
@@ -116,6 +116,7 @@ function genList(r, cfg = {}) {
       due: r.chance(0.5) ? null : validDate(r),
       tags: genTags(r),
       note: r.chance(0.5) ? null : validTitle(r),
+      important: r.chance(0.3),
     });
     id += r.chance(0.6) ? 1 : r.int(2, 6);
   }
@@ -129,17 +130,22 @@ function genList(r, cfg = {}) {
   return { nextId, tasks };
 }
 
-// The list without its notes: the shape of versions 1 and 2.
+// The list without its notes and marks: the shape of versions 1 and 2.
 function stripNotes(list) {
-  return { nextId: list.nextId, tasks: list.tasks.map(({ note, ...t }) => t) };
+  return { nextId: list.nextId, tasks: list.tasks.map(({ note, important, ...t }) => t) };
 }
 
-// Version 3 as ttc writes it: "version": 3 first, a note on every task.
+// The list without its marks: the shape of version 3.
+function stripImportant(list) {
+  return { nextId: list.nextId, tasks: list.tasks.map(({ important, ...t }) => t) };
+}
+
+// Version 4 as ttc writes it: "version": 4 first, a note and a mark on every task.
 function canonicalText(list) {
-  return JSON.stringify({ version: 3, nextId: list.nextId, tasks: list.tasks }, null, 2) + '\n';
+  return JSON.stringify({ version: 4, nextId: list.nextId, tasks: list.tasks }, null, 2) + '\n';
 }
 
-// Version 1 as written before RCDEV-837: no "version" key, no notes.
+// Version 1 as written before RCDEV-837: no "version" key, no notes, no marks.
 function plainText(list) {
   const { nextId, tasks } = stripNotes(list);
   return JSON.stringify({ nextId, tasks }, null, 2) + '\n';
@@ -153,28 +159,30 @@ function messyText(r, list) {
     for (const k of r.shuffle(Object.keys(o))) out[k] = o[k];
     return out;
   };
-  const version = r.chance(0.3) ? r.pick([1, 2, 3]) : null;
+  const version = r.chance(0.3) ? r.pick([1, 2, 3, 4]) : null;
   const withVersion = version === null ? {} : { version };
-  // Notes belong to version 3 only.
-  const body = version === 3 ? list : stripNotes(list);
+  // Notes belong to versions 3 and 4, marks to version 4 only.
+  const body = version === 4 ? list : version === 3 ? stripImportant(list) : stripNotes(list);
   const obj = reorder({ ...withVersion, nextId: list.nextId, tasks: body.tasks.map((t) => reorder({ ...t })) });
   const ws = () => r.string(r.int(0, 2), ' \n\t\r');
   return ws() + JSON.stringify(obj, null, r.pick([undefined, 1, 2, 3, 4, '\t'])) + ws();
 }
 
-// Valid stored lists come in four forms: no version key (version 1 as written
-// before RCDEV-837), "version": 1 first, "version": 2 first, and "version": 3
-// first (canonical, with notes). Versions 1 and 2 carry no notes.
+// Valid stored lists come in five forms: no version key (version 1 as written
+// before RCDEV-837), "version": 1 first, "version": 2 first, "version": 3
+// first (notes, no marks) and "version": 4 first (canonical, notes and marks).
+// Versions 1 and 2 carry no notes.
 function versionedText(list, version) {
-  const { nextId, tasks } = stripNotes(list);
+  const { nextId, tasks } = version === 3 ? stripImportant(list) : stripNotes(list);
   return JSON.stringify({ version, nextId, tasks }, null, 2) + '\n';
 }
 
 function listBytes(r, list) {
-  const form = r.pick(['plain', 'v1', 'v2', 'v3']);
+  const form = r.pick(['plain', 'v1', 'v2', 'v3', 'v4']);
   if (form === 'v1') return Buffer.from(versionedText(list, 1), 'utf8');
   if (form === 'v2') return Buffer.from(versionedText(list, 2), 'utf8');
-  if (form === 'v3') return Buffer.from(canonicalText(list), 'utf8');
+  if (form === 'v3') return Buffer.from(versionedText(list, 3), 'utf8');
+  if (form === 'v4') return Buffer.from(canonicalText(list), 'utf8');
   return Buffer.from(r.chance(0.5) ? plainText(list) : messyText(r, list), 'utf8');
 }
 
@@ -235,12 +243,15 @@ function buildUnits(r, cmd, list, junkP, importTarget) {
       if (r.chance(0.5)) options.push(opt('--due', date()));
       for (let i = r.chance(0.5) ? r.int(1, 3) : 0; i > 0; i--) options.push(opt('--tag', tag(), true));
       if (r.chance(0.3)) options.push(opt('--note', title()));
+      if (r.chance(0.3)) options.push(opt('--important'));
       break;
     case 'list':
       filterOptions();
       break;
     case 'done':
     case 'reopen':
+    case 'important':
+    case 'unimportant':
     case 'delete':
       positionals.push(pos(id()));
       break;
@@ -410,7 +421,7 @@ function insertInTitle(list, insertion, atEnd) {
 
 // Kinds that need tasks in the list.
 const NEEDS_ONE = new Set(['utf8-lone80', 'utf8-c328', 'utf8-overlong', 'utf8-cesu', 'utf8-cut', 'wt-id', 'wt-title',
-  'wt-status', 'wt-due', 'wt-tags', 'wt-note', 'key-task', 'unsafe-id', 'bad-title', 'bad-due', 'bad-tag', 'esc-surrogate',
+  'wt-status', 'wt-due', 'wt-tags', 'wt-note', 'wt-important', 'no-important', 'key-task', 'unsafe-id', 'bad-title', 'bad-due', 'bad-tag', 'esc-surrogate',
   'nextId-low']);
 const minTasks = (kind) => (kind === 'dup-id' ? 2 : NEEDS_ONE.has(kind) ? 1 : 0);
 
@@ -421,9 +432,9 @@ function mutateTask(r, list, field, values) {
 }
 
 // A document with no "version" key would be version 1, which has no notes, so
-// the damaged lists (which carry notes) are written as version 3.
+// the damaged lists (which carry notes and marks) are written as version 4.
 function viaJson(r, obj) {
-  const doc = Object.hasOwn(obj, 'version') ? obj : { version: 3, ...obj };
+  const doc = Object.hasOwn(obj, 'version') ? obj : { version: 4, ...obj };
   return Buffer.from(stringifyRaw(doc, r.pick([2, 2, undefined, '\t'])), 'utf8');
 }
 
@@ -473,9 +484,15 @@ const DAMAGE = {
   'wt-due': (r, list) => viaJson(r, mutateTask(r, list, 'due', [20240101, 0, true, [], {}, false])),
   'wt-tags': (r, list) => viaJson(r, mutateTask(r, list, 'tags', ['x', null, [1], [null], {}, [['a']], 0])),
   'wt-note': (r, list) => viaJson(r, mutateTask(r, list, 'note', ['', ' a', 'a ', 'a\nb', 'a\u0085b', 1, [], true])),
+  'wt-important': (r, list) => viaJson(r, mutateTask(r, list, 'important', ['yes', 'true', 'false', 1, 0, null, [], {}, 'x'])),
+  'no-important': (r, list) => {
+    const copy = JSON.parse(JSON.stringify(list));
+    delete r.pick(copy.tasks).important;
+    return viaJson(r, copy);
+  },
   'wt-version': (r, list) => withVersion(r, stripNotes(list), r.pick(['2', '1', null, true, false, [], {}, 'x', 2.5, 1.5])),
   'version-range': (r, list) =>
-    withVersion(r, stripNotes(list), new Raw(r.pick(['0', '-1', '-0', '4', '1000', '9007199254740992', '9007199254740993', '1e400', '2.0']))),
+    withVersion(r, stripNotes(list), new Raw(r.pick(['0', '-1', '-0', '5', '1000', '9007199254740992', '9007199254740993', '1e400', '2.0']))),
   'key-top': (r, list) => insertKey(r, list, 'top', r.pick(['"extra": 1', '"__proto__": {}', '"nextid": 3', '"Tasks": []', '"": 0'])),
   'key-task': (r, list) => insertKey(r, list, 'task', r.pick(['"extra": 1', '"__proto__": null', '"Id": 7', '"": 0', '"tags2": []'])),
   'dup-id': (r, list) => {

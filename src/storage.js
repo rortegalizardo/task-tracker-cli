@@ -3,18 +3,19 @@
 // The stored list: where it lives, how it is read and checked, and how it is
 // written whole and atomically.
 //
-// Stored layout, format version 3 (the current one; later stories' tests write
+// Stored layout, format version 4 (the current one; later stories' tests write
 // it directly):
 //
-//   { "version": 3, "nextId": <int>, "tasks": [ { "id": <int>, "title": <string>, "status": "open"|"done", "due": "YYYY-MM-DD"|null, "tags": [<string>...], "note": <string>|null } ] }
+//   { "version": 4, "nextId": <int>, "tasks": [ { "id": <int>, "title": <string>, "status": "open"|"done", "due": "YYYY-MM-DD"|null, "tags": [<string>...], "note": <string>|null, "important": true|false } ] }
 //
 // Key order is as shown. Storage keeps the task order and tag order it is
 // given; sorting for display belongs to the list command.
 //
-// Version 2 is the same layout without the "note" key on tasks. Version 1 is
-// version 2 without the "version" key (an explicit "version": 1 is also
-// version 1). Both are still read; the next changing command writes version 3. A version above the current one is refused, and a bad
-// "version" value is an invalid list. The in-memory list is always
+// Version 3 is the same layout without the "important" key on tasks. Version 2
+// is version 3 without "note". Version 1 is version 2 without the "version" key
+// (an explicit "version": 1 is also version 1). All are still read, with no
+// task important; the next changing command writes version 4. A version above
+// the current one is refused, and a bad "version" value is an invalid list. The in-memory list is always
 // { nextId, tasks }: the version belongs to the file, not to the list.
 //
 // A future format is added in the "Formats" section below by registering one
@@ -48,9 +49,9 @@ function onlyKeys(obj, keys) {
 }
 
 // Returns null, or the first problem as a non-empty single-line string.
-// `withNote` is true for the current format (every task has "note") and false
-// for versions 1 and 2 (no task may have it).
-function validateList(data, withNote = true) {
+// `version` is the format the document is checked as: "note" is a task key from
+// version 3, "important" (a boolean, never coerced) from version 4.
+function validateList(data, version = CURRENT_VERSION) {
   if (!isPlainObject(data)) return 'the list is not an object';
   if (!onlyKeys(data, ['nextId', 'tasks'])) return 'the list has an unknown key';
   if (!Array.isArray(data.tasks)) return 'tasks is not an array';
@@ -62,7 +63,8 @@ function validateList(data, withNote = true) {
     const position = 'task at position ' + (i + 1);
     if (!isPlainObject(task)) return position + ' is not an object';
     const keys = ['id', 'title', 'status', 'due', 'tags'];
-    if (withNote) keys.push('note');
+    if (version >= 3) keys.push('note');
+    if (version >= 4) keys.push('important');
     if (!onlyKeys(task, keys)) {
       return position + ' has an unknown key';
     }
@@ -90,9 +92,12 @@ function validateList(data, withNote = true) {
       if (tags.has(tag)) return label + ': tag ' + JSON.stringify(tag) + ' is repeated';
       tags.add(tag);
     }
-    if (withNote && task.note !== null) {
+    if (version >= 3 && task.note !== null) {
       const np = noteProblem(task.note);
       if (np !== null) return label + ': ' + np;
+    }
+    if (version >= 4 && typeof task.important !== 'boolean') {
+      return label + ': important is not true or false';
     }
   }
 
@@ -113,7 +118,7 @@ function validateList(data, withNote = true) {
 function validateV1(doc) {
   if (!isPlainObject(doc)) return 'the list is not an object';
   const { version, ...body } = doc;
-  return validateList(body, false);
+  return validateList(body, 1);
 }
 
 // Version 2: "version": 2 plus the same body.
@@ -121,7 +126,7 @@ function validateV2(doc) {
   if (!isPlainObject(doc)) return 'the list is not an object';
   if (doc.version !== 2) return 'the version is not 2';
   const { version, ...body } = doc;
-  return validateList(body, false);
+  return validateList(body, 2);
 }
 
 // Version 3: "version": 3 plus the same body, with a note on every task.
@@ -129,7 +134,15 @@ function validateV3(doc) {
   if (!isPlainObject(doc)) return 'the list is not an object';
   if (doc.version !== 3) return 'the version is not 3';
   const { version, ...body } = doc;
-  return validateList(body);
+  return validateList(body, 3);
+}
+
+// Version 4: "version": 4 plus the same body, with an important mark on every task.
+function validateV4(doc) {
+  if (!isPlainObject(doc)) return 'the list is not an object';
+  if (doc.version !== 4) return 'the version is not 4';
+  const { version, ...body } = doc;
+  return validateList(body, 4);
 }
 
 // Version 1 -> 2: the same body with "version": 2 first. Does not mutate `doc`.
@@ -146,10 +159,17 @@ function migrateV2ToV3(doc) {
   return { version: 3, nextId, tasks: tasks.map((t) => ({ ...t, note: null })) };
 }
 
+// Version 3 -> 4: every task gains "important": false, last. Does not mutate `doc`.
+function migrateV3ToV4(doc) {
+  const { version, nextId, tasks } = doc;
+  return { version: 4, nextId, tasks: tasks.map((t) => ({ ...t, important: false })) };
+}
+
 const FORMATS = [
   { version: 1, validate: validateV1 },
   { version: 2, validate: validateV2, upgrade: migrateV1ToV2 },
   { version: 3, validate: validateV3, upgrade: migrateV2ToV3 },
+  { version: 4, validate: validateV4, upgrade: migrateV3ToV4 },
 ];
 
 const CURRENT_VERSION = FORMATS[FORMATS.length - 1].version;
@@ -192,7 +212,7 @@ function serializeList(list) {
   const canonical = {
     version: CURRENT_VERSION,
     nextId: list.nextId,
-    tasks: list.tasks.map((t) => ({ id: t.id, title: t.title, status: t.status, due: t.due, tags: t.tags, note: t.note })),
+    tasks: list.tasks.map((t) => ({ id: t.id, title: t.title, status: t.status, due: t.due, tags: t.tags, note: t.note, important: t.important })),
   };
   return JSON.stringify(canonical, null, 2) + '\n';
 }
@@ -394,6 +414,7 @@ module.exports = {
   CURRENT_VERSION,
   migrateV1ToV2,
   migrateV2ToV3,
+  migrateV3ToV4,
   serializeList,
   decodeUtf8,
   parseList,

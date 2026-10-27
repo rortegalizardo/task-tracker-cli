@@ -12,7 +12,7 @@ Install from a clone with `npm install --global .`, then run `ttc help`.
 Each task can have one note. It is optional and one line long. A note follows the same rules as a title: spaces are trimmed from both ends of typed text, the note cannot be empty, and it cannot contain a line break or a control character.
 
 ```
-ttc add "<title>" [--due YYYY-MM-DD] [--tag <t>]... [--note "<text>"]
+ttc add "<title>" [--due YYYY-MM-DD] [--tag <t>]... [--note "<text>"] [--important]
 ttc note <id> ["<text>" | --clear]
 ```
 
@@ -23,6 +23,22 @@ ttc note <id> ["<text>" | --clear]
 - Giving both text and `--clear` is an error.
 
 Notes are not shown in `ttc list` lines or in `ttc stats`. `--search` matches them (see below), and `ttc export` includes them.
+
+## Important tasks
+
+A task can be marked important. A new task is not important unless you say so.
+
+```
+ttc add "<title>" [--due YYYY-MM-DD] [--tag <t>]... [--note "<text>"] [--important]
+ttc important <id>
+ttc unimportant <id>
+```
+
+- `ttc add ... --important`: adds the task already marked important. Without `--important` the task is not important.
+- `ttc important <id>`: marks the task and prints `Marked task <id> as important`. On a task that is already important it is a no-op: it prints `Task <id> is already important` and changes nothing.
+- `ttc unimportant <id>`: removes the mark and prints `Removed important mark from task <id>`. On a task that is not important it is a no-op: it prints `Task <id> is not important` and changes nothing.
+- Both commands work on open and done tasks.
+- The mark stays through `done`, `reopen`, `rename`, `tag` and `note`.
 
 ## Listing and filtering tasks
 
@@ -35,6 +51,8 @@ ttc list [--open|--done|--all|--overdue] [--tag <t>] [--due-from YYYY-MM-DD] [--
 - `--due-from YYYY-MM-DD`: only tasks due on or after that date.
 - `--due-to YYYY-MM-DD`: only tasks due on or before that date. The range is inclusive at both ends, and either option works alone as an open-ended range.
 - `--search <text>`: only tasks whose title or note contains the text. The match is a literal substring, ignoring upper and lower case. There are no wildcards and no regular expressions. An empty text is an error.
+
+Important tasks come first, then the others; inside each group tasks are in ascending id order. This holds in every view and with every filter. An important task's line has the token `!important` after `!overdue` (when present) and before the tags, for example `#2 [ ] Pay rent due:2000-01-02 !overdue !important +home`.
 
 Every option can be given at most once. All options combine with AND: a task is listed only if it passes every option given. When `--due-from` or `--due-to` is given, tasks with no due date are left out.
 
@@ -60,7 +78,7 @@ Unlike `ttc list`, the default status for `ttc export` is `--all`. So `ttc expor
 
 ### JSON format
 
-The same format as `tasks.json`, holding only the matching tasks. Notes are included (format version 3). It keeps the list's own next id and the stored order of the tasks. `ttc export <file>` with no other option writes the whole list, the same bytes as a plain backup.
+The same format as `tasks.json`, holding only the matching tasks. Notes and important marks are included (format version 4). It keeps the list's own next id and the stored order of the tasks. `ttc export <file>` with no other option writes the whole list, the same bytes as a plain backup.
 
 ### CSV format
 
@@ -85,16 +103,17 @@ id,title,status,due,tags,note
 
 ## Data file format
 
-`tasks.json` is format version 3:
+`tasks.json` is format version 4:
 
 ```
-{ "version": 3, "nextId": <int>, "tasks": [ { "id", "title", "status", "due", "tags", "note" } ] }
+{ "version": 4, "nextId": <int>, "tasks": [ { "id", "title", "status", "due", "tags", "note", "important" } ] }
 ```
 
-`note` is a string or `null`.
+`note` is a string or `null`. `important` is `true` or `false`; any other value, or a missing `important`, makes the file invalid.
 
-- Files written by older ttc (version 1 and version 2) are read as-is by read-only commands, and rewritten as version 3 by the next changing command.
-- `ttc import` accepts versions 1, 2 and 3.
+- Files written by older ttc (versions 1, 2 and 3) are read as-is by read-only commands, with no task important, and rewritten as version 4 by the next changing command.
+- `ttc import` accepts versions 1, 2, 3 and 4.
+- After the first change, an older ttc can no longer read `tasks.json` or a new JSON export: no command writes an older version.
 - A file from a newer ttc is refused with one `ttc: cannot read` line and left unchanged.
 
 ## Exit codes

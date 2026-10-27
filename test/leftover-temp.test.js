@@ -55,13 +55,13 @@ for (const step of STEPS) {
     assert.equal(r.stdout, step === 'after-rename' ? 'Added task 3\n' : 'Added task 2\n');
     assert.deepEqual(fs.readdirSync(sb.dataDir), ['tasks.json']);
     const stored = JSON.parse(fs.readFileSync(sb.file, 'utf8'));
-    const y = { id: step === 'after-rename' ? 3 : 2, title: 'y', status: 'open', due: null, tags: [], note: null };
+    const y = { id: step === 'after-rename' ? 3 : 2, title: 'y', status: 'open', due: null, tags: [], note: null, important: false };
     if (step === 'after-rename') {
       assert.equal(stored.tasks.length, 3);
       assert.equal(stored.tasks[1].title, 'x');
       assert.deepEqual(stored.tasks[2], y);
     } else {
-      assert.deepEqual(stored.tasks, [{ ...SEED.tasks[0], note: null }, y]);
+      assert.deepEqual(stored.tasks, [{ ...SEED.tasks[0], note: null, important: false }, y]);
     }
   });
 }

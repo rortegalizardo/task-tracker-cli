@@ -247,7 +247,7 @@ test('ttc help lists the new list usage line and not the old one (AC15)', () => 
   assert.ok(lines.includes('ttc list [--open|--done|--all|--overdue] [--tag <t>] [--due-from YYYY-MM-DD] [--due-to YYYY-MM-DD] [--search <text>]'));
   assert.ok(!lines.includes('ttc list [--open|--done|--all] [--tag <t>]'));
   assert.ok(lines.includes('ttc help'));
-  assert.ok(lines.includes('ttc add "<title>" [--due YYYY-MM-DD] [--tag <t>]... [--note "<text>"]'));
+  assert.ok(lines.includes('ttc add "<title>" [--due YYYY-MM-DD] [--tag <t>]... [--note "<text>"] [--important]'));
   assert.ok(lines.includes('ttc done <id>'));
   assert.ok(lines.includes('ttc reopen <id>'));
 });
