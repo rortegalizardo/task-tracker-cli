@@ -3,16 +3,16 @@ id: PSTATE-INIT-0003
 type: product-state
 title: Product definition state for INIT-0003
 status: authoritative
-revision: 4
+revision: 5
 owner_role: ROLE-product-manager
 created: 2026-10-27
 updated: 2026-10-27
 updated_by_role: ROLE-product-manager
 initiative: INIT-0003
-phase: SOLUTION_EXPLORATION
+phase: SOLUTION_CONVERGENCE
 phase_entered: 2026-10-27
 requester: "the requester (repository owner, rortegalizardo), via the driving session, 2026-10-27"
-next_action: "ROLE-planner (PRODUCT-DISCOVERY): one product-feasibility-assessment dispatch (capability scan, impact, assessment) for options A and B; then ROLE-product-manager records the verdicts in ## Options"
+next_action: "ROLE-product-manager: record the chosen-option PD- and the Solution Contract; advance SOLUTION_CONVERGENCE -> DECOMPOSITION"
 blocked_by: []
 converged: false
 readiness_verdict: none   # none | READY | READY-with-known-issues | NOT READY | void
@@ -29,7 +29,7 @@ these two files never describe the same thing and never share a writer.
 
 ## Where this stands
 
-SOLUTION_EXPLORATION. Outcome O1–O3, out of scope, draft `REQ-0012` and the Product Definition Contract written; architect consult next.
+SOLUTION_CONVERGENCE. Options A and B recorded with the architect's verdicts; PM recommends B.
 
 ## Problem statement
 
@@ -46,7 +46,7 @@ Consequences records "No way to change a due date".
 
 ## Next action
 
-ROLE-planner (PRODUCT-DISCOVERY): one product-feasibility-assessment dispatch (capability scan, impact, assessment) for options A and B; then ROLE-product-manager records the verdicts in ## Options.
+ROLE-product-manager: record the chosen-option PD- and the Solution Contract; advance SOLUTION_CONVERGENCE -> DECOMPOSITION.
 
 ## Blocked by
 
@@ -129,14 +129,28 @@ S2/S3 = the code and README at head `ae4417c`.
 
 ## Options
 
-_Written at SOLUTION_EXPLORATION._
+| Option | User-visible difference | Feasibility verdict | Cost / risk | Trade-off |
+| --- | --- | --- | --- | --- |
+| A — `ttc postpone <id> [<days>]` | One day by default; an optional whole number of days pushes further in one command | `feasible-with-constraints`, band `contained` (`technical/assessment.md`, round 1) | Constraints C1–C8 (C6: a fixed rule and error for the days value). R3: id and days are two bare numbers, so a swapped pair moves the wrong task. P1–P4 to settle | Longer pushes in one command; one more rule, one more error and a typing trap to learn |
+| B — `ttc postpone <id>` | Always one day; to push further, run it again | `feasible-with-constraints`, band `contained` (`technical/assessment.md`, round 1) | Constraints C1–C5, C7, C8 (no C6, no R3). P1, P4 to settle. R5: a days value can be added later without changing `ttc postpone <id>` | Least to learn: one command, one rule; a longer push takes several runs |
+
+_Recommended option and why:_ **B.** It is the whole ask and nothing more: "a
+quick way to postpone a task" is one command with only the task id, and "Keep
+it simple" rules out an amount nobody asked for. In the common case, a task
+that slipped today, one run moves it to tomorrow, because the new date counts
+from today when the task is overdue (A3). B carries no days rule, no extra
+error and no swapped-number trap (R3), and growing into A later is additive
+(R5).
 
 ## Consultation log
 
 | Date | Delegate role | Question | Answer / verdict | Recorded as |
 | --- | --- | --- | --- | --- |
+| 2026-10-27 | ROLE-planner (PRODUCT-DISCOVERY) | Feasibility verdict, constraints, risks and band for options A and B (one dispatch: capability scan, impact, assessment; §9d.1) | A and B both `feasible-with-constraints`, `contained`; constraints C1–C8 (C6 A only); risks R1–R5; narrowing assumptions P1–P4, none blocking; no format change (C1) | `technical/capability-scan.md`, `technical/impact.md`, `technical/assessment.md` (round 1); this row; C2 and P1–P4 go to the convergence `PD-`. Vendor claude, model opus |
 
 Dispatch log: `phase | delegate | vendor | model | tokens-scale | ledger run | artifact produced`
+
+- `SOLUTION_EXPLORATION | ROLE-planner | claude | opus | L | a30aae09d4d4d9769 | technical/capability-scan.md, impact.md, assessment.md`
 
 ## Escalation log
 
@@ -194,6 +208,7 @@ _Assembled at ENGINEERING_READY._
 | 2026-10-27 | INTAKE | DISCOVERY | ROLE-product-manager | INTAKE exit criteria met: one initiative, one problem, one named requester, ambiguity rows A1–A11 all classified (`pm-resolvable`) | Entry precondition (`lifecycle-hooks.md` §3.4.1 DISCOVERY) holds: `initiative.md` at `status: draft`; state at INTAKE with requester, problem statement and a classified ambiguity log. Discovery written (J1–J3, P1–P2, S2 `CAP-0001`, S3 signals 1–5, non-goals). No `Q-` raised. Hooks: HOOK-phase-entry pass | `444a288e2444d5ce`, head `7ba472c` |
 | 2026-10-27 | DISCOVERY | PRODUCT_DEFINITION | ROLE-product-manager | DISCOVERY exit criteria met: problem, user, current state and success signals stated with sources; no open escalation-class ambiguity | Entry precondition (`lifecycle-hooks.md` §3.4.1 PRODUCT_DEFINITION) holds: Discovery has the target user, jobs J1–J3 and problems P1–P2 each with a source (S1), mapping `CAP-0001` (S2), success signals 1–5 (S3) and known non-goals. Hooks: HOOK-phase-entry pass | `444a288e2444d5ce`, head `8978f33` |
 | 2026-10-27 | PRODUCT_DEFINITION | SOLUTION_EXPLORATION | ROLE-product-manager | PRODUCT_DEFINITION exit criteria met: outcome O1–O3, out of scope (9 items), success measures 1–6, draft `REQ-0012` covering O1–O3, Product Definition Contract citing the raw request | Entry precondition (`lifecycle-hooks.md` §3.4.1 SOLUTION_EXPLORATION) holds: F1 `initiative.md` rev 2 has an outcome and a non-empty out-of-scope section; one `status: draft` `REQ-`; F2 draft-mode coverage (inline, deterministic): J1 -> `REQ-0012` Requirement, J2 -> Scope bullet 1 ("one short command"), J3 -> Non-goals and the initiative out of scope; no `R1` defect. `requirement` counter 11 -> 12, checked against `origin/main`. No scope `PD-` needed yet: A1–A11 are recorded in the chosen-option `PD-`. Hooks: HOOK-phase-entry pass | `444a288e2444d5ce`, head `b6c0a3e` |
+| 2026-10-27 | SOLUTION_EXPLORATION | SOLUTION_CONVERGENCE | ROLE-product-manager | SOLUTION_EXPLORATION exit criteria met: options A and B recorded, each with a feasibility verdict (`feasible-with-constraints`) and a user-visible trade-off; PM recommends B with reasons | Entry precondition (`lifecycle-hooks.md` §3.4.1 SOLUTION_CONVERGENCE) holds: X1 two distinguishable options; X2 each verdict in the closed set (`technical/assessment.md` round 1); one Consultation log row for the one delegate response. No design dispatch: no visual surface (`project/constraints.md` row 8, `PD-0001` item 3; to be recorded in the convergence `PD-`, §9d.5). Hooks: HOOK-phase-entry pass | `444a288e2444d5ce`, head `c1e54fa` |
 
 > Every product-side session updates this file before ending — **including
 > sessions that failed**, which record the failure in `next_action` and do not
