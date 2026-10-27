@@ -3,16 +3,16 @@ id: PSTATE-INIT-0002
 type: product-state
 title: Product definition state for INIT-0002
 status: authoritative
-revision: 12
+revision: 13
 owner_role: ROLE-product-manager
 created: 2026-10-26
-updated: 2026-10-26
+updated: 2026-10-27
 updated_by_role: ROLE-product-manager
 initiative: INIT-0002
 phase: HANDOFF
 phase_entered: 2026-10-26
 requester: "the requester (repository owner, rortegalizardo), via the driving session, 2026-10-26"
-next_action: "ROLE-product-manager: HANDOFF — run SKILL-create-tickets-from-stories for REQ-0011 from the start (idempotency search, Sonnet transcription dispatch, X12 lint, create in Linear team RC Development, project Task Tracker CLI), then write delivery/tickets.md, the Handoff log row and the ticket_code. No Linear issue exists yet (title search 2026-10-26: no match). Run stopped at the owner's 7M cache-read and 600k ledger ceilings (attempt 3 continuation); resume only on the owner's go-ahead"
+next_action: "ROLE-orchestrator: deliver RCDEV-856 (one ticket_code; dispatched by a human or a fan-out session). Product side done at HANDOFF; ROLE-product-manager re-enters only on a regression trigger or at initiative close"
 blocked_by: []
 converged: true
 readiness_verdict: READY   # none | READY | READY-with-known-issues | NOT READY | void
@@ -29,7 +29,7 @@ these two files never describe the same thing and never share a writer.
 
 ## Where this stands
 
-HANDOFF, entered; no ticket created. STOPPED: the owner\'s 7M cache-read and 600k ledger ceilings were crossed during the ticket transcription dispatch. Nothing is half-written; no Linear issue exists for `REQ-0011`. Handoff packet written (below); `delivery/manifest.md` compiled at `band_owner: product` against `READY@2026-10-26`, digest `REQ-0011@3/2026-10-26; INIT-0002@3`; `REQ-0011` `readiness: engineering-ready`; `INIT-0002` `status: active`. Readiness round 1 (terminal): `READY`, no conditions, no findings. Option A (`PD-0009`); format 4 with a one-way upgrade (`PD-0010`).
+HANDOFF, done. `REQ-0011` → `RCDEV-856` (Linear team RC Development, project Task Tracker CLI, Backlog); mapping in `delivery/tickets.md` and the global `product/delivery/tickets.md`. Handoff packet and `delivery/manifest.md` (`band_owner: product`) as written at ENGINEERING_READY. Readiness round 1 (terminal): `READY`, no conditions, no findings. No engineering started by the product side.
 
 ## Problem statement
 
@@ -43,7 +43,7 @@ command or stored field marks a task as important (`src/commands/list.js`,
 
 ## Next action
 
-ROLE-product-manager: HANDOFF — run SKILL-create-tickets-from-stories for REQ-0011 from the start (idempotency search, Sonnet transcription dispatch, X12 lint, create in Linear team RC Development, project Task Tracker CLI), then write delivery/tickets.md, the Handoff log row and the ticket_code. No Linear issue exists yet (title search 2026-10-26: no match). Run stopped at the owner's 7M cache-read and 600k ledger ceilings (attempt 3 continuation); resume only on the owner's go-ahead.
+ROLE-orchestrator: deliver RCDEV-856 (one ticket_code; dispatched by a human or a fan-out session). Product side done at HANDOFF; ROLE-product-manager re-enters only on a regression trigger or at initiative close.
 
 ## Blocked by
 
@@ -248,12 +248,13 @@ Assembled 2026-10-26 at ENGINEERING_READY by `ROLE-product-manager` against the 
   - Making a task important automatically (for example because it is overdue or due soon).
 - **Open questions (non-blocking):** none. The verdict carries no conditions or known issues.
 - **Delivery manifest:** `product/initiatives/INIT-0002-important-tasks-first/delivery/manifest.md`
-- **Tickets** (Linear team RC Development, project Task Tracker CLI, `PD-0007`; mapping authority `delivery/tickets.md`): written at HANDOFF.
+- **Tickets** (Linear team RC Development, project Task Tracker CLI, `PD-0007`; mapping authority `delivery/tickets.md`): `REQ-0011` → `RCDEV-856`.
 
 ## Handoff log
 
 | Date | Receiving role | Packet digest | Note |
 | --- | --- | --- | --- |
+| 2026-10-27 | ROLE-orchestrator (one `ticket_code`; no engineering dispatched by this session) | `90efa9287be24896` (sha256 of the packet section, first 16 hex) | Ticket RCDEV-856 in Linear project Task Tracker CLI, team RC Development, state Backlog. Idempotency: exact-title search found no existing issue. Transcription by the Sonnet child (run `ab374bca932fceb42`, 2026-10-26, made after `74aced0`; `REQ-0011` unchanged since), reused and verified by the PM: X12 lint 0 matches on title and body; X13 six mapped sections only; X5 17 of 17 criteria byte-identical to the story; X14 no criterion carried a product identifier, so no translation; X11 no ticket dependencies. Out of scope translations: "in `initiative.md`" dropped; "`PD-0010` accepts" → "a decided product behavior accepts". Success metric: "(`project/constraints.md` row 7)" dropped. No `DES-`, so no `design/` copy (X10). Global union row staged alone; its unrelated uncommitted INIT-0001 `synced_on` change left unstaged, so the global `synced_on` is not bumped |
 
 ## Phase log
 
@@ -273,6 +274,7 @@ Assembled 2026-10-26 at ENGINEERING_READY by `ROLE-product-manager` against the 
 | 2026-10-26 | ENGINEERING_READY | ENGINEERING_READY | ROLE-product-manager | Run stopped at a clean checkpoint: the driving session sent STOP, the owner's 350k-token ceiling was crossed (attempt 3) | No transition. Phase entered; Handoff packet, manifest, readiness flags and tickets not yet written. No child running. No `Q-` open | `2355178f0969f499`, head `480367a` |
 | 2026-10-26 | ENGINEERING_READY | HANDOFF | ROLE-product-manager | ENGINEERING_READY exit criteria met: Handoff packet self-contained, every bullet populated or explicit `none` (H7); `delivery/manifest.md` at `band_owner: product`, M1–M8 hold, digest equals the verdict's | Resumed on the owner's go-ahead (attempt 3 continuation). H1 `READY`, not `void`; H4 digest `(REQ-0011, 3, 2026-10-26)`, INIT-0002 rev 3 unchanged on disk; H2 coverage validation of this digest (zero defects, Coverage validation) relied on, not re-run, per the caller; H3 `REQ-0011` `accepted`; H5 no `blocker` `Q-`; H6 `PD-0003/0004/0007/0008/0009/0010`, `CAP-0001` resolve, no `local_export`; H8 no conditions; H10 `REQ-0011` `readiness: engineering-ready`; H11 no HLD, plan, breakdown or estimate on the product side; `INIT-0002` `status: active`. ENGINEERING_READY commit `74aced0` pushed and verified on `origin/main`. Entry precondition (`lifecycle-hooks.md` §3.4.1 HANDOFF) holds. Hooks: HOOK-handoff-conformance pass (H0–H12; H13 pending ticket creation), HOOK-phase-entry pass | `2355178f0969f499` (carried; narrow hydration), head `74aced0` |
 | 2026-10-26 | HANDOFF | HANDOFF | ROLE-product-manager | Run stopped at a clean checkpoint: the driving session sent STOP, the owner's 7M cache-read and 600k ledger ceilings were crossed | No transition. Linear title search (team RC Development, project Task Tracker CLI): no existing issue. Transcription child returned; per STOP no Linear issue was created, so `delivery/tickets.md` and the Handoff log are not written. No child running. No `Q-` open | `2355178f0969f499` (carried), head `6844759` |
+| 2026-10-27 | HANDOFF | HANDOFF | ROLE-product-manager | HANDOFF exit criteria met: Handoff log row written, phase `HANDOFF`, accepted `REQ-0011` resolves to `RCDEV-856` | Resumed on the owner's go-ahead (owner decisions: the global tickets row may be added as its own staged hunk; no further product token ceiling). `SKILL-create-tickets-from-stories` X1–X14 verified by the PM (Handoff log). No review re-run. `delivery/state.md` not written. Hooks: HOOK-handoff-conformance pass (H13: `RCDEV-856` from the Linear response) | `2355178f0969f499` (carried), head `a11576e` |
 
 > Every product-side session updates this file before ending — **including
 > sessions that failed**, which record the failure in `next_action` and do not

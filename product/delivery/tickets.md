@@ -26,6 +26,7 @@ but re-sync before acting on it destructively (branching, closing, shipping).
 | RCDEV-829 | The ttc tag command adds or removes one tag on a task | INIT-0001 | REQ-0008 | RCDEV-822, RCDEV-823, RCDEV-824 |  |  | Backlog |
 | RCDEV-830 | The ttc export and ttc import commands copy the whole list to and from a file, and a file that fails validation changes nothing | INIT-0001 | REQ-0009 | RCDEV-822, RCDEV-823, RCDEV-824 |  |  | Backlog |
 | RCDEV-831 | The ttc stats command prints the totals of open, done and overdue tasks | INIT-0001 | REQ-0010 | RCDEV-822, RCDEV-823, RCDEV-824, RCDEV-825, RCDEV-828 |  |  | Backlog |
+| RCDEV-856 | Important tasks are marked from the ttc command line and listed first | INIT-0002 | REQ-0011 |  |  |  | Backlog |
 
 Empty `Depends on` = on the executable frontier. Tracker keys verbatim.
 Status is advisory once older than `freshness_window`.
