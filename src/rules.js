@@ -2,7 +2,8 @@
 
 // Pure validation rules: the stored form (titleProblem, noteProblem,
 // tagProblem, isValidDate) and the user-typed input forms (inputTitle,
-// inputNote, inputTag). A note follows exactly the title rules.
+// inputNote, inputTag). A note follows exactly the title rules. Also the pure
+// date step nextDay.
 
 const { TtcError } = require('./errors');
 
@@ -60,6 +61,25 @@ function isValidDate(s) {
   return d >= 1 && d <= days;
 }
 
+// The calendar day after a valid YYYY-MM-DD date before 9999-12-31, by integer
+// arithmetic on the parts only (no Date: years 0-99 and time zones/DST must not
+// matter).
+function nextDay(date) {
+  let y = Number(date.slice(0, 4));
+  let m = Number(date.slice(5, 7));
+  let d = Number(date.slice(8, 10)) + 1;
+  const days = [31, isLeapYear(y) ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][m - 1];
+  if (d > days) {
+    d = 1;
+    m += 1;
+    if (m > 12) {
+      m = 1;
+      y += 1;
+    }
+  }
+  return String(y).padStart(4, '0') + '-' + String(m).padStart(2, '0') + '-' + String(d).padStart(2, '0');
+}
+
 const LINE_BREAKS = new Set([0x0a, 0x0d, 0x85, 0x2028, 0x2029]);
 
 // A user-typed one-line text to its stored form, or a TtcError. Only U+0020 is
@@ -101,6 +121,7 @@ module.exports = {
   noteProblem,
   tagProblem,
   isValidDate,
+  nextDay,
   inputTitle,
   inputNote,
   inputTag,

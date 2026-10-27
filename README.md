@@ -40,6 +40,18 @@ ttc unimportant <id>
 - Both commands work on open and done tasks.
 - The mark stays through `done`, `reopen`, `rename`, `tag` and `note`.
 
+## Postponing a task
+
+```
+ttc postpone <id>
+```
+
+- Moves the task's due date to one calendar day after the later of its due date and today (today is the local date of your machine). A task due in the future moves one day; a task due today or overdue moves to tomorrow. Months, years and leap days roll over by the calendar.
+- Prints `Postponed task <id> to <YYYY-MM-DD>`.
+- Works on open and done tasks. Only the due date changes.
+- Two refusals, each exit 1 with nothing changed: a task with no due date (`ttc: task <id> has no due date`), and a task due `9999-12-31`, the latest date ttc stores (`ttc: task <id> cannot be postponed past 9999-12-31`).
+- It takes no other argument or option.
+
 ## Listing and filtering tasks
 
 ```
@@ -125,6 +137,7 @@ The failures that exit 1:
 
 - bad command line (unknown command, wrong or missing arguments)
 - no such task
+- a refused postpone (the task has no due date, or is due 9999-12-31)
 - data file unreadable or invalid, including a file written by a newer ttc
 - cannot write (the data file or an export file)
 - data file busy: another ttc command still holds it after a 10-second wait
