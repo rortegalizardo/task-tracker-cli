@@ -1,6 +1,6 @@
 # Global ticket manifest
 
-synced_on: 2026-10-20
+synced_on: 2026-10-21
 freshness_window: 24h
 
 Committed mirror of external tracker tickets across all initiatives, plus the

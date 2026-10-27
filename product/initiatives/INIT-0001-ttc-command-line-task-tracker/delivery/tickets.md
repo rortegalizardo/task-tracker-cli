@@ -1,6 +1,6 @@
 # Ticket manifest — INIT-0001
 
-synced_on: 2026-10-20
+synced_on: 2026-10-21
 freshness_window: 24h
 
 Tracker tickets for INIT-0001, created from its accepted stories at HANDOFF
