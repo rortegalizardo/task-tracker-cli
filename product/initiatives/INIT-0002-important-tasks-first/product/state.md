@@ -3,18 +3,18 @@ id: PSTATE-INIT-0002
 type: product-state
 title: Product definition state for INIT-0002
 status: authoritative
-revision: 8
+revision: 9
 owner_role: ROLE-product-manager
 created: 2026-10-26
 updated: 2026-10-26
 updated_by_role: ROLE-product-manager
 initiative: INIT-0002
-phase: DECOMPOSITION
+phase: READINESS
 phase_entered: 2026-10-26
 requester: "the requester (repository owner, rortegalizardo), via the driving session, 2026-10-26"
-next_action: "ROLE-product-manager: DECOMPOSITION — dispatch the coherence check round 1 (ROLE-planner, story-set-technical-coherence, declared round 1 of 2, terminal unless it reports a blocking defect, §9d.3) against draft REQ-0011 rev 2, which is fully written (behavior, AC-1..AC-18, C1–C7); then accept REQ-0011 and declare convergence. Run stopped at the owner's 4M cache-read ceiling (attempt 2); resume only on the owner's go-ahead"
+next_action: "ROLE-product-manager: READINESS — dispatch ROLE-product-readiness-reviewer round 1 (Coverage validation zero-defect is recorded) (declared round 1 of 2, terminal unless it reports a blocking finding) against REQ-0011 rev 3"
 blocked_by: []
-converged: false
+converged: true
 readiness_verdict: none   # none | READY | READY-with-known-issues | NOT READY | void
 stories: [REQ-0011]
 design_refs: []
@@ -29,7 +29,7 @@ these two files never describe the same thing and never share a writer.
 
 ## Where this stands
 
-DECOMPOSITION, in progress. Option A chosen (`PD-0009`); format 4 with a one-way upgrade (`PD-0010`); Solution Contract at `product/solution-contract.md`. `REQ-0011` rev 2 written in full, still `draft`: the coherence check has not run. STOPPED: run stopped at the owner's 4M cache-read ceiling (attempt 2). Nothing is half-written.
+READINESS. Convergence declared (`converged: true`). Option A chosen (`PD-0009`); format 4 with a one-way upgrade (`PD-0010`); Solution Contract at `product/solution-contract.md`. Coherence round 1 (terminal): `coherent` (`technical/coherence.md`); its 8 non-blocking scope-excess findings were trimmed in `REQ-0011` rev 3 (AC-1..AC-17), now `accepted`. Coverage validation: zero defects (below).
 
 ## Problem statement
 
@@ -43,7 +43,7 @@ command or stored field marks a task as important (`src/commands/list.js`,
 
 ## Next action
 
-ROLE-product-manager: DECOMPOSITION — dispatch the coherence check round 1 (ROLE-planner, story-set-technical-coherence, declared round 1 of 2, terminal unless it reports a blocking defect, §9d.3) against draft REQ-0011 rev 2, which is fully written (behavior, AC-1..AC-18, C1–C7); then accept REQ-0011 and declare convergence. Run stopped at the owner's 4M cache-read ceiling (attempt 2); resume only on the owner's go-ahead.
+ROLE-product-manager: READINESS — dispatch ROLE-product-readiness-reviewer round 1 (Coverage validation zero-defect is recorded) (declared round 1 of 2, terminal unless it reports a blocking finding) against REQ-0011 rev 3.
 
 ## Blocked by
 
@@ -144,10 +144,12 @@ consideration.
 | Date | Delegate role | Question | Answer / verdict | Recorded as |
 | --- | --- | --- | --- | --- |
 | 2026-10-26 | ROLE-planner (PRODUCT-DISCOVERY) | Feasibility verdict, constraints, risks and band for options A and B (one dispatch: capability scan, impact, assessment; §9d.1) | A and B both `feasible-with-constraints`, `multi-component`; constraints C1–C8; false assumptions P1–P3 | `technical/capability-scan.md`, `technical/impact.md`, `technical/assessment.md` (round 1); this row; C1–C3 and P1 go to the convergence `PD-`. Vendor claude, model opus |
+| 2026-10-26 | ROLE-planner (PRODUCT-DISCOVERY) | `story-set-technical-coherence` full pass on draft {REQ-0011 rev 2}, round 1 of 2, terminal unless blocking (§9d.3); plus the owner's scope-excess check against the raw request | `coherent`: rules 2–5 pass; 0 blocking, 8 non-blocking (all `scope-excess`, #1–#8). Round 1 is terminal; no round 2. Dispositions (PM): #1–#8 `fixed` — trimmed inline in `REQ-0011` rev 3 per the owner's instruction (AC-6, AC-7, AC-8 clauses dropped; AC-11 keeps v3 only; AC-12 merged into AC-13 as new AC-12; AC-14, AC-15 cut to new AC-13, AC-14; AC-17 drops "with their four messages"; renumbered AC-1..AC-17). Each trim cuts test volume only; no behaviour fixed by `PD-0009`/`PD-0010` changes, and REQ-0011 Behavior and Scope are unchanged | `technical/coherence.md` (round 1, commit `948388c`); this row. Vendor claude, model opus |
 
 Dispatch log: `phase | delegate | vendor | model | tokens-scale | ledger run | artifact produced`
 
 - `SOLUTION_EXPLORATION | ROLE-planner | claude | opus | L (subagent reported 166,151 tokens, 22 tool uses, 345 s) | aa0daa48e900afa25 | technical/capability-scan.md, impact.md, assessment.md`
+- `DECOMPOSITION | ROLE-planner | claude | opus | M (subagent reported 84,427 tokens, 17 tool uses, 187 s) | a517f07e973354fc7 | technical/coherence.md`
 
 ## Escalation log
 
@@ -158,7 +160,36 @@ Dispatch log: `phase | delegate | vendor | model | tokens-scale | ledger run | a
 
 | `REQ-` | Title | Status | `CAP-` | `DES-` | Sequencing note |
 | --- | --- | --- | --- | --- | --- |
-| REQ-0011 | Important tasks are marked from the ttc command line and listed first | draft | CAP-0001 | none — no user-facing visual surface | none — on the frontier |
+| REQ-0011 | Important tasks are marked from the ttc command line and listed first | accepted (rev 3) | CAP-0001 | none — no user-facing visual surface | none — on the frontier |
+
+## Coverage validation
+
+`SKILL-validate-requirement-coverage`, full mode, run by ROLE-product-manager on
+2026-10-26 against the set on disk (iteration 1: zero defects). Story-set digest:
+`(REQ-0011, 3, 2026-10-26)`; `INIT-0002` revision 3.
+
+Traceability map: O1, O2, O3 (`initiative.md` Outcome) -> `REQ-0011` (accepted,
+`outcome_element` names all three) -> `CAP-0001` (resolves, `draft`) -> no `DES-`
+(no visual surface, `PD-0009` item 11) -> `PD-0003`, `PD-0004`, `PD-0008`,
+`PD-0009`, `PD-0010` (all `accepted`, all indexed) -> no `Q-` open (`Q-0001`
+answered, unrelated) -> no tickets yet.
+
+| Rule | Result | Evidence |
+| --- | --- | --- |
+| R1 | pass | O1–O3 each map to accepted `REQ-0011` |
+| R2 | pass | `REQ-0011` id = filename = index row (`requirements/index.md`, `accepted`); counter `requirement: 11`; no renumbering of ids (AC numbers are inside one pre-freeze story) |
+| R3 | pass | `outcome_element` names O1–O3; `CAP-0001` resolves in `capabilities/index.md` |
+| R4 | pass | No user-facing visual surface (`PD-0009` item 11); `design_refs: []`; no `DES-` on the initiative |
+| R5 | pass | 17 acceptance entries, each a command trigger and exact output |
+| R6 | pass | `depends_on: [none]` |
+| R7 | pass | Stories table sequencing note `none — on the frontier`; graph acyclic |
+| R8 | pass | No `blocker` `Q-`; Ambiguity log A1–A9 all `pm-resolvable`; no contradiction found between `REQ-0011` and an accepted `PD-` or `constraints.md` (flag-only) |
+| R9 | pass | `PD-0009` cites `feasible-with-constraints`; coherence verdict `coherent` recorded in the Consultation log, round 1 terminal (no blocking defect), no blocking finding to dispose |
+| R10 | pass | Every `decisions:` entry is `accepted`; no dependency on a non-accepted `REQ-` or an open `Q-` |
+| R11 | pass | Out of scope has 9 items; `REQ-0011` Non-goals mirror them and no AC exercises excluded behaviour |
+| R12 | pass | `INIT-0002`, `REQ-0011`, `CAP-0001`, `PD-0003/0004/0008/0009/0010` resolve through their indexes; file, `id`, frontmatter and index rows agree |
+
+Defects: none.
 
 ## Readiness log
 
@@ -205,6 +236,7 @@ _Written at ENGINEERING_READY._
 | 2026-10-26 | SOLUTION_CONVERGENCE | SOLUTION_CONVERGENCE | ROLE-product-manager | Run stopped at a clean checkpoint: projected usage crosses the owner's frozen 400k-token product ceiling | No transition. Phase entered, no convergence work started; `next_action` names the resume step. No `Q-` open | `b14f2ea367f1add1`, head `9731f42` |
 | 2026-10-26 | SOLUTION_CONVERGENCE | DECOMPOSITION | ROLE-product-manager | SOLUTION_CONVERGENCE exit criteria met: one accepted chosen-option `PD-0009` (option A), indexed, with the rejected option B and its reasons; `PD-0010` settles the C1 format rule and the C2/P1 choice (a); `REQ-0011` (draft) is consistent with both (its scope already names the mark, list order, storage, export/import and help); no option left under consideration; Solution Contract `product/solution-contract.md` cites `PD-0009` and states that there is no design concept (no visual surface, `PD-0009` item 11) | Resumed on the owner's go-ahead (2026-10-26, new ceilings: 550k tokens, 4M cache reads, 60 min). Entry precondition (`lifecycle-hooks.md` §3.4.1 DECOMPOSITION) holds: exactly one accepted chosen-option `PD-` (`PD-0009`) citing verdict `feasible-with-constraints` (`technical/assessment.md` round 1). Counter `decision` 8 -> 10, checked against `origin/main` `3dbf454`. No `Q-`: every choice is PM-resolvable under the requester's run limits. Hooks: HOOK-canonical-root pass, HOOK-hydrate pass (`readiness: needs-orchestration`, expected before HANDOFF; defect carried: `CAP-0001` draft predates shipped behaviour), HOOK-phase-entry pass | `6136a67d57b0d9fc`, head `3dbf454` |
 | 2026-10-26 | DECOMPOSITION | DECOMPOSITION | ROLE-product-manager | Run stopped at a clean checkpoint: the driving session sent STOP, the owner's 4M cache-read ceiling was crossed (attempt 2) | No transition. `REQ-0011` rev 2 written (behavior, AC-1..AC-18, technical constraints C1–C7, rollout `migration`), kept at `draft`; no coherence dispatch made. No `Q-` open | `6136a67d57b0d9fc`, head `df7c467` |
+| 2026-10-26 | DECOMPOSITION | READINESS | ROLE-product-manager | DECOMPOSITION exit criteria met: O1–O3 map to accepted `REQ-0011`; it meets §10.3 points 1–9; the draft-stage coherence check (round 1, terminal, `coherent`) left no blocking defect; convergence declared (`converged: true`) | Resumed on the owner's go-ahead (attempt 3). Coherence round 1 dispatched with the owner's added scope-excess check; 8 non-blocking findings, all trimmed in `REQ-0011` rev 3 (AC-1..AC-17) per the owner's instruction, Behavior and Scope unchanged, then accepted. No `PD-` needed: trims are AC phrasing under §4.1. No `Q-`. Entry precondition (`lifecycle-hooks.md` §3.4.1 READINESS) holds: `converged: true`; HOOK-traceability zero defects (Coverage validation); `coherence.md` `coherent`, terminal round, no blocking finding; no user-facing `DES-` required. Hooks: HOOK-traceability pass, HOOK-phase-entry pass | `2355178f0969f499`, head `948388c` |
 
 > Every product-side session updates this file before ending — **including
 > sessions that failed**, which record the failure in `next_action` and do not
