@@ -7,6 +7,7 @@ not re-open the question.
 
 | ID | Title | Status | Path | Updated |
 | --- | --- | --- | --- | --- |
+| PD-0011 | Build INIT-0003 as option B, ttc postpone moves a task's due date one day later, counting from today when it is overdue | accepted | [PD-0011-ttc-postpone-option-b.md](PD-0011-ttc-postpone-option-b.md) | 2026-10-27 |
 | PD-0010 | Store the important mark in a new data format version 4, and accept that the upgrade is one-way | accepted | [PD-0010-ttc-format-4-one-way-upgrade.md](PD-0010-ttc-format-4-one-way-upgrade.md) | 2026-10-26 |
 | PD-0009 | Build INIT-0002 as option A, one on/off important mark that ttc list shows first | accepted | [PD-0009-ttc-important-mark-option-a.md](PD-0009-ttc-important-mark-option-a.md) | 2026-10-26 |
 | PD-0008 | A changing command that saves its change and then cannot print its confirmation exits 1, and the change stays saved | accepted | [PD-0008-ttc-failure-after-saved-change.md](PD-0008-ttc-failure-after-saved-change.md) | 2026-10-22 |

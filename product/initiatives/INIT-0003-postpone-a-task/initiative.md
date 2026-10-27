@@ -3,14 +3,14 @@ id: INIT-0003
 type: initiative
 title: A task is postponed from the ttc command line in one short command
 status: draft
-revision: 2
+revision: 3
 owner_role: ROLE-product-manager
 created: 2026-10-27
 updated: 2026-10-27
 capabilities: [CAP-0001]
 requirements: [REQ-0012]
 tickets: []
-decisions: []
+decisions: [PD-0011]
 ---
 
 # INIT-0003 — A task is postponed from the ttc command line in one short command
@@ -54,6 +54,7 @@ boundary, not a rejected decision: no `PD-` rejects it.
 
 - Hiding or snoozing a task until a later date: the task stays listed as it is
   today, with its new due date.
+- Choosing how far to postpone: each `ttc postpone` moves the task one day (`PD-0011`).
 - Setting a task's due date to any chosen date, or clearing it.
 - Giving a due date to a task that has none.
 - Postponing several tasks in one command.
@@ -99,3 +100,4 @@ None.
 | --- | --- | --- | --- |
 | 2026-10-27 | 1 | Created at INTAKE | Triage verdict `new-initiative` |
 | 2026-10-27 | 2 | Outcome O1–O3, scope, out of scope (9 items), success measures 1–6, `REQ-0012` | PRODUCT_DEFINITION |
+| 2026-10-27 | 3 | `decisions: [PD-0011]`; out of scope gains "Choosing how far to postpone" (10 items) | SOLUTION_CONVERGENCE, `PD-0011` (option B) |

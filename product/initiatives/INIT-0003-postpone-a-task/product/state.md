@@ -3,22 +3,22 @@ id: PSTATE-INIT-0003
 type: product-state
 title: Product definition state for INIT-0003
 status: authoritative
-revision: 5
+revision: 6
 owner_role: ROLE-product-manager
 created: 2026-10-27
 updated: 2026-10-27
 updated_by_role: ROLE-product-manager
 initiative: INIT-0003
-phase: SOLUTION_CONVERGENCE
+phase: DECOMPOSITION
 phase_entered: 2026-10-27
 requester: "the requester (repository owner, rortegalizardo), via the driving session, 2026-10-27"
-next_action: "ROLE-product-manager: record the chosen-option PD- and the Solution Contract; advance SOLUTION_CONVERGENCE -> DECOMPOSITION"
+next_action: "ROLE-product-manager: write REQ-0012 behavior and acceptance criteria (rev 2), then dispatch ROLE-planner for coherence round 1 of 2 (terminal unless blocking)"
 blocked_by: []
 converged: false
 readiness_verdict: none   # none | READY | READY-with-known-issues | NOT READY | void
 stories: [REQ-0012]
 design_refs: []
-decisions: []
+decisions: [PD-0011]
 ---
 
 # Product definition state — INIT-0003
@@ -29,7 +29,7 @@ these two files never describe the same thing and never share a writer.
 
 ## Where this stands
 
-SOLUTION_CONVERGENCE. Options A and B recorded with the architect's verdicts; PM recommends B.
+DECOMPOSITION. `PD-0011` (option B) and the Solution Contract recorded; `REQ-0012` behavior next.
 
 ## Problem statement
 
@@ -46,7 +46,7 @@ Consequences records "No way to change a due date".
 
 ## Next action
 
-ROLE-product-manager: record the chosen-option PD- and the Solution Contract; advance SOLUTION_CONVERGENCE -> DECOMPOSITION.
+ROLE-product-manager: write REQ-0012 behavior and acceptance criteria (rev 2), then dispatch ROLE-planner for coherence round 1 of 2 (terminal unless blocking).
 
 ## Blocked by
 
@@ -142,6 +142,11 @@ from today when the task is overdue (A3). B carries no days rule, no extra
 error and no swapped-number trap (R3), and growing into A later is additive
 (R5).
 
+_Chosen (SOLUTION_CONVERGENCE, 2026-10-27):_ **B**, `PD-0011`. A rejected for the
+reasons in `PD-0011` "Options considered". The architect's P1 choice: option
+(a), refuse past `9999-12-31`, recorded as a standing rule (`PD-0011` item 6).
+No option is left under consideration.
+
 ## Consultation log
 
 | Date | Delegate role | Question | Answer / verdict | Recorded as |
@@ -209,6 +214,7 @@ _Assembled at ENGINEERING_READY._
 | 2026-10-27 | DISCOVERY | PRODUCT_DEFINITION | ROLE-product-manager | DISCOVERY exit criteria met: problem, user, current state and success signals stated with sources; no open escalation-class ambiguity | Entry precondition (`lifecycle-hooks.md` §3.4.1 PRODUCT_DEFINITION) holds: Discovery has the target user, jobs J1–J3 and problems P1–P2 each with a source (S1), mapping `CAP-0001` (S2), success signals 1–5 (S3) and known non-goals. Hooks: HOOK-phase-entry pass | `444a288e2444d5ce`, head `8978f33` |
 | 2026-10-27 | PRODUCT_DEFINITION | SOLUTION_EXPLORATION | ROLE-product-manager | PRODUCT_DEFINITION exit criteria met: outcome O1–O3, out of scope (9 items), success measures 1–6, draft `REQ-0012` covering O1–O3, Product Definition Contract citing the raw request | Entry precondition (`lifecycle-hooks.md` §3.4.1 SOLUTION_EXPLORATION) holds: F1 `initiative.md` rev 2 has an outcome and a non-empty out-of-scope section; one `status: draft` `REQ-`; F2 draft-mode coverage (inline, deterministic): J1 -> `REQ-0012` Requirement, J2 -> Scope bullet 1 ("one short command"), J3 -> Non-goals and the initiative out of scope; no `R1` defect. `requirement` counter 11 -> 12, checked against `origin/main`. No scope `PD-` needed yet: A1–A11 are recorded in the chosen-option `PD-`. Hooks: HOOK-phase-entry pass | `444a288e2444d5ce`, head `b6c0a3e` |
 | 2026-10-27 | SOLUTION_EXPLORATION | SOLUTION_CONVERGENCE | ROLE-product-manager | SOLUTION_EXPLORATION exit criteria met: options A and B recorded, each with a feasibility verdict (`feasible-with-constraints`) and a user-visible trade-off; PM recommends B with reasons | Entry precondition (`lifecycle-hooks.md` §3.4.1 SOLUTION_CONVERGENCE) holds: X1 two distinguishable options; X2 each verdict in the closed set (`technical/assessment.md` round 1); one Consultation log row for the one delegate response. No design dispatch: no visual surface (`project/constraints.md` row 8, `PD-0001` item 3; to be recorded in the convergence `PD-`, §9d.5). Hooks: HOOK-phase-entry pass | `444a288e2444d5ce`, head `c1e54fa` |
+| 2026-10-27 | SOLUTION_CONVERGENCE | DECOMPOSITION | ROLE-product-manager | SOLUTION_CONVERGENCE exit criteria met: one accepted chosen-option `PD-0011` (option B), indexed, with the rejected option A and its reasons; it also settles A1–A11, C2 (standing date-limit rule) and P1–P4; `REQ-0012` (draft) is consistent with it; no option left under consideration; Solution Contract `product/solution-contract.md` cites `PD-0011` and states there is no design concept (no visual surface, `PD-0011` item 13) | Choice settled by the request (escalation-policy §3 route 2: "a quick way", "Keep it simple"); no `Q-`. Entry precondition (`lifecycle-hooks.md` §3.4.1 DECOMPOSITION) holds: exactly one accepted chosen-option `PD-` (`PD-0011`) citing verdict `feasible-with-constraints` (`technical/assessment.md` round 1). Counter `decision` 10 -> 11, checked against `origin/main`. `INIT-0003` rev 3. Hooks: HOOK-phase-entry pass | `444a288e2444d5ce`, head `d4280a8` |
 
 > Every product-side session updates this file before ending — **including
 > sessions that failed**, which record the failure in `next_action` and do not
