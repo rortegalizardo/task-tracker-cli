@@ -3,16 +3,16 @@ id: PSTATE-INIT-0002
 type: product-state
 title: Product definition state for INIT-0002
 status: authoritative
-revision: 2
+revision: 3
 owner_role: ROLE-product-manager
 created: 2026-10-26
 updated: 2026-10-26
 updated_by_role: ROLE-product-manager
 initiative: INIT-0002
-phase: DISCOVERY
+phase: PRODUCT_DEFINITION
 phase_entered: 2026-10-26
 requester: "the requester (repository owner, rortegalizardo), via the driving session, 2026-10-26"
-next_action: "ROLE-product-manager: SKILL-advance-product-phase (DISCOVERY -> PRODUCT_DEFINITION)"
+next_action: "ROLE-product-manager: SKILL-define-product-requirements, then SKILL-advance-product-phase (PRODUCT_DEFINITION -> SOLUTION_EXPLORATION)"
 blocked_by: []
 converged: false
 readiness_verdict: none   # none | READY | READY-with-known-issues | NOT READY | void
@@ -29,7 +29,7 @@ these two files never describe the same thing and never share a writer.
 
 ## Where this stands
 
-DISCOVERY. Problem, user, current state and success signals are written with sources below. No architect consult: the size rule (§9d.1) allows none at DISCOVERY. Size: small (≤3 stories expected; target 1).
+PRODUCT_DEFINITION. Discovery is complete with sources. Size: small (≤3 stories expected; target 1).
 
 ## Problem statement
 
@@ -43,7 +43,7 @@ command or stored field marks a task as important (`src/commands/list.js`,
 
 ## Next action
 
-ROLE-product-manager: SKILL-advance-product-phase (DISCOVERY -> PRODUCT_DEFINITION).
+ROLE-product-manager: SKILL-define-product-requirements, then SKILL-advance-product-phase (PRODUCT_DEFINITION -> SOLUTION_EXPLORATION).
 
 ## Blocked by
 
@@ -183,6 +183,7 @@ _Written at ENGINEERING_READY._
 | 2026-10-26 | — | BOOTSTRAP | ROLE-product-manager | Raw request relayed by the driving session | Packet: `readiness: ready`, `scope.initiative: null`, profile S, no areas. `neighbouring` read in full: `CAP-0001` (draft) lists "priorities" among INIT-0001's exclusions, not as a decision; no `PD-` (accepted or rejected) concerns importance or priority; no open `Q-`. Note: `CAP-0001` is still draft and predates shipped behaviour (notes, search, export filters from RCDEV-839..841); code and README at head `6ea6439` are the current-state evidence. Hooks: HOOK-canonical-root pass, HOOK-hydrate pass | `b14f2ea367f1add1`, head `6ea6439` |
 | 2026-10-26 | BOOTSTRAP | INTAKE | ROLE-product-manager | Packet emitted, scope resolved to none | Triage verdict `new-initiative`: no `CAP-` does this (grep of `src/`, `bin/`, README for priority/important: none); no `PD-` settles it; no constraint forbids it; no initiative covers it (INIT-0001 excluded "Priorities"); one outcome named. Raw request committed verbatim. `INIT-0002` allocated (counter 1 -> 2, checked against `origin/main` `6ea6439`). Size: small (≤3 stories expected). Hooks: HOOK-initiative-resolved pass, HOOK-phase-entry pass | `b14f2ea367f1add1`, head `6ea6439` |
 | 2026-10-26 | INTAKE | DISCOVERY | ROLE-product-manager | INTAKE exit criteria met: one initiative, one problem, one named requester, ambiguity rows A1–A9 all classified (`pm-resolvable`) | Entry precondition (`lifecycle-hooks.md` §3.4.1 DISCOVERY) holds: `initiative.md` at `status: draft`; state at INTAKE with requester, problem statement and a classified ambiguity log. Discovery written (J1–J3, P1–P2, S2 `CAP-0001`, S3 signals 1–5, non-goals). No `Q-` raised. Hooks: HOOK-phase-entry pass | `b14f2ea367f1add1`, head `68a070b` |
+| 2026-10-26 | DISCOVERY | PRODUCT_DEFINITION | ROLE-product-manager | DISCOVERY exit criteria met: problem, user, current state and success signals stated with sources; no open escalation-class ambiguity | Entry precondition (`lifecycle-hooks.md` §3.4.1 PRODUCT_DEFINITION) holds: Discovery has the target user, jobs J1–J3 and problems P1–P2 each with a source (S1), mapping `CAP-0001` (S2), success signals 1–5 (S3) and known non-goals. Hooks: HOOK-phase-entry pass | `b14f2ea367f1add1`, head `dc90a63` |
 
 > Every product-side session updates this file before ending — **including
 > sessions that failed**, which record the failure in `next_action` and do not
