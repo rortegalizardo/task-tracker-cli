@@ -3,7 +3,7 @@ id: PSTATE-INIT-0002
 type: product-state
 title: Product definition state for INIT-0002
 status: authoritative
-revision: 10
+revision: 11
 owner_role: ROLE-product-manager
 created: 2026-10-26
 updated: 2026-10-26
@@ -12,7 +12,7 @@ initiative: INIT-0002
 phase: ENGINEERING_READY
 phase_entered: 2026-10-26
 requester: "the requester (repository owner, rortegalizardo), via the driving session, 2026-10-26"
-next_action: "ROLE-product-manager: ENGINEERING_READY — write the Handoff packet (inline, size rule §9d.2), set REQ-0011 readiness engineering-ready and INIT-0002 active, compile delivery/manifest.md (band_owner product), then advance to HANDOFF and run SKILL-create-tickets-from-stories (Linear team RC Development, project Task Tracker CLI). Run stopped at the owner's 350k-token ceiling (attempt 3); resume only on the owner's go-ahead"
+next_action: "ROLE-product-manager: advance ENGINEERING_READY → HANDOFF (Handoff log row) and run SKILL-create-tickets-from-stories for REQ-0011 (Linear team RC Development, project Task Tracker CLI). Handoff packet, delivery/manifest.md, REQ-0011 readiness engineering-ready and INIT-0002 active are written and committed"
 blocked_by: []
 converged: true
 readiness_verdict: READY   # none | READY | READY-with-known-issues | NOT READY | void
@@ -29,7 +29,7 @@ these two files never describe the same thing and never share a writer.
 
 ## Where this stands
 
-ENGINEERING_READY, entered; no handoff work started. STOPPED: run stopped at the owner's 350k-token ceiling (attempt 3). Nothing is half-written. Readiness round 1 (terminal, no blocking finding): `READY`, no conditions, no findings (Readiness log). Convergence declared (`converged: true`). Option A chosen (`PD-0009`); format 4 with a one-way upgrade (`PD-0010`); Solution Contract at `product/solution-contract.md`. Coherence round 1 (terminal): `coherent` (`technical/coherence.md`); its 8 non-blocking scope-excess findings were trimmed in `REQ-0011` rev 3 (AC-1..AC-17), now `accepted`. Coverage validation: zero defects (below).
+ENGINEERING_READY, work done; HANDOFF not yet entered. Handoff packet written (below); `delivery/manifest.md` compiled at `band_owner: product` against `READY@2026-10-26`, digest `REQ-0011@3/2026-10-26; INIT-0002@3`; `REQ-0011` `readiness: engineering-ready`; `INIT-0002` `status: active`. Readiness round 1 (terminal): `READY`, no conditions, no findings. Option A (`PD-0009`); format 4 with a one-way upgrade (`PD-0010`).
 
 ## Problem statement
 
@@ -43,7 +43,7 @@ command or stored field marks a task as important (`src/commands/list.js`,
 
 ## Next action
 
-ROLE-product-manager: ENGINEERING_READY — write the Handoff packet (inline, size rule §9d.2), set REQ-0011 readiness engineering-ready and INIT-0002 active, compile delivery/manifest.md (band_owner product), then advance to HANDOFF and run SKILL-create-tickets-from-stories (Linear team RC Development, project Task Tracker CLI). Run stopped at the owner's 350k-token ceiling (attempt 3); resume only on the owner's go-ahead.
+ROLE-product-manager: advance ENGINEERING_READY → HANDOFF (Handoff log row) and run SKILL-create-tickets-from-stories for REQ-0011 (Linear team RC Development, project Task Tracker CLI). Handoff packet, delivery/manifest.md, REQ-0011 readiness engineering-ready and INIT-0002 active are written and committed.
 
 ## Blocked by
 
@@ -219,7 +219,35 @@ with no findings rows is invalid output.
 
 ## Handoff packet
 
-_Written at ENGINEERING_READY._
+Assembled 2026-10-26 at ENGINEERING_READY by `ROLE-product-manager` against the `READY` verdict of 2026-10-26 (Readiness log, round 1; digest `(REQ-0011, 3, 2026-10-26)`, INIT-0002 rev 3, unchanged on disk). Drafted inline under the size rule (§9d.2): a transcription of existing records.
+
+- **Repository:** `rortegalizardo/task-tracker-cli` (`~/Desktop/Projects/task-tracker-cli`), default branch `main` (`project/constraints.md` row 9).
+- **Outcome:** A person using `ttc` can mark a task as important and remove the mark again, see every important task before every other task in every `ttc list` view and filter, with the mark shown on its line, and keep everything else as it is today: a list with no important task prints exactly what it prints now, data files written by older ttc keep working, and the mark survives the other commands and a JSON export/import round trip (`initiative.md` `## Outcome`, O1–O3).
+- **Stories, in suggested sequence:**
+  1. `REQ-0011` — the only story; `depends_on: [none]`, on the frontier.
+- **Design references and export paths:** none — no user-facing visual surface (`PD-0009` item 11; `project/constraints.md` row 8).
+- **Decisions in force:** `PD-0003`, `PD-0004`, `PD-0008`, `PD-0009` (chosen option A), `PD-0010` (format 4, one-way upgrade).
+- **Binding technical constraints** (all from `technical/assessment.md`, round 1; carried in `REQ-0011` `## Technical constraints`):
+  - C1 — every stored and imported file is checked against the exact fields of its format version, so the mark needs format version 4; versions 1–3 are read with no task important, and the next change writes version 4.
+  - C2 — the upgrade is one-way: an older ttc refuses a version 4 file and new JSON exports, even with no task marked.
+  - C3 — the new rules add to the existing fixed behaviour rules and are fixed text; tests assert that text exactly.
+  - C4 — `ttc important`, `ttc unimportant` and `ttc add --important` inherit the id, option, lock, atomic-write, no-op and failure-after-save rules of the existing changing commands.
+  - C5 — `tasks.json` and import files share one parse path; the mark is checked strictly and the same way in both, never coerced, and "exported then imported is the same list" includes it, also for a filtered JSON export.
+  - C6 — the test oracle (`test/support/ttc-model.js`, `fuzz-gen.js`) and the unit tests that assert format 3 output move with the change; the oracle is changed from the decided rules, not from the new code.
+  - C7 — the perf guard (10,000 tasks, median < 500 ms) must still pass.
+- **Explicitly out of scope** (copied from `initiative.md` `## Scope`, Out of scope):
+  - More than one level of importance (for example high, medium, low): "Keep it simple" (request).
+  - A list option that shows only important tasks, or hides them.
+  - Counting important tasks in `ttc stats`.
+  - An importance column in the CSV export: its columns stay `id,title,status,due,tags,note`.
+  - Changing the order of `ttc export` output (JSON keeps stored order; CSV keeps ascending id).
+  - Any other sort order or sort option for `ttc list`.
+  - Showing the mark in `ttc note` output.
+  - Reminders or notifications for important tasks.
+  - Making a task important automatically (for example because it is overdue or due soon).
+- **Open questions (non-blocking):** none. The verdict carries no conditions or known issues.
+- **Delivery manifest:** `product/initiatives/INIT-0002-important-tasks-first/delivery/manifest.md`
+- **Tickets** (Linear team RC Development, project Task Tracker CLI, `PD-0007`; mapping authority `delivery/tickets.md`): written at HANDOFF.
 
 ## Handoff log
 

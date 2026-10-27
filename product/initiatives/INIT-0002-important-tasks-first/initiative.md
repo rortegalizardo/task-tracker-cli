@@ -2,7 +2,7 @@
 id: INIT-0002
 type: initiative
 title: Important tasks are marked and listed first
-status: draft
+status: active
 revision: 3
 owner_role: ROLE-product-manager
 created: 2026-10-26
