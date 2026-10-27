@@ -9,10 +9,10 @@ created: 2026-10-26
 updated: 2026-10-26
 updated_by_role: ROLE-product-manager
 initiative: INIT-0002
-phase: ENGINEERING_READY
+phase: HANDOFF
 phase_entered: 2026-10-26
 requester: "the requester (repository owner, rortegalizardo), via the driving session, 2026-10-26"
-next_action: "ROLE-product-manager: advance ENGINEERING_READY → HANDOFF (Handoff log row) and run SKILL-create-tickets-from-stories for REQ-0011 (Linear team RC Development, project Task Tracker CLI). Handoff packet, delivery/manifest.md, REQ-0011 readiness engineering-ready and INIT-0002 active are written and committed"
+next_action: "ROLE-product-manager: HANDOFF — run SKILL-create-tickets-from-stories for REQ-0011 (Linear team RC Development, project Task Tracker CLI), then write the Handoff log row and name the created ticket_code"
 blocked_by: []
 converged: true
 readiness_verdict: READY   # none | READY | READY-with-known-issues | NOT READY | void
@@ -29,7 +29,7 @@ these two files never describe the same thing and never share a writer.
 
 ## Where this stands
 
-ENGINEERING_READY, work done; HANDOFF not yet entered. Handoff packet written (below); `delivery/manifest.md` compiled at `band_owner: product` against `READY@2026-10-26`, digest `REQ-0011@3/2026-10-26; INIT-0002@3`; `REQ-0011` `readiness: engineering-ready`; `INIT-0002` `status: active`. Readiness round 1 (terminal): `READY`, no conditions, no findings. Option A (`PD-0009`); format 4 with a one-way upgrade (`PD-0010`).
+HANDOFF, entered; tickets not yet created. Handoff packet written (below); `delivery/manifest.md` compiled at `band_owner: product` against `READY@2026-10-26`, digest `REQ-0011@3/2026-10-26; INIT-0002@3`; `REQ-0011` `readiness: engineering-ready`; `INIT-0002` `status: active`. Readiness round 1 (terminal): `READY`, no conditions, no findings. Option A (`PD-0009`); format 4 with a one-way upgrade (`PD-0010`).
 
 ## Problem statement
 
@@ -43,7 +43,7 @@ command or stored field marks a task as important (`src/commands/list.js`,
 
 ## Next action
 
-ROLE-product-manager: advance ENGINEERING_READY → HANDOFF (Handoff log row) and run SKILL-create-tickets-from-stories for REQ-0011 (Linear team RC Development, project Task Tracker CLI). Handoff packet, delivery/manifest.md, REQ-0011 readiness engineering-ready and INIT-0002 active are written and committed.
+ROLE-product-manager: HANDOFF — run SKILL-create-tickets-from-stories for REQ-0011 (Linear team RC Development, project Task Tracker CLI), then write the Handoff log row and name the created ticket_code.
 
 ## Blocked by
 
@@ -270,6 +270,7 @@ Assembled 2026-10-26 at ENGINEERING_READY by `ROLE-product-manager` against the 
 | 2026-10-26 | DECOMPOSITION | READINESS | ROLE-product-manager | DECOMPOSITION exit criteria met: O1–O3 map to accepted `REQ-0011`; it meets §10.3 points 1–9; the draft-stage coherence check (round 1, terminal, `coherent`) left no blocking defect; convergence declared (`converged: true`) | Resumed on the owner's go-ahead (attempt 3). Coherence round 1 dispatched with the owner's added scope-excess check; 8 non-blocking findings, all trimmed in `REQ-0011` rev 3 (AC-1..AC-17) per the owner's instruction, Behavior and Scope unchanged, then accepted. No `PD-` needed: trims are AC phrasing under §4.1. No `Q-`. Entry precondition (`lifecycle-hooks.md` §3.4.1 READINESS) holds: `converged: true`; HOOK-traceability zero defects (Coverage validation); `coherence.md` `coherent`, terminal round, no blocking finding; no user-facing `DES-` required. Hooks: HOOK-traceability pass, HOOK-phase-entry pass | `2355178f0969f499`, head `948388c` |
 | 2026-10-26 | READINESS | ENGINEERING_READY | ROLE-product-manager | READINESS exit criteria met: `READY` recorded by ROLE-product-readiness-reviewer, round 1 of 2 declared terminal unless blocking; no conditions or known issues to record as `Q-`/`PD-` | Coverage validation zero defects ran before the dispatch (not a review dispatch). Review budget used this session: 2 of 6 (coherence 1, readiness 1). `readiness_verdict: READY` set by the PM from the reviewer's Readiness log row, at the reviewer's request (the dispatch had limited its writes to the log sections). Entry precondition (`lifecycle-hooks.md` §3.4.1 ENGINEERING_READY) holds: verdict `READY`, not `void`, digest `(REQ-0011, 3, 2026-10-26)`; INIT-0002 rev 3 matches disk. Hooks: HOOK-readiness pass, HOOK-phase-entry pass | `2355178f0969f499`, head `64b7003` |
 | 2026-10-26 | ENGINEERING_READY | ENGINEERING_READY | ROLE-product-manager | Run stopped at a clean checkpoint: the driving session sent STOP, the owner's 350k-token ceiling was crossed (attempt 3) | No transition. Phase entered; Handoff packet, manifest, readiness flags and tickets not yet written. No child running. No `Q-` open | `2355178f0969f499`, head `480367a` |
+| 2026-10-26 | ENGINEERING_READY | HANDOFF | ROLE-product-manager | ENGINEERING_READY exit criteria met: Handoff packet self-contained, every bullet populated or explicit `none` (H7); `delivery/manifest.md` at `band_owner: product`, M1–M8 hold, digest equals the verdict's | Resumed on the owner's go-ahead (attempt 3 continuation). H1 `READY`, not `void`; H4 digest `(REQ-0011, 3, 2026-10-26)`, INIT-0002 rev 3 unchanged on disk; H2 coverage validation of this digest (zero defects, Coverage validation) relied on, not re-run, per the caller; H3 `REQ-0011` `accepted`; H5 no `blocker` `Q-`; H6 `PD-0003/0004/0007/0008/0009/0010`, `CAP-0001` resolve, no `local_export`; H8 no conditions; H10 `REQ-0011` `readiness: engineering-ready`; H11 no HLD, plan, breakdown or estimate on the product side; `INIT-0002` `status: active`. ENGINEERING_READY commit `74aced0` pushed and verified on `origin/main`. Entry precondition (`lifecycle-hooks.md` §3.4.1 HANDOFF) holds. Hooks: HOOK-handoff-conformance pass (H0–H12; H13 pending ticket creation), HOOK-phase-entry pass | `2355178f0969f499` (carried; narrow hydration), head `74aced0` |
 
 > Every product-side session updates this file before ending — **including
 > sessions that failed**, which record the failure in `next_action` and do not
