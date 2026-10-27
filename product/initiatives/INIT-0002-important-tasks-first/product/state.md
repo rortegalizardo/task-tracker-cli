@@ -3,16 +3,16 @@ id: PSTATE-INIT-0002
 type: product-state
 title: Product definition state for INIT-0002
 status: authoritative
-revision: 4
+revision: 6
 owner_role: ROLE-product-manager
 created: 2026-10-26
 updated: 2026-10-26
 updated_by_role: ROLE-product-manager
 initiative: INIT-0002
-phase: SOLUTION_EXPLORATION
+phase: SOLUTION_CONVERGENCE
 phase_entered: 2026-10-26
 requester: "the requester (repository owner, rortegalizardo), via the driving session, 2026-10-26"
-next_action: "ROLE-planner (PRODUCT-DISCOVERY mode): product-feasibility-assessment of options A and B, writing technical/capability-scan.md, impact.md and assessment.md in one dispatch (§9d.1)"
+next_action: "ROLE-product-manager: SOLUTION_CONVERGENCE — record the chosen-option PD- for option A (rules A1–A9, the architect's C1–C7, the C2/P1 format-4 choice, PD-0003 items 7–10, 12, 14 amended per C3, no visual surface per §9d.5), then the Solution Contract. Run STOPPED at the owner's 400k-token ceiling; resume only on the owner's go-ahead"
 blocked_by: []
 converged: false
 readiness_verdict: none   # none | READY | READY-with-known-issues | NOT READY | void
@@ -29,7 +29,7 @@ these two files never describe the same thing and never share a writer.
 
 ## Where this stands
 
-SOLUTION_EXPLORATION. Outcome, out of scope and draft REQ-0011 are written; the Product Definition Contract is accepted. Next: one architect feasibility dispatch for the options. Size: small (target 1 story).
+SOLUTION_CONVERGENCE, not started. STOPPED: the run will cross the owner's 400k-token product ceiling (about 350k used: the feasibility dispatch alone reported 166k). DECOMPOSITION, READINESS and HANDOFF still need three dispatches (coherence, readiness, ticket transcription). Options, verdicts and the recommendation (A) are recorded below; nothing is half-written.
 
 ## Problem statement
 
@@ -43,7 +43,7 @@ command or stored field marks a task as important (`src/commands/list.js`,
 
 ## Next action
 
-ROLE-planner (PRODUCT-DISCOVERY mode): product-feasibility-assessment of options A and B, writing technical/capability-scan.md, impact.md and assessment.md in one dispatch (§9d.1).
+ROLE-product-manager: SOLUTION_CONVERGENCE — record the chosen-option PD- for option A (rules A1–A9, the architect's C1–C7, the C2/P1 format-4 choice, PD-0003 items 7–10, 12, 14 amended per C3, no visual surface per §9d.5), then the Solution Contract. Run STOPPED at the owner's 400k-token ceiling; resume only on the owner's go-ahead.
 
 ## Blocked by
 
@@ -126,13 +126,26 @@ S2/S3 = the code and README at head `6ea6439`.
 
 | Option | User-visible difference | Feasibility verdict | Cost / risk | Trade-off |
 | --- | --- | --- | --- | --- |
+| A — one on/off important mark | `ttc add ... --important`; `ttc important <id>` marks, `ttc unimportant <id>` unmarks (no-op messages, no write on a no-op); `ttc list` prints important tasks first, ascending id inside each group, with a `!important` token on the line | `feasible-with-constraints`, band `multi-component` (`technical/assessment.md`, round 1) | Constraints C1–C7 (`technical/assessment.md` round 1). C2: the format 4 upgrade is one-way, so older ttc refuses the file after new ttc's first change | Least to learn: two groups only |
+| B — three levels (high, normal, low) | `ttc add ... --priority high\|normal\|low`; `ttc priority <id> <level>`; `ttc list` orders high, normal, low, ascending id inside each level, with `!high` / `!low` tokens | `feasible-with-constraints`, band `multi-component` (`technical/assessment.md`, round 1) | C1–C7 plus C8 (fixed level spelling and case); P2: no success or no-op message defined yet | Finer ordering, more to learn; contradicts the out-of-scope item "more than one level" |
 
-_Recommended option and why:_
+_Recommended option and why:_ **A.** It is what the request asks for ("mark
+some tasks as more important", "see the important ones first", "Keep it
+simple"). It stays inside the out-of-scope section, which excludes levels, and
+it carries one constraint fewer than B (no C8). Open for SOLUTION_CONVERGENCE:
+the architect's C2/P1 choice between accepting the one-way format 4 upgrade
+(as format 3 did for notes) and writing format 3 until the first task is
+marked (`technical/assessment.md`, Recommendations).
 
 ## Consultation log
 
 | Date | Delegate role | Question | Answer / verdict | Recorded as |
 | --- | --- | --- | --- | --- |
+| 2026-10-26 | ROLE-planner (PRODUCT-DISCOVERY) | Feasibility verdict, constraints, risks and band for options A and B (one dispatch: capability scan, impact, assessment; §9d.1) | A and B both `feasible-with-constraints`, `multi-component`; constraints C1–C8; false assumptions P1–P3 | `technical/capability-scan.md`, `technical/impact.md`, `technical/assessment.md` (round 1); this row; C1–C3 and P1 go to the convergence `PD-`. Vendor claude, model opus |
+
+Dispatch log: `phase | delegate | vendor | model | tokens-scale | ledger run | artifact produced`
+
+- `SOLUTION_EXPLORATION | ROLE-planner | claude | opus | L (subagent reported 166,151 tokens, 22 tool uses, 345 s) | aa0daa48e900afa25 | technical/capability-scan.md, impact.md, assessment.md`
 
 ## Escalation log
 
@@ -186,6 +199,8 @@ _Written at ENGINEERING_READY._
 | 2026-10-26 | INTAKE | DISCOVERY | ROLE-product-manager | INTAKE exit criteria met: one initiative, one problem, one named requester, ambiguity rows A1–A9 all classified (`pm-resolvable`) | Entry precondition (`lifecycle-hooks.md` §3.4.1 DISCOVERY) holds: `initiative.md` at `status: draft`; state at INTAKE with requester, problem statement and a classified ambiguity log. Discovery written (J1–J3, P1–P2, S2 `CAP-0001`, S3 signals 1–5, non-goals). No `Q-` raised. Hooks: HOOK-phase-entry pass | `b14f2ea367f1add1`, head `68a070b` |
 | 2026-10-26 | DISCOVERY | PRODUCT_DEFINITION | ROLE-product-manager | DISCOVERY exit criteria met: problem, user, current state and success signals stated with sources; no open escalation-class ambiguity | Entry precondition (`lifecycle-hooks.md` §3.4.1 PRODUCT_DEFINITION) holds: Discovery has the target user, jobs J1–J3 and problems P1–P2 each with a source (S1), mapping `CAP-0001` (S2), success signals 1–5 (S3) and known non-goals. Hooks: HOOK-phase-entry pass | `b14f2ea367f1add1`, head `dc90a63` |
 | 2026-10-26 | PRODUCT_DEFINITION | SOLUTION_EXPLORATION | ROLE-product-manager | PRODUCT_DEFINITION exit criteria met: outcome O1–O3, out of scope (9 items), success measures 1–5, draft `REQ-0011` covering O1–O3, Product Definition Contract citing the raw request | Entry precondition (`lifecycle-hooks.md` §3.4.1 SOLUTION_EXPLORATION) holds: F1 `initiative.md` rev 2 has an outcome and a non-empty out-of-scope section; one `status: draft` `REQ-`; F2 draft-mode coverage (inline, deterministic): J1 -> `REQ-0011` Scope bullet 1, J2 -> Scope bullet 2, J3 -> Non-goals and the initiative out of scope; no `R1` defect. No scope `PD-` needed yet: A1–A9 are recorded in the chosen-option `PD-`. Hooks: HOOK-phase-entry pass | `b14f2ea367f1add1`, head `60ea0b2` |
+| 2026-10-26 | SOLUTION_EXPLORATION | SOLUTION_CONVERGENCE | ROLE-product-manager | SOLUTION_EXPLORATION exit criteria met: options A and B recorded, each with a feasibility verdict (`feasible-with-constraints`) and a user-visible trade-off; PM recommends A with reasons | Entry precondition (`lifecycle-hooks.md` §3.4.1 SOLUTION_CONVERGENCE) holds: X1 two distinguishable options; X2 each verdict in the closed set (`technical/assessment.md` round 1); one Consultation log row for the one delegate response. No design dispatch: no visual surface (requester's run limits; to be recorded in the convergence `PD-`, §9d.5). Hooks: HOOK-phase-entry pass | `b14f2ea367f1add1`, head `9731f42` |
+| 2026-10-26 | SOLUTION_CONVERGENCE | SOLUTION_CONVERGENCE | ROLE-product-manager | Run stopped at a clean checkpoint: projected usage crosses the owner's frozen 400k-token product ceiling | No transition. Phase entered, no convergence work started; `next_action` names the resume step. No `Q-` open | `b14f2ea367f1add1`, head `9731f42` |
 
 > Every product-side session updates this file before ending — **including
 > sessions that failed**, which record the failure in `next_action` and do not
