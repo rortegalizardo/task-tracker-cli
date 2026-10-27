@@ -7,6 +7,8 @@ not re-open the question.
 
 | ID | Title | Status | Path | Updated |
 | --- | --- | --- | --- | --- |
+| PD-0010 | Store the important mark in a new data format version 4, and accept that the upgrade is one-way | accepted | [PD-0010-ttc-format-4-one-way-upgrade.md](PD-0010-ttc-format-4-one-way-upgrade.md) | 2026-10-26 |
+| PD-0009 | Build INIT-0002 as option A, one on/off important mark that ttc list shows first | accepted | [PD-0009-ttc-important-mark-option-a.md](PD-0009-ttc-important-mark-option-a.md) | 2026-10-26 |
 | PD-0008 | A changing command that saves its change and then cannot print its confirmation exits 1, and the change stays saved | accepted | [PD-0008-ttc-failure-after-saved-change.md](PD-0008-ttc-failure-after-saved-change.md) | 2026-10-22 |
 | PD-0007 | The ttc tickets live in a new Linear project, Task Tracker CLI, in team RC Development | accepted | [PD-0007-ttc-linear-project.md](PD-0007-ttc-linear-project.md) | 2026-10-20 |
 | PD-0006 | Titles in a stored or imported file must be in stored form, and an import may give ids again | accepted | [PD-0006-ttc-file-titles-and-ids-after-import.md](PD-0006-ttc-file-titles-and-ids-after-import.md) | 2026-10-20 |

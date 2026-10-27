@@ -3,14 +3,14 @@ id: INIT-0002
 type: initiative
 title: Important tasks are marked and listed first
 status: draft
-revision: 2
+revision: 3
 owner_role: ROLE-product-manager
 created: 2026-10-26
 updated: 2026-10-26
 capabilities: [CAP-0001]
 requirements: [REQ-0011]
 tickets: []
-decisions: []
+decisions: [PD-0009, PD-0010]
 ---
 
 # INIT-0002 — Important tasks are marked and listed first
@@ -102,3 +102,4 @@ None.
 | --- | --- | --- | --- |
 | 2026-10-26 | 1 | Created at INTAKE | Triage verdict `new-initiative` |
 | 2026-10-26 | 2 | Outcome O1–O3, scope, out of scope, success measures, `REQ-0011` | PRODUCT_DEFINITION |
+| 2026-10-26 | 3 | `decisions` lists `PD-0009` (chosen option A) and `PD-0010` (format 4). Scope unchanged | SOLUTION_CONVERGENCE |

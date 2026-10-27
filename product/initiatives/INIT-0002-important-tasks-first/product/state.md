@@ -3,22 +3,22 @@ id: PSTATE-INIT-0002
 type: product-state
 title: Product definition state for INIT-0002
 status: authoritative
-revision: 6
+revision: 7
 owner_role: ROLE-product-manager
 created: 2026-10-26
 updated: 2026-10-26
 updated_by_role: ROLE-product-manager
 initiative: INIT-0002
-phase: SOLUTION_CONVERGENCE
+phase: DECOMPOSITION
 phase_entered: 2026-10-26
 requester: "the requester (repository owner, rortegalizardo), via the driving session, 2026-10-26"
-next_action: "ROLE-product-manager: SOLUTION_CONVERGENCE — record the chosen-option PD- for option A (rules A1–A9, the architect's C1–C7, the C2/P1 format-4 choice, PD-0003 items 7–10, 12, 14 amended per C3, no visual surface per §9d.5), then the Solution Contract. Run STOPPED at the owner's 400k-token ceiling; resume only on the owner's go-ahead"
+next_action: "ROLE-product-manager: DECOMPOSITION — write REQ-0011 in full (behavior, acceptance criteria, technical constraints from PD-0009, PD-0010 and assessment C1–C7), then dispatch the coherence check round 1 (ROLE-planner)"
 blocked_by: []
 converged: false
 readiness_verdict: none   # none | READY | READY-with-known-issues | NOT READY | void
 stories: [REQ-0011]
 design_refs: []
-decisions: []
+decisions: [PD-0009, PD-0010]
 ---
 
 # Product definition state — INIT-0002
@@ -29,7 +29,7 @@ these two files never describe the same thing and never share a writer.
 
 ## Where this stands
 
-SOLUTION_CONVERGENCE, not started. STOPPED: the run will cross the owner's 400k-token product ceiling (about 350k used: the feasibility dispatch alone reported 166k). DECOMPOSITION, READINESS and HANDOFF still need three dispatches (coherence, readiness, ticket transcription). Options, verdicts and the recommendation (A) are recorded below; nothing is half-written.
+DECOMPOSITION. Option A chosen (`PD-0009`); the mark is stored in format 4 with a one-way upgrade (`PD-0010`); Solution Contract at `product/solution-contract.md`.
 
 ## Problem statement
 
@@ -43,7 +43,7 @@ command or stored field marks a task as important (`src/commands/list.js`,
 
 ## Next action
 
-ROLE-product-manager: SOLUTION_CONVERGENCE — record the chosen-option PD- for option A (rules A1–A9, the architect's C1–C7, the C2/P1 format-4 choice, PD-0003 items 7–10, 12, 14 amended per C3, no visual surface per §9d.5), then the Solution Contract. Run STOPPED at the owner's 400k-token ceiling; resume only on the owner's go-ahead.
+ROLE-product-manager: DECOMPOSITION — write REQ-0011 in full (behavior, acceptance criteria, technical constraints from PD-0009, PD-0010 and assessment C1–C7), then dispatch the coherence check round 1 (ROLE-planner).
 
 ## Blocked by
 
@@ -132,10 +132,12 @@ S2/S3 = the code and README at head `6ea6439`.
 _Recommended option and why:_ **A.** It is what the request asks for ("mark
 some tasks as more important", "see the important ones first", "Keep it
 simple"). It stays inside the out-of-scope section, which excludes levels, and
-it carries one constraint fewer than B (no C8). Open for SOLUTION_CONVERGENCE:
-the architect's C2/P1 choice between accepting the one-way format 4 upgrade
-(as format 3 did for notes) and writing format 3 until the first task is
-marked (`technical/assessment.md`, Recommendations).
+it carries one constraint fewer than B (no C8).
+
+_Chosen (SOLUTION_CONVERGENCE, 2026-10-26):_ **A**, `PD-0009`. B rejected for
+the reasons in `PD-0009` "Options considered". The architect's C2/P1 choice:
+option (a), the one-way format 4 upgrade, `PD-0010`. No option is left under
+consideration.
 
 ## Consultation log
 
@@ -201,6 +203,7 @@ _Written at ENGINEERING_READY._
 | 2026-10-26 | PRODUCT_DEFINITION | SOLUTION_EXPLORATION | ROLE-product-manager | PRODUCT_DEFINITION exit criteria met: outcome O1–O3, out of scope (9 items), success measures 1–5, draft `REQ-0011` covering O1–O3, Product Definition Contract citing the raw request | Entry precondition (`lifecycle-hooks.md` §3.4.1 SOLUTION_EXPLORATION) holds: F1 `initiative.md` rev 2 has an outcome and a non-empty out-of-scope section; one `status: draft` `REQ-`; F2 draft-mode coverage (inline, deterministic): J1 -> `REQ-0011` Scope bullet 1, J2 -> Scope bullet 2, J3 -> Non-goals and the initiative out of scope; no `R1` defect. No scope `PD-` needed yet: A1–A9 are recorded in the chosen-option `PD-`. Hooks: HOOK-phase-entry pass | `b14f2ea367f1add1`, head `60ea0b2` |
 | 2026-10-26 | SOLUTION_EXPLORATION | SOLUTION_CONVERGENCE | ROLE-product-manager | SOLUTION_EXPLORATION exit criteria met: options A and B recorded, each with a feasibility verdict (`feasible-with-constraints`) and a user-visible trade-off; PM recommends A with reasons | Entry precondition (`lifecycle-hooks.md` §3.4.1 SOLUTION_CONVERGENCE) holds: X1 two distinguishable options; X2 each verdict in the closed set (`technical/assessment.md` round 1); one Consultation log row for the one delegate response. No design dispatch: no visual surface (requester's run limits; to be recorded in the convergence `PD-`, §9d.5). Hooks: HOOK-phase-entry pass | `b14f2ea367f1add1`, head `9731f42` |
 | 2026-10-26 | SOLUTION_CONVERGENCE | SOLUTION_CONVERGENCE | ROLE-product-manager | Run stopped at a clean checkpoint: projected usage crosses the owner's frozen 400k-token product ceiling | No transition. Phase entered, no convergence work started; `next_action` names the resume step. No `Q-` open | `b14f2ea367f1add1`, head `9731f42` |
+| 2026-10-26 | SOLUTION_CONVERGENCE | DECOMPOSITION | ROLE-product-manager | SOLUTION_CONVERGENCE exit criteria met: one accepted chosen-option `PD-0009` (option A), indexed, with the rejected option B and its reasons; `PD-0010` settles the C1 format rule and the C2/P1 choice (a); `REQ-0011` (draft) is consistent with both (its scope already names the mark, list order, storage, export/import and help); no option left under consideration; Solution Contract `product/solution-contract.md` cites `PD-0009` and states that there is no design concept (no visual surface, `PD-0009` item 11) | Resumed on the owner's go-ahead (2026-10-26, new ceilings: 550k tokens, 4M cache reads, 60 min). Entry precondition (`lifecycle-hooks.md` §3.4.1 DECOMPOSITION) holds: exactly one accepted chosen-option `PD-` (`PD-0009`) citing verdict `feasible-with-constraints` (`technical/assessment.md` round 1). Counter `decision` 8 -> 10, checked against `origin/main` `3dbf454`. No `Q-`: every choice is PM-resolvable under the requester's run limits. Hooks: HOOK-canonical-root pass, HOOK-hydrate pass (`readiness: needs-orchestration`, expected before HANDOFF; defect carried: `CAP-0001` draft predates shipped behaviour), HOOK-phase-entry pass | `6136a67d57b0d9fc`, head `3dbf454` |
 
 > Every product-side session updates this file before ending — **including
 > sessions that failed**, which record the failure in `next_action` and do not
