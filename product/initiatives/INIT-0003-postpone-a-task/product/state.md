@@ -3,16 +3,16 @@ id: PSTATE-INIT-0003
 type: product-state
 title: Product definition state for INIT-0003
 status: authoritative
-revision: 2
+revision: 3
 owner_role: ROLE-product-manager
 created: 2026-10-27
 updated: 2026-10-27
 updated_by_role: ROLE-product-manager
 initiative: INIT-0003
-phase: DISCOVERY
+phase: PRODUCT_DEFINITION
 phase_entered: 2026-10-27
 requester: "the requester (repository owner, rortegalizardo), via the driving session, 2026-10-27"
-next_action: "ROLE-product-manager: SKILL-advance-product-phase DISCOVERY -> PRODUCT_DEFINITION"
+next_action: "ROLE-product-manager: write outcome, out of scope, draft REQ- and the Product Definition Contract; advance PRODUCT_DEFINITION -> SOLUTION_EXPLORATION"
 blocked_by: []
 converged: false
 readiness_verdict: none   # none | READY | READY-with-known-issues | NOT READY | void
@@ -29,7 +29,7 @@ these two files never describe the same thing and never share a writer.
 
 ## Where this stands
 
-DISCOVERY. Discovery written (J1–J3, P1–P2, S2 `CAP-0001`, S3 signals 1–5, non-goals).
+PRODUCT_DEFINITION. Discovery complete; definition not yet written.
 
 ## Problem statement
 
@@ -46,7 +46,7 @@ Consequences records "No way to change a due date".
 
 ## Next action
 
-ROLE-product-manager: SKILL-advance-product-phase DISCOVERY -> PRODUCT_DEFINITION.
+ROLE-product-manager: write outcome, out of scope, draft REQ- and the Product Definition Contract; advance PRODUCT_DEFINITION -> SOLUTION_EXPLORATION.
 
 ## Blocked by
 
@@ -191,6 +191,7 @@ _Assembled at ENGINEERING_READY._
 | 2026-10-27 | — | BOOTSTRAP | ROLE-product-manager | Raw request relayed by the driving session | Packet: `readiness: ready`, `scope.initiative: null`, profile S, no areas, no open `Q-`. `neighbouring` read in full: `CAP-0001` (draft) covers due dates set at `add` and the overdue mark, not changing a due date; no `PD-` (accepted or rejected) concerns postponing; `PD-0003` Consequences "No way to change a due date" and INIT-0001 out of scope "Changing or clearing a due date after `add`" are scope boundaries, not rejections. Defect carried (advisory): `CAP-0001` is still draft and predates shipped behaviour; code and README at head `ae4417c` are the current-state evidence. Hooks: HOOK-canonical-root pass, HOOK-hydrate pass | `444a288e2444d5ce`, head `ae4417c` |
 | 2026-10-27 | BOOTSTRAP | INTAKE | ROLE-product-manager | Packet emitted, scope resolved to none | Triage verdict `new-initiative`: no `CAP-` does this (no command changes a due date, `src/commands/`); no `PD-` settles it; no constraint forbids it; no initiative covers it (INIT-0001 excluded it, INIT-0002 is the important mark); one outcome named. Raw request committed verbatim. `INIT-0003` allocated (counter 2 -> 3, checked against `origin/main` `ae4417c`). Size: small (≤3 stories expected). Hooks: HOOK-initiative-resolved pass, HOOK-phase-entry pass | `444a288e2444d5ce`, head `ae4417c` |
 | 2026-10-27 | INTAKE | DISCOVERY | ROLE-product-manager | INTAKE exit criteria met: one initiative, one problem, one named requester, ambiguity rows A1–A11 all classified (`pm-resolvable`) | Entry precondition (`lifecycle-hooks.md` §3.4.1 DISCOVERY) holds: `initiative.md` at `status: draft`; state at INTAKE with requester, problem statement and a classified ambiguity log. Discovery written (J1–J3, P1–P2, S2 `CAP-0001`, S3 signals 1–5, non-goals). No `Q-` raised. Hooks: HOOK-phase-entry pass | `444a288e2444d5ce`, head `7ba472c` |
+| 2026-10-27 | DISCOVERY | PRODUCT_DEFINITION | ROLE-product-manager | DISCOVERY exit criteria met: problem, user, current state and success signals stated with sources; no open escalation-class ambiguity | Entry precondition (`lifecycle-hooks.md` §3.4.1 PRODUCT_DEFINITION) holds: Discovery has the target user, jobs J1–J3 and problems P1–P2 each with a source (S1), mapping `CAP-0001` (S2), success signals 1–5 (S3) and known non-goals. Hooks: HOOK-phase-entry pass | `444a288e2444d5ce`, head `8978f33` |
 
 > Every product-side session updates this file before ending — **including
 > sessions that failed**, which record the failure in `next_action` and do not
