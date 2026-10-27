@@ -3,16 +3,16 @@ id: PSTATE-INIT-0003
 type: product-state
 title: Product definition state for INIT-0003
 status: authoritative
-revision: 1
+revision: 2
 owner_role: ROLE-product-manager
 created: 2026-10-27
 updated: 2026-10-27
 updated_by_role: ROLE-product-manager
 initiative: INIT-0003
-phase: INTAKE
+phase: DISCOVERY
 phase_entered: 2026-10-27
 requester: "the requester (repository owner, rortegalizardo), via the driving session, 2026-10-27"
-next_action: "ROLE-product-manager: SKILL-advance-product-phase INTAKE -> DISCOVERY (write the Discovery section)"
+next_action: "ROLE-product-manager: SKILL-advance-product-phase DISCOVERY -> PRODUCT_DEFINITION"
 blocked_by: []
 converged: false
 readiness_verdict: none   # none | READY | READY-with-known-issues | NOT READY | void
@@ -29,7 +29,7 @@ these two files never describe the same thing and never share a writer.
 
 ## Where this stands
 
-INTAKE. Triage verdict `new-initiative`; draft initiative and this file written.
+DISCOVERY. Discovery written (J1–J3, P1–P2, S2 `CAP-0001`, S3 signals 1–5, non-goals).
 
 ## Problem statement
 
@@ -46,7 +46,7 @@ Consequences records "No way to change a due date".
 
 ## Next action
 
-ROLE-product-manager: SKILL-advance-product-phase INTAKE -> DISCOVERY (write the Discovery section).
+ROLE-product-manager: SKILL-advance-product-phase DISCOVERY -> PRODUCT_DEFINITION.
 
 ## Blocked by
 
@@ -78,7 +78,54 @@ raised.
 
 ## Discovery
 
-_Written at DISCOVERY._
+**Target user.** One person who keeps their own task list with `ttc` on their
+own machine: the requester. ttc has one user and no shared list
+(`CAP-0001` Boundaries; INIT-0001 out of scope). Source: S1 below.
+
+**Jobs and problems, with sources.**
+
+| # | Job or problem | Source |
+| --- | --- | --- |
+| J1 | Push a task back to a later date, often ("I keep pushing tasks back"). | Request, verbatim (`sources/2026-10-27-requester-request.md`) |
+| J2 | Do it quickly: one short command. | Request, verbatim: "Give me a quick way to postpone a task." (same file) |
+| J3 | Keep the feature simple: little to learn, nothing else changes. | Request, verbatim: "Keep it simple." (same file) |
+| P1 | No command changes a task's due date after `ttc add`. | `src/commands/` (add, delete, export, help, import, important, list, note, rename, stats, status, tag); README usage; `PD-0003` Consequences "No way to change a due date"; head `ae4417c` |
+| P2 | So pushing a task back today means editing `tasks.json` by hand, or deleting the task and adding it again, which gives it a new id. Until then an open task whose date has passed keeps showing `!overdue` in `ttc list`. | README "Data file format"; `src/commands/delete.js` (ids never reused, `PD-0003`); `src/overdue.js` (`isOverdue`: open, has a due date, due before today) |
+
+**Current-state capability mapping (S2).** `CAP-0001` — local task tracking
+from the `ttc` command line. This initiative extends it. `CAP-0001` is still
+`draft` and does not describe everything that shipped; the current-state
+evidence is the code and README at head `ae4417c`:
+
+- `ttc add "<title>" [--due YYYY-MM-DD] [--tag <t>]... [--note "<text>"] [--important]`
+  is the only way to give a task a due date (`src/commands/add.js`, README).
+- A due date is `YYYY-MM-DD` and a real calendar date; "today" is the local
+  date on the user's machine; a task is overdue when it is open and its due
+  date is before today (`PD-0003` items 5–6, `src/overdue.js`).
+- `ttc list` lines show `due:<date>` and `!overdue`
+  (`#<id> [ ]|[x] <title> [due:<date>] [!overdue] [!important] [+<tag>]...`);
+  the order is important tasks first, then ascending id; the due date does not
+  affect the order (README "Listing and filtering tasks").
+- Changing commands such as `ttc important <id>` print one confirmation line,
+  write atomically under a lock, and work on open and done tasks
+  (`src/commands/important.js`, `PD-0008`).
+- `tasks.json` is format version 4 (README "Data file format", `PD-0010`).
+
+**Success signals (S3).**
+
+1. A user postpones a task with one command that names only the task.
+2. Afterwards the task is due later than it was, and it is not overdue.
+3. The command prints the task's new due date.
+4. Nothing else about the task, the other tasks or the list order changes.
+5. A data file written by older ttc still works.
+
+**Known non-goals.** Hiding or snoozing tasks; setting or clearing a due date
+at will; giving a due date to a task that has none; postponing several tasks
+in one command; counting how often a task was postponed; weekends, holidays or
+times of day; reminders; recurring tasks.
+
+Sources: S1 = the request file above; INIT-0001 `initiative.md` out of scope;
+S2/S3 = the code and README at head `ae4417c`.
 
 ## Options
 
@@ -143,6 +190,7 @@ _Assembled at ENGINEERING_READY._
 | --- | --- | --- | --- | --- | --- | --- |
 | 2026-10-27 | — | BOOTSTRAP | ROLE-product-manager | Raw request relayed by the driving session | Packet: `readiness: ready`, `scope.initiative: null`, profile S, no areas, no open `Q-`. `neighbouring` read in full: `CAP-0001` (draft) covers due dates set at `add` and the overdue mark, not changing a due date; no `PD-` (accepted or rejected) concerns postponing; `PD-0003` Consequences "No way to change a due date" and INIT-0001 out of scope "Changing or clearing a due date after `add`" are scope boundaries, not rejections. Defect carried (advisory): `CAP-0001` is still draft and predates shipped behaviour; code and README at head `ae4417c` are the current-state evidence. Hooks: HOOK-canonical-root pass, HOOK-hydrate pass | `444a288e2444d5ce`, head `ae4417c` |
 | 2026-10-27 | BOOTSTRAP | INTAKE | ROLE-product-manager | Packet emitted, scope resolved to none | Triage verdict `new-initiative`: no `CAP-` does this (no command changes a due date, `src/commands/`); no `PD-` settles it; no constraint forbids it; no initiative covers it (INIT-0001 excluded it, INIT-0002 is the important mark); one outcome named. Raw request committed verbatim. `INIT-0003` allocated (counter 2 -> 3, checked against `origin/main` `ae4417c`). Size: small (≤3 stories expected). Hooks: HOOK-initiative-resolved pass, HOOK-phase-entry pass | `444a288e2444d5ce`, head `ae4417c` |
+| 2026-10-27 | INTAKE | DISCOVERY | ROLE-product-manager | INTAKE exit criteria met: one initiative, one problem, one named requester, ambiguity rows A1–A11 all classified (`pm-resolvable`) | Entry precondition (`lifecycle-hooks.md` §3.4.1 DISCOVERY) holds: `initiative.md` at `status: draft`; state at INTAKE with requester, problem statement and a classified ambiguity log. Discovery written (J1–J3, P1–P2, S2 `CAP-0001`, S3 signals 1–5, non-goals). No `Q-` raised. Hooks: HOOK-phase-entry pass | `444a288e2444d5ce`, head `7ba472c` |
 
 > Every product-side session updates this file before ending — **including
 > sessions that failed**, which record the failure in `next_action` and do not
