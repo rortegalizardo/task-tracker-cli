@@ -29,7 +29,7 @@ function ttc(sb, ...args) {
   return spawnSync(process.execPath, [BIN, ...args], { env, encoding: 'utf8' });
 }
 
-test('a version 2 file is not rewritten by read-only commands, and the next changing command writes version 3 (AC-4)', () => {
+test('a version 2 file is not rewritten by read-only commands, and the next changing command writes version 4 (AC-4)', () => {
   const sb = sandbox();
   fs.writeFileSync(sb.file, JSON.stringify(V2, null, 2) + '\n');
   const before = fs.readFileSync(sb.file);
@@ -42,10 +42,11 @@ test('a version 2 file is not rewritten by read-only commands, and the next chan
   assert.equal(ttc(sb, 'done', '1').status, 0);
   const after = JSON.parse(fs.readFileSync(sb.file, 'utf8'));
   assert.deepEqual(Object.keys(after), ['version', 'nextId', 'tasks']);
-  assert.equal(after.version, 3);
+  assert.equal(after.version, 4);
   assert.equal(after.tasks.length, 2);
   for (const t of after.tasks) {
-    assert.deepEqual(Object.keys(t), ['id', 'title', 'status', 'due', 'tags', 'note']);
+    assert.deepEqual(Object.keys(t), ['id', 'title', 'status', 'due', 'tags', 'note', 'important']);
     assert.equal(t.note, null);
+    assert.equal(t.important, false);
   }
 });

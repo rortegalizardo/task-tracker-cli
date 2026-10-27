@@ -189,10 +189,10 @@ const OUT_OF_ORDER = { nextId: 5, tasks: [
   { id: 4, title: 'Fourth', status: 'open', due: null, tags: [] },
 ] };
 
-// The seeded lists have no notes (version 1 on disk); export writes version 3.
+// The seeded lists have no notes (version 1 on disk); export writes version 4.
 function canonical(list) {
-  const tasks = list.tasks.map((t) => ({ ...t, note: null }));
-  return JSON.stringify({ version: 3, nextId: list.nextId, tasks }, null, 2) + '\n';
+  const tasks = list.tasks.map((t) => ({ ...t, note: null, important: false }));
+  return JSON.stringify({ version: 4, nextId: list.nextId, tasks }, null, 2) + '\n';
 }
 
 function listing(dir) {
@@ -274,7 +274,7 @@ test('export --search finds a task by its note alone and keeps its note (AC-3)',
   const r = ttc(sb, ['export', '--search', 'transfer']);
   assert.equal(r.status, 0);
   assert.deepEqual(JSON.parse(r.stdout).tasks, [
-    { id: 1, title: 'Pay rent', status: 'open', due: null, tags: [], note: 'Bank TRANSFER, ref 7' },
+    { id: 1, title: 'Pay rent', status: 'open', due: null, tags: [], note: 'Bank TRANSFER, ref 7', important: false },
   ]);
 });
 

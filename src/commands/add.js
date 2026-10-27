@@ -8,7 +8,7 @@ const { withLock } = require('../lock');
 
 module.exports = {
   name: 'add',
-  usage: 'ttc add "<title>" [--due YYYY-MM-DD] [--tag <t>]... [--note "<text>"]',
+  usage: 'ttc add "<title>" [--due YYYY-MM-DD] [--tag <t>]... [--note "<text>"] [--important]',
   run(args, ctx) {
     const parsed = parseArgs(args, {
       positionals: ['<title>'],
@@ -16,6 +16,7 @@ module.exports = {
         '--due': { value: true },
         '--tag': { value: true, repeat: true },
         '--note': { value: true },
+        '--important': { value: false },
       },
     });
     const title = inputTitle(parsed.positionals[0]);
@@ -31,12 +32,14 @@ module.exports = {
 
     const note = Object.hasOwn(parsed.options, '--note') ? inputNote(parsed.options['--note']) : null;
 
+    const important = Object.hasOwn(parsed.options, '--important');
+
     // Every check is done before the lock, the read and the write.
     const id = withLock(() => {
       const list = readList();
       if (list.nextId > MAX_ID) throw new TtcError('no task id is left');
       const newId = list.nextId;
-      list.tasks.push({ id: newId, title, status: 'open', due, tags, note });
+      list.tasks.push({ id: newId, title, status: 'open', due, tags, note, important });
       list.nextId = newId + 1;
       writeList(list);
       return newId;

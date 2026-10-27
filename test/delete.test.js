@@ -163,7 +163,7 @@ test('help lists the delete usage (criterion 11)', () => {
   assert.equal(r.status, 0);
   const lines = r.stdout.split('\n').map((l) => l.trim());
   assert.ok(lines.includes('ttc help'));
-  assert.ok(lines.includes('ttc add "<title>" [--due YYYY-MM-DD] [--tag <t>]... [--note "<text>"]'));
+  assert.ok(lines.includes('ttc add "<title>" [--due YYYY-MM-DD] [--tag <t>]... [--note "<text>"] [--important]'));
   assert.ok(lines.includes('ttc delete <id>'));
   assert.ok(lines.some((l) => l.startsWith('ttc list [')));
 });

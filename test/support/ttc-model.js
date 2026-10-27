@@ -2,7 +2,7 @@
 
 // The test-owned reference model (the oracle) for ttc. It is written from the
 // documented rules (src/args.js and src/storage.js headers, PD-0002, PD-0003,
-// C7) and never requires anything under src/.
+// PD-0009, PD-0010, C7) and never requires anything under src/.
 //
 // expect({ argv, files, today }) returns { ok: false } or
 // { ok: true, stdout, files }. `files` maps paths relative to the case folder
@@ -18,10 +18,12 @@ const STORED = 'home/tasks.json';
 
 const USAGE = [
   'ttc help',
-  'ttc add "<title>" [--due YYYY-MM-DD] [--tag <t>]... [--note "<text>"]',
+  'ttc add "<title>" [--due YYYY-MM-DD] [--tag <t>]... [--note "<text>"] [--important]',
   'ttc list [--open|--done|--all|--overdue] [--tag <t>] [--due-from YYYY-MM-DD] [--due-to YYYY-MM-DD] [--search <text>]',
   'ttc done <id>',
   'ttc reopen <id>',
+  'ttc important <id>',
+  'ttc unimportant <id>',
   'ttc rename <id> "<title>"',
   'ttc delete <id>',
   'ttc tag <id> +<t> | -<t>',
@@ -207,17 +209,18 @@ function parseJson(text) {
 }
 
 // A stored or imported document: an optional "version" key (a whole number
-// from 1 to 3; anything else, newer versions included, fails), then the list
+// from 1 to 4; anything else, newer versions included, fails), then the list
 // body. No key is version 1. Versions 1 and 2 tasks have five keys; version 3
-// tasks also have "note" (null or a valid one-line text). The result is always
-// the version 3 shape (older tasks get note null). Rest syntax keeps a parsed
+// tasks also have "note" (null or a valid one-line text); version 4 tasks also
+// have "important", which must be true or false. The result is always the
+// version 4 shape (older tasks get note null, then important false). Rest syntax keeps a parsed
 // "__proto__" key as an ordinary key.
 function checkList(doc) {
   if (!isObject(doc)) invalid();
   let format = 1;
   if (Object.hasOwn(doc, 'version')) {
     const v = doc.version;
-    if (!Number.isInteger(v) || v < 1 || v > 3) invalid();
+    if (!Number.isInteger(v) || v < 1 || v > 4) invalid();
     format = v;
   }
   const { version, ...data } = doc;
@@ -226,7 +229,8 @@ function checkList(doc) {
   let highest = 0;
   for (const t of data.tasks) {
     const keys = ['id', 'title', 'status', 'due', 'tags'];
-    if (format === 3) keys.push('note');
+    if (format >= 3) keys.push('note');
+    if (format >= 4) keys.push('important');
     if (!isObject(t) || !hasOnly(t, keys)) invalid();
     if (!Number.isSafeInteger(t.id) || t.id < 1 || ids.has(t.id)) invalid();
     ids.add(t.id);
@@ -244,12 +248,14 @@ function checkList(doc) {
       if (typeof tag !== 'string' || !/^[a-z0-9][a-z0-9_-]{0,31}$/.test(tag) || seen.has(tag)) invalid();
       seen.add(tag);
     }
-    if (format === 3) {
+    if (format >= 3) {
       if (!Object.hasOwn(t, 'note')) invalid();
       if (t.note !== null) checkNote(t.note);
     }
+    if (format >= 4 && typeof t.important !== 'boolean') invalid();
   }
   if (format < 3) data.tasks = data.tasks.map((t) => ({ ...t, note: null }));
+  if (format < 4) data.tasks = data.tasks.map((t) => ({ ...t, important: false }));
   if (!Number.isInteger(data.nextId) || data.nextId < 1 || data.nextId > MAX_NEXT_ID) invalid();
   if (data.nextId <= highest) invalid();
   return data;
@@ -279,8 +285,8 @@ function readStored(tree) {
 }
 
 function canonical(list) {
-  const tasks = list.tasks.map((t) => ({ id: t.id, title: t.title, status: t.status, due: t.due, tags: t.tags, note: t.note }));
-  return JSON.stringify({ version: 3, nextId: list.nextId, tasks }, null, 2) + '\n';
+  const tasks = list.tasks.map((t) => ({ id: t.id, title: t.title, status: t.status, due: t.due, tags: t.tags, note: t.note, important: t.important }));
+  return JSON.stringify({ version: 4, nextId: list.nextId, tasks }, null, 2) + '\n';
 }
 
 // Any write replaces tasks.json whole with the canonical text.
@@ -295,6 +301,7 @@ function taskLine(t, today) {
   const parts = ['#' + t.id, t.status === 'done' ? '[x]' : '[ ]', t.title];
   if (t.due !== null) parts.push('due:' + t.due);
   if (t.status === 'open' && t.due !== null && t.due < today) parts.push('!overdue');
+  if (t.important) parts.push('!important');
   for (const tag of [...t.tags].sort()) parts.push('+' + tag);
   return parts.join(' ');
 }
@@ -303,7 +310,7 @@ function isLate(t, today) {
   return t.status === 'open' && t.due !== null && t.due < today;
 }
 
-const ADD = new Map([['--due', { value: true }], ['--tag', { value: true, repeat: true }], ['--note', { value: true }]]);
+const ADD = new Map([['--due', { value: true }], ['--tag', { value: true, repeat: true }], ['--note', { value: true }], ['--important', {}]]);
 const NOTE = new Map([['--clear', {}]]);
 const LIST = new Map([
   ['--open', {}],
@@ -381,10 +388,11 @@ const COMMANDS = {
     }
     const tags = [...new Set((options.get('--tag') || []).map(typedTag))];
     const note = options.has('--note') ? typedTitle(options.get('--note')) : null;
+    const important = options.has('--important');
     const list = readStored(ctx.tree);
     if (list.nextId > MAX_SAFE) invalid();
     const id = list.nextId;
-    list.tasks.push({ id, title, status: 'open', due, tags, note });
+    list.tasks.push({ id, title, status: 'open', due, tags, note, important });
     list.nextId = id + 1;
     writeStored(ctx.tree, list);
     ctx.out = 'Added task ' + id + '\n';
@@ -394,12 +402,16 @@ const COMMANDS = {
     const { options } = grammar(args, { positionals: 0, options: LIST });
     const keep = filterOf(options, '--open', ctx.today);
     const list = readStored(ctx.tree);
-    const shown = list.tasks.filter(keep).sort((a, b) => a.id - b.id);
+    const shown = list.tasks.filter(keep).sort((a, b) => (b.important ? 1 : 0) - (a.important ? 1 : 0) || a.id - b.id);
     ctx.out = shown.length === 0 ? 'No tasks.\n' : shown.map((t) => taskLine(t, ctx.today) + '\n').join('');
   },
 
   done: (args, ctx) => setStatus(args, ctx, 'done', 'Completed', 'done'),
   reopen: (args, ctx) => setStatus(args, ctx, 'open', 'Reopened', 'open'),
+  important: (args, ctx) =>
+    setImportant(args, ctx, true, (id) => 'Marked task ' + id + ' as important', (id) => 'Task ' + id + ' is already important'),
+  unimportant: (args, ctx) =>
+    setImportant(args, ctx, false, (id) => 'Removed important mark from task ' + id, (id) => 'Task ' + id + ' is not important'),
 
   rename(args, ctx) {
     const { positionals } = grammar(args, plain(2));
@@ -531,6 +543,21 @@ function setStatus(args, ctx, to, changed, already) {
   task.status = to;
   writeStored(ctx.tree, list);
   ctx.out = changed + ' task ' + id + '\n';
+}
+
+function setImportant(args, ctx, to, changed, already) {
+  const { positionals } = grammar(args, plain(1));
+  const id = parseId(positionals[0]);
+  const list = readStored(ctx.tree);
+  const task = list.tasks.find((t) => t.id === id);
+  if (task === undefined) invalid();
+  if (task.important === to) {
+    ctx.out = already(id) + '\n';
+    return;
+  }
+  task.important = to;
+  writeStored(ctx.tree, list);
+  ctx.out = changed(id) + '\n';
 }
 
 // Empty argv or a first argument of --help is "help" with the rest as its

@@ -62,9 +62,9 @@ test('add to a new list stores task 1 (criterion 1)', () => {
   const sb = sandbox();
   assertOk(add(sb, 'Buy milk'), 1);
   assert.deepEqual(stored(sb), {
-    version: 3,
+    version: 4,
     nextId: 2,
-    tasks: [{ id: 1, title: 'Buy milk', status: 'open', due: null, tags: [], note: null }],
+    tasks: [{ id: 1, title: 'Buy milk', status: 'open', due: null, tags: [], note: null, important: false }],
   });
 });
 
@@ -260,7 +260,7 @@ test('ttc help lists the add usage line (criterion 23)', () => {
   assert.equal(r.status, 0);
   const lines = r.stdout.split('\n').map((l) => l.trim());
   assert.ok(lines.includes('ttc help'));
-  assert.ok(lines.includes('ttc add "<title>" [--due YYYY-MM-DD] [--tag <t>]... [--note "<text>"]'));
+  assert.ok(lines.includes('ttc add "<title>" [--due YYYY-MM-DD] [--tag <t>]... [--note "<text>"] [--important]'));
 });
 
 test('add --note stores the note typed and trimmed', () => {

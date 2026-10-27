@@ -230,19 +230,19 @@ for (const args of [['import'], ['import', 'a.json', 'b.json'], ['import', 'a.js
   });
 }
 
-test('import of a version 1, a version 2 and a version 3 file all store version 3, and export -> import -> export is byte-identical (RCDEV-837, RCDEV-841)', () => {
+test('import of a version 1, a version 2 and a version 3 file all store version 4, and export -> import -> export is byte-identical (RCDEV-837, RCDEV-841)', () => {
   const body = { nextId: 3, tasks: [{ id: 2, title: 'Pay rent', status: 'done', due: '2099-12-31', tags: ['home'] }] };
   const v3 = { version: 3, nextId: 3, tasks: [{ ...body.tasks[0], note: 'bank, transfer' }] };
   for (const doc of [body, { version: 2, ...body }, v3]) {
     const sb = sandbox();
     fs.writeFileSync(path.join(sb.work, 'in.json'), JSON.stringify(doc, null, 2) + '\n');
     assertImported(ttc(sb, ['import', 'in.json']), 1, 'in.json');
-    assert.ok(fs.readFileSync(sb.file, 'utf8').startsWith('{\n  "version": 3,\n'));
+    assert.ok(fs.readFileSync(sb.file, 'utf8').startsWith('{\n  "version": 4,\n'));
     assert.equal(ttc(sb, ['export', 'a.json']).status, 0);
     assertImported(ttc(sb, ['import', 'a.json']), 1, 'a.json');
     assert.equal(ttc(sb, ['export', 'b.json']).status, 0);
     const a = fs.readFileSync(path.join(sb.work, 'a.json'));
-    assert.ok(a.toString().startsWith('{\n  "version": 3,\n'));
+    assert.ok(a.toString().startsWith('{\n  "version": 4,\n'));
     assert.deepEqual(fs.readFileSync(path.join(sb.work, 'b.json')), a);
   }
 });
