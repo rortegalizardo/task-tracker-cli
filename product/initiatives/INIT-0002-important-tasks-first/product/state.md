@@ -12,7 +12,7 @@ initiative: INIT-0002
 phase: ENGINEERING_READY
 phase_entered: 2026-10-26
 requester: "the requester (repository owner, rortegalizardo), via the driving session, 2026-10-26"
-next_action: "ROLE-product-manager: ENGINEERING_READY — write the Handoff packet (inline, size rule §9d.2), set REQ-0011 readiness engineering-ready and INIT-0002 active, compile delivery/manifest.md (band_owner product), then advance to HANDOFF"
+next_action: "ROLE-product-manager: ENGINEERING_READY — write the Handoff packet (inline, size rule §9d.2), set REQ-0011 readiness engineering-ready and INIT-0002 active, compile delivery/manifest.md (band_owner product), then advance to HANDOFF and run SKILL-create-tickets-from-stories (Linear team RC Development, project Task Tracker CLI). Run stopped at the owner's 350k-token ceiling (attempt 3); resume only on the owner's go-ahead"
 blocked_by: []
 converged: true
 readiness_verdict: READY   # none | READY | READY-with-known-issues | NOT READY | void
@@ -29,7 +29,7 @@ these two files never describe the same thing and never share a writer.
 
 ## Where this stands
 
-ENGINEERING_READY. Readiness round 1 (terminal, no blocking finding): `READY`, no conditions, no findings (Readiness log). Convergence declared (`converged: true`). Option A chosen (`PD-0009`); format 4 with a one-way upgrade (`PD-0010`); Solution Contract at `product/solution-contract.md`. Coherence round 1 (terminal): `coherent` (`technical/coherence.md`); its 8 non-blocking scope-excess findings were trimmed in `REQ-0011` rev 3 (AC-1..AC-17), now `accepted`. Coverage validation: zero defects (below).
+ENGINEERING_READY, entered; no handoff work started. STOPPED: run stopped at the owner's 350k-token ceiling (attempt 3). Nothing is half-written. Readiness round 1 (terminal, no blocking finding): `READY`, no conditions, no findings (Readiness log). Convergence declared (`converged: true`). Option A chosen (`PD-0009`); format 4 with a one-way upgrade (`PD-0010`); Solution Contract at `product/solution-contract.md`. Coherence round 1 (terminal): `coherent` (`technical/coherence.md`); its 8 non-blocking scope-excess findings were trimmed in `REQ-0011` rev 3 (AC-1..AC-17), now `accepted`. Coverage validation: zero defects (below).
 
 ## Problem statement
 
@@ -43,7 +43,7 @@ command or stored field marks a task as important (`src/commands/list.js`,
 
 ## Next action
 
-ROLE-product-manager: ENGINEERING_READY — write the Handoff packet (inline, size rule §9d.2), set REQ-0011 readiness engineering-ready and INIT-0002 active, compile delivery/manifest.md (band_owner product), then advance to HANDOFF.
+ROLE-product-manager: ENGINEERING_READY — write the Handoff packet (inline, size rule §9d.2), set REQ-0011 readiness engineering-ready and INIT-0002 active, compile delivery/manifest.md (band_owner product), then advance to HANDOFF and run SKILL-create-tickets-from-stories (Linear team RC Development, project Task Tracker CLI). Run stopped at the owner's 350k-token ceiling (attempt 3); resume only on the owner's go-ahead.
 
 ## Blocked by
 
@@ -241,6 +241,7 @@ _Written at ENGINEERING_READY._
 | 2026-10-26 | DECOMPOSITION | DECOMPOSITION | ROLE-product-manager | Run stopped at a clean checkpoint: the driving session sent STOP, the owner's 4M cache-read ceiling was crossed (attempt 2) | No transition. `REQ-0011` rev 2 written (behavior, AC-1..AC-18, technical constraints C1–C7, rollout `migration`), kept at `draft`; no coherence dispatch made. No `Q-` open | `6136a67d57b0d9fc`, head `df7c467` |
 | 2026-10-26 | DECOMPOSITION | READINESS | ROLE-product-manager | DECOMPOSITION exit criteria met: O1–O3 map to accepted `REQ-0011`; it meets §10.3 points 1–9; the draft-stage coherence check (round 1, terminal, `coherent`) left no blocking defect; convergence declared (`converged: true`) | Resumed on the owner's go-ahead (attempt 3). Coherence round 1 dispatched with the owner's added scope-excess check; 8 non-blocking findings, all trimmed in `REQ-0011` rev 3 (AC-1..AC-17) per the owner's instruction, Behavior and Scope unchanged, then accepted. No `PD-` needed: trims are AC phrasing under §4.1. No `Q-`. Entry precondition (`lifecycle-hooks.md` §3.4.1 READINESS) holds: `converged: true`; HOOK-traceability zero defects (Coverage validation); `coherence.md` `coherent`, terminal round, no blocking finding; no user-facing `DES-` required. Hooks: HOOK-traceability pass, HOOK-phase-entry pass | `2355178f0969f499`, head `948388c` |
 | 2026-10-26 | READINESS | ENGINEERING_READY | ROLE-product-manager | READINESS exit criteria met: `READY` recorded by ROLE-product-readiness-reviewer, round 1 of 2 declared terminal unless blocking; no conditions or known issues to record as `Q-`/`PD-` | Coverage validation zero defects ran before the dispatch (not a review dispatch). Review budget used this session: 2 of 6 (coherence 1, readiness 1). `readiness_verdict: READY` set by the PM from the reviewer's Readiness log row, at the reviewer's request (the dispatch had limited its writes to the log sections). Entry precondition (`lifecycle-hooks.md` §3.4.1 ENGINEERING_READY) holds: verdict `READY`, not `void`, digest `(REQ-0011, 3, 2026-10-26)`; INIT-0002 rev 3 matches disk. Hooks: HOOK-readiness pass, HOOK-phase-entry pass | `2355178f0969f499`, head `64b7003` |
+| 2026-10-26 | ENGINEERING_READY | ENGINEERING_READY | ROLE-product-manager | Run stopped at a clean checkpoint: the driving session sent STOP, the owner's 350k-token ceiling was crossed (attempt 3) | No transition. Phase entered; Handoff packet, manifest, readiness flags and tickets not yet written. No child running. No `Q-` open | `2355178f0969f499`, head `480367a` |
 
 > Every product-side session updates this file before ending — **including
 > sessions that failed**, which record the failure in `next_action` and do not
