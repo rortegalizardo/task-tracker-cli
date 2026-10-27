@@ -3,7 +3,7 @@ id: PSTATE-INIT-0002
 type: product-state
 title: Product definition state for INIT-0002
 status: authoritative
-revision: 7
+revision: 8
 owner_role: ROLE-product-manager
 created: 2026-10-26
 updated: 2026-10-26
@@ -12,7 +12,7 @@ initiative: INIT-0002
 phase: DECOMPOSITION
 phase_entered: 2026-10-26
 requester: "the requester (repository owner, rortegalizardo), via the driving session, 2026-10-26"
-next_action: "ROLE-product-manager: DECOMPOSITION — write REQ-0011 in full (behavior, acceptance criteria, technical constraints from PD-0009, PD-0010 and assessment C1–C7), then dispatch the coherence check round 1 (ROLE-planner)"
+next_action: "ROLE-product-manager: DECOMPOSITION — dispatch the coherence check round 1 (ROLE-planner, story-set-technical-coherence, declared round 1 of 2, terminal unless it reports a blocking defect, §9d.3) against draft REQ-0011 rev 2, which is fully written (behavior, AC-1..AC-18, C1–C7); then accept REQ-0011 and declare convergence. Run stopped at the owner's 4M cache-read ceiling (attempt 2); resume only on the owner's go-ahead"
 blocked_by: []
 converged: false
 readiness_verdict: none   # none | READY | READY-with-known-issues | NOT READY | void
@@ -29,7 +29,7 @@ these two files never describe the same thing and never share a writer.
 
 ## Where this stands
 
-DECOMPOSITION. Option A chosen (`PD-0009`); the mark is stored in format 4 with a one-way upgrade (`PD-0010`); Solution Contract at `product/solution-contract.md`.
+DECOMPOSITION, in progress. Option A chosen (`PD-0009`); format 4 with a one-way upgrade (`PD-0010`); Solution Contract at `product/solution-contract.md`. `REQ-0011` rev 2 written in full, still `draft`: the coherence check has not run. STOPPED: run stopped at the owner's 4M cache-read ceiling (attempt 2). Nothing is half-written.
 
 ## Problem statement
 
@@ -43,7 +43,7 @@ command or stored field marks a task as important (`src/commands/list.js`,
 
 ## Next action
 
-ROLE-product-manager: DECOMPOSITION — write REQ-0011 in full (behavior, acceptance criteria, technical constraints from PD-0009, PD-0010 and assessment C1–C7), then dispatch the coherence check round 1 (ROLE-planner).
+ROLE-product-manager: DECOMPOSITION — dispatch the coherence check round 1 (ROLE-planner, story-set-technical-coherence, declared round 1 of 2, terminal unless it reports a blocking defect, §9d.3) against draft REQ-0011 rev 2, which is fully written (behavior, AC-1..AC-18, C1–C7); then accept REQ-0011 and declare convergence. Run stopped at the owner's 4M cache-read ceiling (attempt 2); resume only on the owner's go-ahead.
 
 ## Blocked by
 
@@ -204,6 +204,7 @@ _Written at ENGINEERING_READY._
 | 2026-10-26 | SOLUTION_EXPLORATION | SOLUTION_CONVERGENCE | ROLE-product-manager | SOLUTION_EXPLORATION exit criteria met: options A and B recorded, each with a feasibility verdict (`feasible-with-constraints`) and a user-visible trade-off; PM recommends A with reasons | Entry precondition (`lifecycle-hooks.md` §3.4.1 SOLUTION_CONVERGENCE) holds: X1 two distinguishable options; X2 each verdict in the closed set (`technical/assessment.md` round 1); one Consultation log row for the one delegate response. No design dispatch: no visual surface (requester's run limits; to be recorded in the convergence `PD-`, §9d.5). Hooks: HOOK-phase-entry pass | `b14f2ea367f1add1`, head `9731f42` |
 | 2026-10-26 | SOLUTION_CONVERGENCE | SOLUTION_CONVERGENCE | ROLE-product-manager | Run stopped at a clean checkpoint: projected usage crosses the owner's frozen 400k-token product ceiling | No transition. Phase entered, no convergence work started; `next_action` names the resume step. No `Q-` open | `b14f2ea367f1add1`, head `9731f42` |
 | 2026-10-26 | SOLUTION_CONVERGENCE | DECOMPOSITION | ROLE-product-manager | SOLUTION_CONVERGENCE exit criteria met: one accepted chosen-option `PD-0009` (option A), indexed, with the rejected option B and its reasons; `PD-0010` settles the C1 format rule and the C2/P1 choice (a); `REQ-0011` (draft) is consistent with both (its scope already names the mark, list order, storage, export/import and help); no option left under consideration; Solution Contract `product/solution-contract.md` cites `PD-0009` and states that there is no design concept (no visual surface, `PD-0009` item 11) | Resumed on the owner's go-ahead (2026-10-26, new ceilings: 550k tokens, 4M cache reads, 60 min). Entry precondition (`lifecycle-hooks.md` §3.4.1 DECOMPOSITION) holds: exactly one accepted chosen-option `PD-` (`PD-0009`) citing verdict `feasible-with-constraints` (`technical/assessment.md` round 1). Counter `decision` 8 -> 10, checked against `origin/main` `3dbf454`. No `Q-`: every choice is PM-resolvable under the requester's run limits. Hooks: HOOK-canonical-root pass, HOOK-hydrate pass (`readiness: needs-orchestration`, expected before HANDOFF; defect carried: `CAP-0001` draft predates shipped behaviour), HOOK-phase-entry pass | `6136a67d57b0d9fc`, head `3dbf454` |
+| 2026-10-26 | DECOMPOSITION | DECOMPOSITION | ROLE-product-manager | Run stopped at a clean checkpoint: the driving session sent STOP, the owner's 4M cache-read ceiling was crossed (attempt 2) | No transition. `REQ-0011` rev 2 written (behavior, AC-1..AC-18, technical constraints C1–C7, rollout `migration`), kept at `draft`; no coherence dispatch made. No `Q-` open | `6136a67d57b0d9fc`, head `df7c467` |
 
 > Every product-side session updates this file before ending — **including
 > sessions that failed**, which record the failure in `next_action` and do not
