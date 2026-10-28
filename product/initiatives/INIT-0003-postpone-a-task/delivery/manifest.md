@@ -17,7 +17,7 @@ story_set_digest: "REQ-0012@3/2026-10-27; INIT-0003@3"
 accepted_on: 2026-10-27
 dispatch_unit: ticket
 max_parallelism: 5
-completion: pending
+completion: complete
 stories: [REQ-0012]
 ---
 
@@ -66,19 +66,24 @@ none — dependencies are the only ordering
 
 | Unit | Stories | Depends on | State | Attempts | Last outcome | Dispatch ref | Wave | Updated |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| RCDEV-857 | REQ-0012 | none | eligible | 0 | none | none | 0 | 2026-10-27 |
+| RCDEV-857 | REQ-0012 | none | complete | 1 | Status: merged | INIT-0003 / orch-RCDEV-857 / wrapper_pid=21432; rortegalizardo/task-tracker-cli PR #33, merge 624f2c2f0cddcf724b9e52a92386335bd902ee8a | 0 | 2026-10-27 |
 
 ## Waves
 
 | Wave | Units | Eligible-now count |
 | --- | --- | --- |
-| 0 | RCDEV-857 | 1 |
+| 0 | RCDEV-857 | 0 |
 
 ## Dispatch ledger
 
 | Date | Unit | Event | Detail |
 | --- | --- | --- | --- |
+| 2026-10-27 | RCDEV-857 | dispatched | cap 5 (manifest max_parallelism, no override); launcher wrapper_pid=21432 |
+| 2026-10-27 | RCDEV-857 | completed | PR #33 state MERGED (gh pr view), head 56d7c10abb7ac2546ddb16ecb557fb40ff8b233c, merge commit 624f2c2f0cddcf724b9e52a92386335bd902ee8a, mergedAt 2026-10-27T23:30:46Z |
+| 2026-10-27 | INIT-0003 | completion | every unit complete; completion: complete |
 
 ## Completion
 
 _Computed per schema §5.8. `pending` until every unit is `complete`._
+
+`complete` — 1 of 1 units complete (RCDEV-857, PR #33 merged 624f2c2f0cddcf724b9e52a92386335bd902ee8a).
