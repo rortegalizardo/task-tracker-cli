@@ -7,14 +7,14 @@ revision: 1
 owner_role: ROLE-orchestrator
 created: 2026-10-28
 updated: 2026-10-28
-updated_by_role: ROLE-product-manager
+updated_by_role: ROLE-orchestrator
 initiative: INIT-0004
 manifest_version: 1
-band_owner: product
+band_owner: delivery
 issued_on: 2026-10-28
 issued_from_verdict: READY@2026-10-28
 story_set_digest: "REQ-0013@3/2026-10-28; INIT-0004@3"
-accepted_on: none
+accepted_on: 2026-10-28
 dispatch_unit: ticket
 max_parallelism: 5
 completion: pending
@@ -64,11 +64,13 @@ none — dependencies are the only ordering
 
 | Unit | Stories | Depends on | State | Attempts | Last outcome | Dispatch ref | Wave | Updated |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| RCDEV-858 | REQ-0013 | none | eligible | 0 | | | 0 | 2026-10-28 |
 
 ## Waves
 
 | Wave | Units | Eligible-now count |
 | --- | --- | --- |
+| 0 | RCDEV-858 | 1 |
 
 ## Dispatch ledger
 
