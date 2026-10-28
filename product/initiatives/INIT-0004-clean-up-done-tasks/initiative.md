@@ -3,14 +3,14 @@ id: INIT-0004
 type: initiative
 title: Finished tasks are cleaned out of the list in one short command
 status: draft
-revision: 2
+revision: 3
 owner_role: ROLE-product-manager
 created: 2026-10-28
 updated: 2026-10-28
 capabilities: [CAP-0001]
 requirements: [REQ-0013]
 tickets: []
-decisions: []
+decisions: [PD-0012]
 ---
 
 # INIT-0004 — Finished tasks are cleaned out of the list in one short command
@@ -46,7 +46,7 @@ line takes one id. That was a story boundary, not a rejected decision: no
 **In scope.**
 
 - One command that removes finished (done) tasks from the list in one go.
-- Which finished tasks it removes (decided at SOLUTION_CONVERGENCE).
+- Which finished tasks it removes: every done task (`PD-0012`).
 - The command's confirmation line, which gives the number of tasks removed,
   the case where there is nothing to remove, and its errors.
 - `ttc help` lists the new usage, and the README documents it.
@@ -54,6 +54,8 @@ line takes one id. That was a story boundary, not a rejected decision: no
 **Out of scope.**
 
 - Removing open tasks.
+- Keeping recently finished tasks while removing older ones: `ttc clean`
+  removes every done task (`PD-0012`).
 - An archive, an undo, or an "are you sure?" prompt ("No command asks for
   confirmation", `PD-0003` item 10).
 - Choosing which finished tasks to remove by tag, date, id or search text.
@@ -65,7 +67,7 @@ line takes one id. That was a story boundary, not a rejected decision: no
 
 ## Success measures
 
-1. `ttc <command>`, with nothing else typed, removes the finished tasks and
+1. `ttc clean`, with nothing else typed, removes the finished tasks and
    exits 0.
 2. Afterwards the removed tasks no longer show under `ttc list --done` or
    `--all`, in the `ttc stats` done count, or in `ttc export`.
@@ -98,3 +100,4 @@ None.
 | --- | --- | --- | --- |
 | 2026-10-28 | 1 | Created at INTAKE | Triage verdict `new-initiative` |
 | 2026-10-28 | 2 | Outcome O1–O3, scope, out of scope (7 items), success measures 1–6, `REQ-0013` | PRODUCT_DEFINITION |
+| 2026-10-28 | 3 | `decisions: [PD-0012]`; in scope names every done task; out of scope gains "Keeping recently finished tasks while removing older ones" (8 items); success measure 1 names `ttc clean` | SOLUTION_CONVERGENCE, `PD-0012` (option A) |
