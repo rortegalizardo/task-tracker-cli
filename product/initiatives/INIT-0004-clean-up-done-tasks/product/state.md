@@ -3,19 +3,19 @@ id: PSTATE-INIT-0004
 type: product-state
 title: Product definition state for INIT-0004
 status: authoritative
-revision: 7
+revision: 8
 owner_role: ROLE-product-manager
 created: 2026-10-28
 updated: 2026-10-28
 updated_by_role: ROLE-product-manager
 initiative: INIT-0004
-phase: READINESS
+phase: ENGINEERING_READY
 phase_entered: 2026-10-28
 requester: "the requester (repository owner, rortegalizardo), via the driving session, 2026-10-28"
-next_action: "ROLE-product-manager: dispatch ROLE-product-readiness-reviewer (claude, sonnet), round 1 of 2, terminal unless it leaves a blocking finding, on the story set (REQ-0013, 3, 2026-10-28) and INIT-0004 revision 3"
+next_action: "ROLE-product-manager: assemble the Handoff packet, compile delivery/manifest.md (product band), mark REQ-0013 engineering-ready and INIT-0004 active, then advance to HANDOFF"
 blocked_by: []
 converged: true
-readiness_verdict: none   # none | READY | READY-with-known-issues | NOT READY | void
+readiness_verdict: READY   # none | READY | READY-with-known-issues | NOT READY | void
 stories: [REQ-0013]
 design_refs: []
 decisions: [PD-0012]
@@ -29,7 +29,7 @@ these two files never describe the same thing and never share a writer.
 
 ## Where this stands
 
-READINESS. Convergence declared: `REQ-0013` rev 3 is accepted, the coherence check (round 1, terminal) is `coherent` with its one non-blocking finding fixed, and coverage validation has zero defects. The independent readiness verdict is next.
+ENGINEERING_READY. `READY` recorded by ROLE-product-readiness-reviewer (round 1, no conditions, no findings) on `(REQ-0013, 3, 2026-10-28)`. The Handoff packet and delivery manifest are next.
 
 ## Problem statement
 
@@ -50,7 +50,7 @@ Head `21e02ed`.
 
 ## Next action
 
-ROLE-product-manager: dispatch ROLE-product-readiness-reviewer (claude, sonnet), round 1 of 2, terminal unless it leaves a blocking finding, on the story set (REQ-0013, 3, 2026-10-28) and INIT-0004 revision 3.
+ROLE-product-manager: assemble the Handoff packet, compile delivery/manifest.md (product band), mark REQ-0013 engineering-ready and INIT-0004 active, then advance to HANDOFF.
 
 ## Blocked by
 
@@ -165,11 +165,13 @@ consideration.
 | --- | --- | --- | --- | --- |
 | 2026-10-28 | ROLE-planner (PRODUCT-DISCOVERY) | Feasibility verdict, constraints, risks and band for options A and B (one dispatch: capability scan, impact, assessment; §9d.1) | A `feasible-with-constraints`, `contained`; B `feasible-with-constraints`, `multi-component`; constraints C1–C9 (C6–C9 B only); risks R1–R6; narrowing points P1–P7 (P5 costly), none blocking; A needs no format change, B forces format version 5 (C6) | `technical/capability-scan.md`, `technical/impact.md`, `technical/assessment.md` (round 1); this row; C3 and P1, P7 go to the convergence `PD-`. Vendor claude, model opus |
 | 2026-10-28 | ROLE-planner (PRODUCT-DISCOVERY) | `story-set-technical-coherence` full pass on draft {REQ-0013 rev 2}, round 1 of 2, terminal unless blocking (§9d.3) | `coherent`: 0 blocking, 1 non-blocking (#1, non-discriminating check in AC-6: with fixture `nextId` 3 a kept and a recomputed next id both give `Added task 3`); every AC precondition and current output checked against the real CLI at head `0dee64f`; no verdict drift from `PD-0012`, no absent capability, no sequencing problem. Round 1 is terminal; no round 2. Disposition (PM): #1 `fixed` — `REQ-0013` rev 3 raises the AC-6 fixture `nextId` to 5 and expects `Added task 5` (fixture checked valid on the CLI); no behaviour fixed by `PD-0012` changes; Behavior and Scope unchanged; AC numbering AC-1..AC-12 kept | `technical/coherence.md` (round 1, commit `e2965c1`); this row. Vendor claude, model opus |
+| 2026-10-28 | ROLE-product-readiness-reviewer | Readiness verdict on {REQ-0013 rev 3}, R13–R18 plus flag-only R8/R9, round 1 of 2 terminal unless blocking | `READY`, no conditions, no findings | Readiness log row (round 1, commit `d3c0494`); `readiness_verdict: READY` set by the PM from it. Vendor claude, model sonnet |
 
 Dispatch log: `phase | delegate | vendor | model | tokens-scale | ledger run | artifact produced`
 
 - `SOLUTION_EXPLORATION | ROLE-planner | claude | opus | L (subagent reported 125,313 tokens, 25 tool uses, 327 s) | a20827c30634d2743 | technical/capability-scan.md, impact.md, assessment.md`
 - `DECOMPOSITION | ROLE-planner | claude | opus | M (subagent reported 88,117 tokens, 20 tool uses, 169 s) | af64282de887e653a | technical/coherence.md`
+- `READINESS | ROLE-product-readiness-reviewer | claude | sonnet | M (subagent reported 56,298 tokens, 15 tool uses, 35 s) | a76a71e9ae1b29146 | Readiness log row 1 (READY)`
 
 ## Escalation log
 
@@ -256,6 +258,7 @@ _Assembled at ENGINEERING_READY._
 | 2026-10-28 | SOLUTION_EXPLORATION | SOLUTION_CONVERGENCE | ROLE-product-manager | SOLUTION_EXPLORATION exit criteria met: options A and B recorded, each with a feasibility verdict (`feasible-with-constraints`) and a user-visible trade-off; PM recommends A with reasons | Entry precondition (`lifecycle-hooks.md` §3.4.1 SOLUTION_CONVERGENCE) holds: X1 two distinguishable options; X2 each verdict in the closed set (`technical/assessment.md` round 1); one Consultation log row for the one delegate response. No design dispatch: no visual surface (`project/constraints.md` row 8, `PD-0001` item 3; to be recorded in the convergence `PD-`, §9d.5). Hooks: HOOK-phase-entry pass | `2b4a364ef1aee73c`, head `6a25069` |
 | 2026-10-28 | SOLUTION_CONVERGENCE | DECOMPOSITION | ROLE-product-manager | SOLUTION_CONVERGENCE exit criteria met: one accepted chosen-option `PD-0012` (option A), indexed, with the rejected option B and its reasons; it also settles A1–A9, C3 and P1, P7; `REQ-0013` (draft) is consistent with it; no option left under consideration; Solution Contract `product/solution-contract.md` cites `PD-0012` and states there is no design concept (no visual surface, `PD-0012` item 13) | Choice settled by the request (escalation-policy §3 route 2: "Let me clean them up", "Keep it simple"; the driving session relayed that the PM makes the product decisions); no `Q-`. Entry precondition (`lifecycle-hooks.md` §3.4.1 DECOMPOSITION) holds: exactly one accepted chosen-option `PD-` (`PD-0012`) citing verdict `feasible-with-constraints` (`technical/assessment.md` round 1). Counter `decision` 11 -> 12, checked against `origin/main`. `INIT-0004` rev 3. Hooks: HOOK-phase-entry pass | `2b4a364ef1aee73c`, head `e3b874b` |
 | 2026-10-28 | DECOMPOSITION | READINESS | ROLE-product-manager | DECOMPOSITION exit criteria met: O1–O3 map to accepted `REQ-0013`; it meets §10.3 points 1–9; the draft-stage coherence check (round 1, terminal, `coherent`) left no blocking defect; convergence declared (`converged: true`) | `REQ-0013` rev 2 written in full (AC-1..AC-12, C1–C5); coherence round 1 dispatched on draft rev 2; 1 non-blocking finding (AC-6 non-discriminating next-id check) fixed in rev 3, then accepted. No `PD-` needed: the fix is AC phrasing under §4.1. No `Q-`. Entry precondition (`lifecycle-hooks.md` §3.4.1 READINESS) holds: `converged: true`; HOOK-traceability zero defects (Coverage validation); `coherence.md` `coherent`, terminal round, no blocking finding; no user-facing `DES-` required. Review budget used this session: 1 of 6. Hooks: HOOK-traceability pass, HOOK-phase-entry pass | `2b4a364ef1aee73c` (carried), head `70d3e94` |
+| 2026-10-28 | READINESS | ENGINEERING_READY | ROLE-product-manager | READINESS exit criteria met: `READY` recorded by ROLE-product-readiness-reviewer, round 1 of 2 declared terminal unless blocking; no conditions or known issues to record as `Q-`/`PD-` | Coverage validation zero defects ran before the dispatch (not a review dispatch). Review budget used this session: 2 of 6 (coherence 1, readiness 1). `readiness_verdict: READY` set by the PM from the reviewer's Readiness log row (the dispatch limited its writes to the log section). Entry precondition (`lifecycle-hooks.md` §3.4.1 ENGINEERING_READY) holds: verdict `READY`, not `void`, digest `(REQ-0013, 3, 2026-10-28)`; INIT-0004 rev 3 matches disk. Hooks: HOOK-readiness pass, HOOK-phase-entry pass | `2b4a364ef1aee73c` (carried), head `d3c0494` |
 
 > Every product-side session updates this file before ending — **including
 > sessions that failed**, which record the failure in `next_action` and do not
