@@ -3,16 +3,16 @@ id: PSTATE-INIT-0004
 type: product-state
 title: Product definition state for INIT-0004
 status: authoritative
-revision: 1
+revision: 2
 owner_role: ROLE-product-manager
 created: 2026-10-28
 updated: 2026-10-28
 updated_by_role: ROLE-product-manager
 initiative: INIT-0004
-phase: INTAKE
+phase: DISCOVERY
 phase_entered: 2026-10-28
 requester: "the requester (repository owner, rortegalizardo), via the driving session, 2026-10-28"
-next_action: "ROLE-product-manager: SKILL-advance-product-phase (INTAKE -> DISCOVERY), write the Discovery section"
+next_action: "ROLE-product-manager: SKILL-advance-product-phase (DISCOVERY -> PRODUCT_DEFINITION)"
 blocked_by: []
 converged: false
 readiness_verdict: none   # none | READY | READY-with-known-issues | NOT READY | void
@@ -29,7 +29,7 @@ these two files never describe the same thing and never share a writer.
 
 ## Where this stands
 
-INTAKE. Triage verdict `new-initiative`; draft initiative and this file written.
+DISCOVERY. Discovery written (J1–J3, P1–P3, S2 `CAP-0001`, S3 signals 1–5, non-goals). No `Q-` raised.
 
 ## Problem statement
 
@@ -50,7 +50,7 @@ Head `21e02ed`.
 
 ## Next action
 
-ROLE-product-manager: SKILL-advance-product-phase (INTAKE -> DISCOVERY), write the Discovery section.
+ROLE-product-manager: SKILL-advance-product-phase (DISCOVERY -> PRODUCT_DEFINITION).
 
 ## Blocked by
 
@@ -81,7 +81,59 @@ is raised.
 
 ## Discovery
 
-_Written at DISCOVERY._
+**Target user.** One person who keeps their own task list with `ttc` on their
+own machine: the requester. ttc has one user and no shared list
+(`CAP-0001` Boundaries; INIT-0001 out of scope). Source: S1 below.
+
+**Jobs and problems, with sources.**
+
+| # | Job or problem | Source |
+| --- | --- | --- |
+| J1 | Get rid of tasks finished long ago, which clutter the list ("My list is cluttered with tasks I finished ages ago."). | Request, verbatim (`sources/2026-10-28-requester-request.md`) |
+| J2 | Remove them all in one go, not one by one ("Let me clean them up."). | Request, verbatim (same file) |
+| J3 | Keep the feature simple: little to learn, nothing else changes ("Keep it simple."). | Request, verbatim (same file) |
+| P1 | A done task is stored for good. It shows under `ttc list --done` and `ttc list --all`, counts in the `ttc stats` done total, and goes into every `ttc export`, whose default view is `--all`. | `src/filter.js` (`parseFilter`), `src/commands/export.js` (default `--all`), `src/commands/stats.js`; README "Listing and filtering tasks", "Exporting tasks"; head `21e02ed` |
+| P2 | Removing done tasks takes one `ttc delete <id>` per task, after finding each id with `ttc list --done`. | `src/commands/delete.js`; `REQ-0006` Non-goals "Deleting several tasks in one command"; `PD-0003` items 1, 10 |
+| P3 | ttc does not record when a task was finished, so "finished ages ago" cannot be told apart from "finished today" with the data stored now. | README "Data file format" (task keys id, title, status, due, tags, note, important); `src/storage.js` format version 4; `src/commands/status.js` (`done` sets status only) |
+
+**Current-state capability mapping (S2).** `CAP-0001` — local task tracking
+from the `ttc` command line. This initiative extends it. `CAP-0001` is still
+`draft` and does not describe everything that shipped; the current-state
+evidence is the code and README at head `21e02ed`:
+
+- `ttc done <id>` marks a task done; `ttc reopen <id>` makes it open again
+  (`src/commands/status.js`, `PD-0003` items 9–10).
+- `ttc list` shows open tasks unless `--done`, `--all` or `--overdue` is given;
+  a done task's line shows `[x]` (`PD-0003` items 7–8).
+- `ttc delete <id>` removes one task, prints `Deleted task <id>`, and its id is
+  never reused (`PD-0003` items 1, 10; `src/commands/delete.js`).
+- "No command asks for confirmation" (`PD-0003` item 10).
+- Changing commands write atomically under a lock; a refusal writes nothing; a
+  failure after the save exits 1 and keeps the change (`PD-0004` items 3–4,
+  `PD-0008`). A no-op never writes (`src/commands/status.js`,
+  `src/commands/important.js`).
+- `ttc stats` prints `open: <n>`, `done: <n>`, `overdue: <n>` (`PD-0003`
+  item 15).
+- `tasks.json` is format version 4; versions 1–3 are read and rewritten as
+  version 4 by the next changing command (README "Data file format", `PD-0010`).
+
+**Success signals (S3).**
+
+1. A user removes finished tasks with one command that needs nothing else
+   typed.
+2. Afterwards the finished tasks the user wanted gone no longer show under
+   `ttc list --done` or `--all`, in `ttc stats`, or in `ttc export`.
+3. The command says how many tasks it removed.
+4. Open tasks, their ids and their fields are unchanged; removed ids are never
+   given again.
+5. A data file written by older ttc still works.
+
+**Known non-goals.** An archive or undo; an "are you sure?" prompt; narrowing
+the clean-up by tag, date or id; removing open tasks; automatic or scheduled
+clean-ups; any change to how other commands behave.
+
+Sources: S1 = the request file above; INIT-0001 `initiative.md` out of scope;
+S2/S3 = the code and README at head `21e02ed`.
 
 ## Options
 
@@ -146,6 +198,7 @@ _Assembled at ENGINEERING_READY._
 | --- | --- | --- | --- | --- | --- | --- |
 | 2026-10-28 | — | BOOTSTRAP | ROLE-product-manager | Raw request relayed by the driving session | Packet: `readiness: ready`, `scope.initiative: null`, profile S, no areas, no open `Q-` (`Q-0001` answered). `neighbouring` read in full: `CAP-0001` (draft) covers `ttc delete <id>` one task at a time and the open-only default of `ttc list`, not removing finished tasks together; no `PD-` (accepted or rejected) concerns a bulk clean-up; `REQ-0006` Non-goals "Deleting several tasks in one command" is a story boundary, not a rejection; `PD-0003` item 10 "No command asks for confirmation" and item 1 (ids never reused) bind. INIT-0001..INIT-0003 are not touched. Defect carried (advisory): `CAP-0001` is still draft and predates shipped behaviour; code and README at head `21e02ed` are the current-state evidence. Hooks: HOOK-canonical-root pass, HOOK-hydrate pass | `2b4a364ef1aee73c`, head `21e02ed` |
 | 2026-10-28 | BOOTSTRAP | INTAKE | ROLE-product-manager | Packet emitted, scope resolved to none | Triage verdict `new-initiative`: not `satisfied-by CAP-0001` (the default `ttc list` hides done tasks but nothing removes them except `ttc delete <id>` one at a time); no `PD-` settles it; no constraint forbids it; no initiative covers it (INIT-0001 single delete, INIT-0002 important mark, INIT-0003 postpone), so not a duplicate; one outcome named. Raw request committed verbatim. `INIT-0004` allocated (counter 3 -> 4, checked against `origin/main` `21e02ed`). Size: small (≤3 stories expected). Hooks: HOOK-initiative-resolved pass, HOOK-phase-entry pass | `2b4a364ef1aee73c`, head `21e02ed` |
+| 2026-10-28 | INTAKE | DISCOVERY | ROLE-product-manager | INTAKE exit criteria met: one initiative, one problem, one named requester, ambiguity rows A1–A9 all classified (`pm-resolvable`) | Entry precondition (`lifecycle-hooks.md` §3.4.1 DISCOVERY) holds: `initiative.md` at `status: draft`; state at INTAKE with requester, problem statement and a classified ambiguity log. Discovery written (J1–J3, P1–P3, S2 `CAP-0001`, S3 signals 1–5, non-goals). No `Q-` raised. Hooks: HOOK-phase-entry pass | `2b4a364ef1aee73c`, head `b2e2601` |
 
 > Every product-side session updates this file before ending — **including
 > sessions that failed**, which record the failure in `next_action` and do not
