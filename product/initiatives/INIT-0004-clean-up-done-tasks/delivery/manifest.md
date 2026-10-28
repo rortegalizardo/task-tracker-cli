@@ -17,7 +17,7 @@ story_set_digest: "REQ-0013@3/2026-10-28; INIT-0004@3"
 accepted_on: 2026-10-28
 dispatch_unit: ticket
 max_parallelism: 5
-completion: pending
+completion: complete
 stories: [REQ-0013]
 ---
 
@@ -64,7 +64,7 @@ none — dependencies are the only ordering
 
 | Unit | Stories | Depends on | State | Attempts | Last outcome | Dispatch ref | Wave | Updated |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| RCDEV-858 | REQ-0013 | none | eligible | 0 | | | 0 | 2026-10-28 |
+| RCDEV-858 | REQ-0013 | none | complete | 1 | PR #34 MERGED, merge commit d0274b64c5b1ef7dfb1590213e750a410c814502 (gh pr view) | INIT-0004 / orch-RCDEV-858 / wrapper_pid=62177 / PR #34 | 0 | 2026-10-28 |
 
 ## Waves
 
@@ -76,7 +76,12 @@ none — dependencies are the only ordering
 
 | Date | Unit | Event | Detail |
 | --- | --- | --- | --- |
+| 2026-10-28 | RCDEV-858 | dispatched | cap 5 (manifest max_parallelism, no override); launcher wrapper_pid=62177 |
+| 2026-10-28 | RCDEV-858 | completed | PR #34 state MERGED, merge commit d0274b64c5b1ef7dfb1590213e750a410c814502, head 452450bc6ae923390de8921dcb03b94eb865fb06 (gh pr view); release.md Status: merged |
+| 2026-10-28 | INIT-0004 | acceptance | delivery/acceptance.md: 12 criteria, 12 pass, 0 fail |
 
 ## Completion
 
 _Computed per schema §5.8. `pending` until every unit is `complete`._
+
+`complete` — 1 of 1 units `complete` (RCDEV-858, PR #34 merged); acceptance in [`acceptance.md`](acceptance.md): 12 of 12 pass.
