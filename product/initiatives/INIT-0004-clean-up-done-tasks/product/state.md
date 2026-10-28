@@ -3,18 +3,18 @@ id: PSTATE-INIT-0004
 type: product-state
 title: Product definition state for INIT-0004
 status: authoritative
-revision: 6
+revision: 7
 owner_role: ROLE-product-manager
 created: 2026-10-28
 updated: 2026-10-28
 updated_by_role: ROLE-product-manager
 initiative: INIT-0004
-phase: DECOMPOSITION
+phase: READINESS
 phase_entered: 2026-10-28
 requester: "the requester (repository owner, rortegalizardo), via the driving session, 2026-10-28"
-next_action: "ROLE-product-manager: write REQ-0013 rev 2 (behavior, acceptance criteria, technical constraints C1–C5), then dispatch the coherence check round 1 of 2 (terminal unless blocking)"
+next_action: "ROLE-product-manager: dispatch ROLE-product-readiness-reviewer (claude, sonnet), round 1 of 2, terminal unless it leaves a blocking finding, on the story set (REQ-0013, 3, 2026-10-28) and INIT-0004 revision 3"
 blocked_by: []
-converged: false
+converged: true
 readiness_verdict: none   # none | READY | READY-with-known-issues | NOT READY | void
 stories: [REQ-0013]
 design_refs: []
@@ -29,7 +29,7 @@ these two files never describe the same thing and never share a writer.
 
 ## Where this stands
 
-DECOMPOSITION. `PD-0012` (option A, `ttc clean` removes every done task) and the Solution Contract are recorded. `REQ-0013` is written in full next, then checked for technical coherence.
+READINESS. Convergence declared: `REQ-0013` rev 3 is accepted, the coherence check (round 1, terminal) is `coherent` with its one non-blocking finding fixed, and coverage validation has zero defects. The independent readiness verdict is next.
 
 ## Problem statement
 
@@ -50,7 +50,7 @@ Head `21e02ed`.
 
 ## Next action
 
-ROLE-product-manager: write REQ-0013 rev 2 (behavior, acceptance criteria, technical constraints C1–C5), then dispatch the coherence check round 1 of 2 (terminal unless blocking).
+ROLE-product-manager: dispatch ROLE-product-readiness-reviewer (claude, sonnet), round 1 of 2, terminal unless it leaves a blocking finding, on the story set (REQ-0013, 3, 2026-10-28) and INIT-0004 revision 3.
 
 ## Blocked by
 
@@ -254,6 +254,7 @@ _Assembled at ENGINEERING_READY._
 | 2026-10-28 | PRODUCT_DEFINITION | SOLUTION_EXPLORATION | ROLE-product-manager | PRODUCT_DEFINITION exit criteria met: outcome O1–O3, out of scope (7 items), success measures 1–6, draft `REQ-0013` covering O1–O3, Product Definition Contract citing the raw request | Entry precondition (`lifecycle-hooks.md` §3.4.1 SOLUTION_EXPLORATION) holds: F1 `initiative.md` rev 2 has an outcome and a non-empty out-of-scope section; one `status: draft` `REQ-`; F2 draft-mode coverage (inline, deterministic): J1 -> `REQ-0013` Requirement, J2 -> Requirement ("one short command"), J3 -> Non-goals and the initiative out of scope; no `R1` defect. `requirement` counter 12 -> 13, checked against `origin/main`. No scope `PD-` needed yet: A1–A9 are recorded in the chosen-option `PD-`. Hooks: HOOK-phase-entry pass | `2b4a364ef1aee73c`, head `40416ec` |
 | 2026-10-28 | SOLUTION_EXPLORATION | SOLUTION_CONVERGENCE | ROLE-product-manager | SOLUTION_EXPLORATION exit criteria met: options A and B recorded, each with a feasibility verdict (`feasible-with-constraints`) and a user-visible trade-off; PM recommends A with reasons | Entry precondition (`lifecycle-hooks.md` §3.4.1 SOLUTION_CONVERGENCE) holds: X1 two distinguishable options; X2 each verdict in the closed set (`technical/assessment.md` round 1); one Consultation log row for the one delegate response. No design dispatch: no visual surface (`project/constraints.md` row 8, `PD-0001` item 3; to be recorded in the convergence `PD-`, §9d.5). Hooks: HOOK-phase-entry pass | `2b4a364ef1aee73c`, head `6a25069` |
 | 2026-10-28 | SOLUTION_CONVERGENCE | DECOMPOSITION | ROLE-product-manager | SOLUTION_CONVERGENCE exit criteria met: one accepted chosen-option `PD-0012` (option A), indexed, with the rejected option B and its reasons; it also settles A1–A9, C3 and P1, P7; `REQ-0013` (draft) is consistent with it; no option left under consideration; Solution Contract `product/solution-contract.md` cites `PD-0012` and states there is no design concept (no visual surface, `PD-0012` item 13) | Choice settled by the request (escalation-policy §3 route 2: "Let me clean them up", "Keep it simple"; the driving session relayed that the PM makes the product decisions); no `Q-`. Entry precondition (`lifecycle-hooks.md` §3.4.1 DECOMPOSITION) holds: exactly one accepted chosen-option `PD-` (`PD-0012`) citing verdict `feasible-with-constraints` (`technical/assessment.md` round 1). Counter `decision` 11 -> 12, checked against `origin/main`. `INIT-0004` rev 3. Hooks: HOOK-phase-entry pass | `2b4a364ef1aee73c`, head `e3b874b` |
+| 2026-10-28 | DECOMPOSITION | READINESS | ROLE-product-manager | DECOMPOSITION exit criteria met: O1–O3 map to accepted `REQ-0013`; it meets §10.3 points 1–9; the draft-stage coherence check (round 1, terminal, `coherent`) left no blocking defect; convergence declared (`converged: true`) | `REQ-0013` rev 2 written in full (AC-1..AC-12, C1–C5); coherence round 1 dispatched on draft rev 2; 1 non-blocking finding (AC-6 non-discriminating next-id check) fixed in rev 3, then accepted. No `PD-` needed: the fix is AC phrasing under §4.1. No `Q-`. Entry precondition (`lifecycle-hooks.md` §3.4.1 READINESS) holds: `converged: true`; HOOK-traceability zero defects (Coverage validation); `coherence.md` `coherent`, terminal round, no blocking finding; no user-facing `DES-` required. Review budget used this session: 1 of 6. Hooks: HOOK-traceability pass, HOOK-phase-entry pass | `2b4a364ef1aee73c` (carried), head `70d3e94` |
 
 > Every product-side session updates this file before ending — **including
 > sessions that failed**, which record the failure in `next_action` and do not
