@@ -3,16 +3,16 @@ id: PSTATE-INIT-0004
 type: product-state
 title: Product definition state for INIT-0004
 status: authoritative
-revision: 4
+revision: 5
 owner_role: ROLE-product-manager
 created: 2026-10-28
 updated: 2026-10-28
 updated_by_role: ROLE-product-manager
 initiative: INIT-0004
-phase: SOLUTION_EXPLORATION
+phase: SOLUTION_CONVERGENCE
 phase_entered: 2026-10-28
 requester: "the requester (repository owner, rortegalizardo), via the driving session, 2026-10-28"
-next_action: "ROLE-product-manager: dispatch ROLE-planner (PRODUCT-DISCOVERY, one product-feasibility-assessment dispatch per §9d.1) for options A and B, then record the Options table"
+next_action: "ROLE-product-manager: record the chosen-option PD- (SKILL-record-decision) and the Solution Contract (inline, size rule §9d.2)"
 blocked_by: []
 converged: false
 readiness_verdict: none   # none | READY | READY-with-known-issues | NOT READY | void
@@ -29,7 +29,7 @@ these two files never describe the same thing and never share a writer.
 
 ## Where this stands
 
-SOLUTION_EXPLORATION. Outcome O1–O3, out of scope (7 items), success measures 1–6, draft `REQ-0013` and the Product Definition Contract are written. Options A and B go to the architect for feasibility.
+SOLUTION_CONVERGENCE. Options A and B are recorded with the architect's verdicts (A `contained`, B `multi-component`, both `feasible-with-constraints`); the PM recommends A. The choice is recorded next as a `PD-`.
 
 ## Problem statement
 
@@ -50,7 +50,7 @@ Head `21e02ed`.
 
 ## Next action
 
-ROLE-product-manager: dispatch ROLE-planner (PRODUCT-DISCOVERY, one product-feasibility-assessment dispatch per §9d.1) for options A and B, then record the Options table.
+ROLE-product-manager: record the chosen-option PD- (SKILL-record-decision) and the Solution Contract (inline, size rule §9d.2).
 
 ## Blocked by
 
@@ -137,14 +137,30 @@ S2/S3 = the code and README at head `21e02ed`.
 
 ## Options
 
-_Written at SOLUTION_EXPLORATION._
+| Option | User-visible difference | Feasibility verdict | Cost / risk | Trade-off |
+| --- | --- | --- | --- | --- |
+| A — `ttc clean` removes every done task | Every finished task goes in one run, including one finished today | `feasible-with-constraints`, band `contained` (`technical/assessment.md`, round 1) | Constraints C1–C5. R5 (oracle copies the new code), R6 (an age rule added later would change what `clean` does). P1, P7 to settle. No stored-format change | Least to learn: one command, one rule, nothing new stored. A task finished a minute ago is removed too; `ttc list --done` shows beforehand exactly what goes |
+| B — `ttc clean` removes done tasks finished more than 30 days ago | Recently finished tasks stay; `ttc done` starts recording the finish date | `feasible-with-constraints`, band `multi-component` (`technical/assessment.md`, round 1) | Constraints C1–C9: format version 5 and a one-way upgrade for every user from any changing command (C6, C7, R4); changes to `done`, `reopen`, import and JSON export (C8); a backwards day count the platform lacks (C9). R1: every task already done when B ships has no date, so the first clean removes all of them anyway. P1–P6 to settle | Keeps recent finished tasks, but only from the second month after it ships; a 30-day rule, a finish date in every JSON export and a format change to accept |
+
+_Recommended option and why:_ **A.** It is the whole ask: "Let me clean them
+up" is one command that clears the finished tasks out, and "Keep it simple"
+rules out a stored finish date, an age threshold and a format change nobody
+asked for. Both options remove the tasks finished long ago, so both meet J1;
+B's only gain, keeping recent finished tasks, does not even appear on its first
+run (R1), and it costs a one-way format upgrade for every user (C6, R4). A user
+who wants to keep a finished task can see it in `ttc list --done` first and
+`ttc reopen` it, or keep a copy with `ttc export <file> --done` (P7). Adding
+an age rule later stays possible (R6).
 
 ## Consultation log
 
 | Date | Delegate role | Question | Answer / verdict | Recorded as |
 | --- | --- | --- | --- | --- |
+| 2026-10-28 | ROLE-planner (PRODUCT-DISCOVERY) | Feasibility verdict, constraints, risks and band for options A and B (one dispatch: capability scan, impact, assessment; §9d.1) | A `feasible-with-constraints`, `contained`; B `feasible-with-constraints`, `multi-component`; constraints C1–C9 (C6–C9 B only); risks R1–R6; narrowing points P1–P7 (P5 costly), none blocking; A needs no format change, B forces format version 5 (C6) | `technical/capability-scan.md`, `technical/impact.md`, `technical/assessment.md` (round 1); this row; C3 and P1, P7 go to the convergence `PD-`. Vendor claude, model opus |
 
 Dispatch log: `phase | delegate | vendor | model | tokens-scale | ledger run | artifact produced`
+
+- `SOLUTION_EXPLORATION | ROLE-planner | claude | opus | L (subagent reported 125,313 tokens, 25 tool uses, 327 s) | a20827c30634d2743 | technical/capability-scan.md, impact.md, assessment.md`
 
 ## Escalation log
 
@@ -201,6 +217,7 @@ _Assembled at ENGINEERING_READY._
 | 2026-10-28 | INTAKE | DISCOVERY | ROLE-product-manager | INTAKE exit criteria met: one initiative, one problem, one named requester, ambiguity rows A1–A9 all classified (`pm-resolvable`) | Entry precondition (`lifecycle-hooks.md` §3.4.1 DISCOVERY) holds: `initiative.md` at `status: draft`; state at INTAKE with requester, problem statement and a classified ambiguity log. Discovery written (J1–J3, P1–P3, S2 `CAP-0001`, S3 signals 1–5, non-goals). No `Q-` raised. Hooks: HOOK-phase-entry pass | `2b4a364ef1aee73c`, head `b2e2601` |
 | 2026-10-28 | DISCOVERY | PRODUCT_DEFINITION | ROLE-product-manager | DISCOVERY exit criteria met: problem, user, current state and success signals stated with sources; no open escalation-class ambiguity | Entry precondition (`lifecycle-hooks.md` §3.4.1 PRODUCT_DEFINITION) holds: Discovery has the target user, jobs J1–J3 and problems P1–P3 each with a source (S1), mapping `CAP-0001` (S2), success signals 1–5 (S3) and known non-goals. Hooks: HOOK-phase-entry pass | `2b4a364ef1aee73c`, head `5d2d9fa` |
 | 2026-10-28 | PRODUCT_DEFINITION | SOLUTION_EXPLORATION | ROLE-product-manager | PRODUCT_DEFINITION exit criteria met: outcome O1–O3, out of scope (7 items), success measures 1–6, draft `REQ-0013` covering O1–O3, Product Definition Contract citing the raw request | Entry precondition (`lifecycle-hooks.md` §3.4.1 SOLUTION_EXPLORATION) holds: F1 `initiative.md` rev 2 has an outcome and a non-empty out-of-scope section; one `status: draft` `REQ-`; F2 draft-mode coverage (inline, deterministic): J1 -> `REQ-0013` Requirement, J2 -> Requirement ("one short command"), J3 -> Non-goals and the initiative out of scope; no `R1` defect. `requirement` counter 12 -> 13, checked against `origin/main`. No scope `PD-` needed yet: A1–A9 are recorded in the chosen-option `PD-`. Hooks: HOOK-phase-entry pass | `2b4a364ef1aee73c`, head `40416ec` |
+| 2026-10-28 | SOLUTION_EXPLORATION | SOLUTION_CONVERGENCE | ROLE-product-manager | SOLUTION_EXPLORATION exit criteria met: options A and B recorded, each with a feasibility verdict (`feasible-with-constraints`) and a user-visible trade-off; PM recommends A with reasons | Entry precondition (`lifecycle-hooks.md` §3.4.1 SOLUTION_CONVERGENCE) holds: X1 two distinguishable options; X2 each verdict in the closed set (`technical/assessment.md` round 1); one Consultation log row for the one delegate response. No design dispatch: no visual surface (`project/constraints.md` row 8, `PD-0001` item 3; to be recorded in the convergence `PD-`, §9d.5). Hooks: HOOK-phase-entry pass | `2b4a364ef1aee73c`, head `6a25069` |
 
 > Every product-side session updates this file before ending — **including
 > sessions that failed**, which record the failure in `next_action` and do not
