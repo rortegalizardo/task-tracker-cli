@@ -3,16 +3,16 @@ id: PSTATE-INIT-0004
 type: product-state
 title: Product definition state for INIT-0004
 status: authoritative
-revision: 2
+revision: 3
 owner_role: ROLE-product-manager
 created: 2026-10-28
 updated: 2026-10-28
 updated_by_role: ROLE-product-manager
 initiative: INIT-0004
-phase: DISCOVERY
+phase: PRODUCT_DEFINITION
 phase_entered: 2026-10-28
 requester: "the requester (repository owner, rortegalizardo), via the driving session, 2026-10-28"
-next_action: "ROLE-product-manager: SKILL-advance-product-phase (DISCOVERY -> PRODUCT_DEFINITION)"
+next_action: "ROLE-product-manager: populate initiative.md (outcome, scope, out of scope, success measures), draft REQ-0013 and the Product Definition Contract (inline, size rule §9d.2)"
 blocked_by: []
 converged: false
 readiness_verdict: none   # none | READY | READY-with-known-issues | NOT READY | void
@@ -29,7 +29,7 @@ these two files never describe the same thing and never share a writer.
 
 ## Where this stands
 
-DISCOVERY. Discovery written (J1–J3, P1–P3, S2 `CAP-0001`, S3 signals 1–5, non-goals). No `Q-` raised.
+PRODUCT_DEFINITION. Discovery complete (J1–J3, P1–P3, S2 `CAP-0001`, S3 signals 1–5, non-goals); no `Q-` raised. Outcome, scope and the draft story come next.
 
 ## Problem statement
 
@@ -50,7 +50,7 @@ Head `21e02ed`.
 
 ## Next action
 
-ROLE-product-manager: SKILL-advance-product-phase (DISCOVERY -> PRODUCT_DEFINITION).
+ROLE-product-manager: populate initiative.md (outcome, scope, out of scope, success measures), draft REQ-0013 and the Product Definition Contract (inline, size rule §9d.2).
 
 ## Blocked by
 
@@ -199,6 +199,7 @@ _Assembled at ENGINEERING_READY._
 | 2026-10-28 | — | BOOTSTRAP | ROLE-product-manager | Raw request relayed by the driving session | Packet: `readiness: ready`, `scope.initiative: null`, profile S, no areas, no open `Q-` (`Q-0001` answered). `neighbouring` read in full: `CAP-0001` (draft) covers `ttc delete <id>` one task at a time and the open-only default of `ttc list`, not removing finished tasks together; no `PD-` (accepted or rejected) concerns a bulk clean-up; `REQ-0006` Non-goals "Deleting several tasks in one command" is a story boundary, not a rejection; `PD-0003` item 10 "No command asks for confirmation" and item 1 (ids never reused) bind. INIT-0001..INIT-0003 are not touched. Defect carried (advisory): `CAP-0001` is still draft and predates shipped behaviour; code and README at head `21e02ed` are the current-state evidence. Hooks: HOOK-canonical-root pass, HOOK-hydrate pass | `2b4a364ef1aee73c`, head `21e02ed` |
 | 2026-10-28 | BOOTSTRAP | INTAKE | ROLE-product-manager | Packet emitted, scope resolved to none | Triage verdict `new-initiative`: not `satisfied-by CAP-0001` (the default `ttc list` hides done tasks but nothing removes them except `ttc delete <id>` one at a time); no `PD-` settles it; no constraint forbids it; no initiative covers it (INIT-0001 single delete, INIT-0002 important mark, INIT-0003 postpone), so not a duplicate; one outcome named. Raw request committed verbatim. `INIT-0004` allocated (counter 3 -> 4, checked against `origin/main` `21e02ed`). Size: small (≤3 stories expected). Hooks: HOOK-initiative-resolved pass, HOOK-phase-entry pass | `2b4a364ef1aee73c`, head `21e02ed` |
 | 2026-10-28 | INTAKE | DISCOVERY | ROLE-product-manager | INTAKE exit criteria met: one initiative, one problem, one named requester, ambiguity rows A1–A9 all classified (`pm-resolvable`) | Entry precondition (`lifecycle-hooks.md` §3.4.1 DISCOVERY) holds: `initiative.md` at `status: draft`; state at INTAKE with requester, problem statement and a classified ambiguity log. Discovery written (J1–J3, P1–P3, S2 `CAP-0001`, S3 signals 1–5, non-goals). No `Q-` raised. Hooks: HOOK-phase-entry pass | `2b4a364ef1aee73c`, head `b2e2601` |
+| 2026-10-28 | DISCOVERY | PRODUCT_DEFINITION | ROLE-product-manager | DISCOVERY exit criteria met: problem, user, current state and success signals stated with sources; no open escalation-class ambiguity | Entry precondition (`lifecycle-hooks.md` §3.4.1 PRODUCT_DEFINITION) holds: Discovery has the target user, jobs J1–J3 and problems P1–P3 each with a source (S1), mapping `CAP-0001` (S2), success signals 1–5 (S3) and known non-goals. Hooks: HOOK-phase-entry pass | `2b4a364ef1aee73c`, head `5d2d9fa` |
 
 > Every product-side session updates this file before ending — **including
 > sessions that failed**, which record the failure in `next_action` and do not
