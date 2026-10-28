@@ -283,6 +283,7 @@ test('AC-15: help lists the new usages in order', () => {
         '  ttc postpone <id>',
         '  ttc rename <id> "<title>"',
         '  ttc delete <id>',
+        '  ttc clean',
         '  ttc tag <id> +<t> | -<t>',
         '  ttc note <id> ["<text>" | --clear]',
         '  ttc export [<file>] [--format json|csv] [--open|--done|--all|--overdue] [--tag <t>] [--due-from YYYY-MM-DD] [--due-to YYYY-MM-DD] [--search <text>]',

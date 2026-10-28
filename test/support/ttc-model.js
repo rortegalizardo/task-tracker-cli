@@ -2,7 +2,7 @@
 
 // The test-owned reference model (the oracle) for ttc. It is written from the
 // documented rules (src/args.js and src/storage.js headers, PD-0002, PD-0003,
-// PD-0009, PD-0010, PD-0011, C7) and never requires anything under src/.
+// PD-0009, PD-0010, PD-0011, PD-0012, C7) and never requires anything under src/.
 //
 // expect({ argv, files, today }) returns { ok: false } or
 // { ok: true, stdout, files }. `files` maps paths relative to the case folder
@@ -27,6 +27,7 @@ const USAGE = [
   'ttc postpone <id>',
   'ttc rename <id> "<title>"',
   'ttc delete <id>',
+  'ttc clean',
   'ttc tag <id> +<t> | -<t>',
   'ttc note <id> ["<text>" | --clear]',
   'ttc export [<file>] [--format json|csv] [--open|--done|--all|--overdue] [--tag <t>] [--due-from YYYY-MM-DD] [--due-to YYYY-MM-DD] [--search <text>]',
@@ -469,6 +470,18 @@ const COMMANDS = {
     list.tasks = list.tasks.filter((t) => t.id !== id); // nextId stays
     writeStored(ctx.tree, list);
     ctx.out = 'Deleted task ' + id + '\n';
+  },
+
+  clean(args, ctx) {
+    grammar(args, plain(0));
+    const list = readStored(ctx.tree);
+    const kept = list.tasks.filter((t) => t.status === 'open');
+    const n = list.tasks.length - kept.length;
+    if (n > 0) {
+      list.tasks = kept; // nextId stays
+      writeStored(ctx.tree, list);
+    }
+    ctx.out = 'Removed ' + n + ' done tasks\n';
   },
 
   tag(args, ctx) {

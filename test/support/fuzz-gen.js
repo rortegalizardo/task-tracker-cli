@@ -11,7 +11,7 @@
 // and never an absolute path or "..".
 
 const MAX_SAFE = Number.MAX_SAFE_INTEGER;
-const COMMANDS = ['help', 'add', 'list', 'done', 'reopen', 'important', 'unimportant', 'postpone', 'rename', 'delete', 'tag', 'note', 'export', 'import', 'stats'];
+const COMMANDS = ['help', 'add', 'list', 'done', 'reopen', 'important', 'unimportant', 'postpone', 'rename', 'delete', 'clean', 'tag', 'note', 'export', 'import', 'stats'];
 
 const DIR = { kind: 'dir' };
 const file = (bytes) => ({ kind: 'file', bytes: Buffer.isBuffer(bytes) ? bytes : Buffer.from(bytes, 'utf8') });
@@ -279,7 +279,7 @@ function buildUnits(r, cmd, list, junkP, importTarget) {
     case 'import':
       positionals.push(pos(importTarget ?? r.pick(IMPORT_TARGETS)));
       break;
-    default: // help, stats
+    default: // help, stats, clean
   }
   const units = [...positionals];
   for (const o of options) units.splice(r.int(0, units.length), 0, o);
