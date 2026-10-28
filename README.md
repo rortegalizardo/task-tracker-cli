@@ -52,6 +52,20 @@ ttc postpone <id>
 - Two refusals, each exit 1 with nothing changed: a task with no due date (`ttc: task <id> has no due date`), and a task due `9999-12-31`, the latest date ttc stores (`ttc: task <id> cannot be postponed past 9999-12-31`).
 - It takes no other argument or option.
 
+## Cleaning out done tasks
+
+```
+ttc clean
+```
+
+- Removes every done task for good. There is no undo and no archive.
+- Prints `Removed <n> done tasks`, where `<n>` is how many were removed (0 and 1 included).
+- Asks no confirmation.
+- Open tasks keep their id and every field, and ids are never given again.
+- With no done task it writes nothing.
+- It takes no argument or option.
+- Before cleaning, `ttc list --done` shows what will be removed, `ttc reopen <id>` keeps a task, and `ttc export <file> --done` keeps a copy.
+
 ## Listing and filtering tasks
 
 ```
