@@ -9,7 +9,7 @@ here and remain in place on disk.
 | INIT-0001 | Tasks are tracked locally from the ttc command line | active | [INIT-0001-ttc-command-line-task-tracker/initiative.md](INIT-0001-ttc-command-line-task-tracker/initiative.md) | 2026-10-20 |
 | INIT-0002 | Important tasks are marked and listed first | active | [INIT-0002-important-tasks-first/initiative.md](INIT-0002-important-tasks-first/initiative.md) | 2026-10-26 |
 | INIT-0003 | A task is postponed from the ttc command line in one short command | active | [INIT-0003-postpone-a-task/initiative.md](INIT-0003-postpone-a-task/initiative.md) | 2026-10-27 |
-| INIT-0004 | Finished tasks are cleaned out of the list in one short command | draft | [INIT-0004-clean-up-done-tasks/initiative.md](INIT-0004-clean-up-done-tasks/initiative.md) | 2026-10-28 |
+| INIT-0004 | Finished tasks are cleaned out of the list in one short command | active | [INIT-0004-clean-up-done-tasks/initiative.md](INIT-0004-clean-up-done-tasks/initiative.md) | 2026-10-28 |
 
 To create one: allocate `INIT-nnnn` from `../manifest.yaml`, copy
 `../templates/initiative.md` into `INIT-nnnn-<slug>/initiative.md`, create

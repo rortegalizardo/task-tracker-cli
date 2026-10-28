@@ -239,7 +239,32 @@ with no findings rows is invalid output.
 
 ## Handoff packet
 
-_Assembled at ENGINEERING_READY._
+Assembled 2026-10-28 at ENGINEERING_READY by `ROLE-product-manager` against the `READY` verdict of 2026-10-28 (Readiness log, round 1; digest `(REQ-0013, 3, 2026-10-28)`, INIT-0004 rev 3, unchanged on disk). Drafted inline under the size rule (§9d.2): a transcription of existing records.
+
+- **Repository:** `rortegalizardo/task-tracker-cli` (`~/Desktop/Projects/task-tracker-cli`), default branch `main` (`project/constraints.md` row 9).
+- **Outcome:** A person using `ttc` can clean finished tasks out of their list with one short command that needs nothing else typed, after which the tasks they finished long ago no longer show under `ttc list --done` or `--all`, in `ttc stats`, or in `ttc export`; see in that command's output how many tasks it removed; and keep everything else as it is today: every open task with its id and fields, ids that are never given again, the order and format of `ttc list`, and data files written by older ttc (`initiative.md` `## Outcome`, O1–O3).
+- **Stories, in suggested sequence:**
+  1. `REQ-0013` — the only story; `depends_on: [none]`, on the frontier.
+- **Design references and export paths:** none — no user-facing visual surface (`PD-0012` item 13; `project/constraints.md` row 8).
+- **Decisions in force:** `PD-0003`, `PD-0004`, `PD-0008`, `PD-0010`, `PD-0012` (chosen option A: `ttc clean` removes every done task and prints `Removed <n> done tasks`).
+- **Binding technical constraints** (all from `technical/assessment.md`, round 1; carried in `REQ-0013` `## Technical constraints`; C6–C9 applied to option B only):
+  - C1 — `ttc clean` inherits, unchanged, the argument, lock, atomic-write, permission, failure-before-save and failure-after-save rules of the existing changing commands; with nothing to remove it writes nothing: the file stays byte-identical, a version 1–3 file is not upgraded, and a missing `tasks.json` leaves no file or data folder.
+  - C2 — the next id is left as it is, even when every task is removed; it is never lowered or recomputed.
+  - C3 — the success line, its form for every number, the usage line and its position are fixed text; tests assert them exactly.
+  - C4 — the test oracle (`test/support/ttc-model.js`) and the argument fuzzing (`fuzz-gen.js`, `fuzz-harness.js`) gain `clean`, written from `PD-0012`, not from the new code.
+  - C5 — the perf guard (10,000 tasks, median < 500 ms) must still pass.
+- **Explicitly out of scope** (copied from `initiative.md` `## Scope`, Out of scope):
+  - Removing open tasks.
+  - Keeping recently finished tasks while removing older ones: `ttc clean` removes every done task.
+  - An archive, an undo, or an "are you sure?" prompt.
+  - Choosing which finished tasks to remove by tag, date, id or search text.
+  - Automatic or scheduled clean-ups.
+  - Showing when a task was finished.
+  - Giving a removed task's id to a new task.
+  - Any change to the output of `ttc list`, `ttc stats` or `ttc export` other than the removed tasks no longer being there.
+- **Open questions (non-blocking):** none. The verdict carries no conditions or known issues.
+- **Delivery manifest:** `product/initiatives/INIT-0004-clean-up-done-tasks/delivery/manifest.md`
+- **Tickets:** created at HANDOFF by `SKILL-create-tickets-from-stories` (Linear team RC Development, project Task Tracker CLI, `PD-0007`); mapping authority `delivery/tickets.md`.
 
 ## Handoff log
 

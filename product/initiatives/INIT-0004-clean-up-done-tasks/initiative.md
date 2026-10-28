@@ -2,7 +2,7 @@
 id: INIT-0004
 type: initiative
 title: Finished tasks are cleaned out of the list in one short command
-status: draft
+status: active
 revision: 3
 owner_role: ROLE-product-manager
 created: 2026-10-28
