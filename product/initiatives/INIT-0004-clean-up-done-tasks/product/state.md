@@ -164,10 +164,12 @@ consideration.
 | Date | Delegate role | Question | Answer / verdict | Recorded as |
 | --- | --- | --- | --- | --- |
 | 2026-10-28 | ROLE-planner (PRODUCT-DISCOVERY) | Feasibility verdict, constraints, risks and band for options A and B (one dispatch: capability scan, impact, assessment; §9d.1) | A `feasible-with-constraints`, `contained`; B `feasible-with-constraints`, `multi-component`; constraints C1–C9 (C6–C9 B only); risks R1–R6; narrowing points P1–P7 (P5 costly), none blocking; A needs no format change, B forces format version 5 (C6) | `technical/capability-scan.md`, `technical/impact.md`, `technical/assessment.md` (round 1); this row; C3 and P1, P7 go to the convergence `PD-`. Vendor claude, model opus |
+| 2026-10-28 | ROLE-planner (PRODUCT-DISCOVERY) | `story-set-technical-coherence` full pass on draft {REQ-0013 rev 2}, round 1 of 2, terminal unless blocking (§9d.3) | `coherent`: 0 blocking, 1 non-blocking (#1, non-discriminating check in AC-6: with fixture `nextId` 3 a kept and a recomputed next id both give `Added task 3`); every AC precondition and current output checked against the real CLI at head `0dee64f`; no verdict drift from `PD-0012`, no absent capability, no sequencing problem. Round 1 is terminal; no round 2. Disposition (PM): #1 `fixed` — `REQ-0013` rev 3 raises the AC-6 fixture `nextId` to 5 and expects `Added task 5` (fixture checked valid on the CLI); no behaviour fixed by `PD-0012` changes; Behavior and Scope unchanged; AC numbering AC-1..AC-12 kept | `technical/coherence.md` (round 1, commit `e2965c1`); this row. Vendor claude, model opus |
 
 Dispatch log: `phase | delegate | vendor | model | tokens-scale | ledger run | artifact produced`
 
 - `SOLUTION_EXPLORATION | ROLE-planner | claude | opus | L (subagent reported 125,313 tokens, 25 tool uses, 327 s) | a20827c30634d2743 | technical/capability-scan.md, impact.md, assessment.md`
+- `DECOMPOSITION | ROLE-planner | claude | opus | M (subagent reported 88,117 tokens, 20 tool uses, 169 s) | af64282de887e653a | technical/coherence.md`
 
 ## Escalation log
 
@@ -178,10 +180,36 @@ Dispatch log: `phase | delegate | vendor | model | tokens-scale | ledger run | a
 
 | `REQ-` | Title | Status | `CAP-` | `DES-` | Sequencing note |
 | --- | --- | --- | --- | --- | --- |
+| REQ-0013 | Finished tasks are cleaned out of the list in one short command | accepted (rev 3) | CAP-0001 | none — no user-facing visual surface | none — on the frontier |
 
 ## Coverage validation
 
-_Run at DECOMPOSITION._
+`SKILL-validate-requirement-coverage`, full mode, run by ROLE-product-manager on
+2026-10-28 against the set on disk (iteration 1: zero defects). Story-set digest:
+`(REQ-0013, 3, 2026-10-28)`; `INIT-0004` revision 3.
+
+Traceability map: O1, O2, O3 (`initiative.md` Outcome) -> `REQ-0013` (accepted,
+`outcome_element` names all three) -> `CAP-0001` (resolves, `draft`) -> no `DES-`
+(no visual surface, `PD-0012` item 13) -> `PD-0003`, `PD-0004`, `PD-0008`,
+`PD-0010`, `PD-0012` (all `accepted`, all indexed) -> no `Q-` open -> no tickets
+yet.
+
+| Rule | Result | Evidence |
+| --- | --- | --- |
+| R1 | pass | O1–O3 each map to accepted `REQ-0013` (O1: AC-1, AC-3 for `list --done`, `--all` and `stats`, AC-2 for `export`; O2: the `Removed <n> done tasks` line in AC-1–AC-7; O3: AC-2 fields and order, AC-3 and AC-6 ids, AC-6 and AC-7 older files, AC-8 and AC-9 nothing written on error) |
+| R2 | pass | `REQ-0013` id = filename = index row (`requirements/index.md`, `accepted`); counter `requirement: 13`; AC numbering AC-1..AC-12 kept across revisions |
+| R3 | pass | `outcome_element` names O1–O3; `CAP-0001` resolves in `capabilities/index.md` |
+| R4 | pass | No user-facing visual surface (`PD-0012` item 13); `design_refs: []`; no `DES-` on the initiative |
+| R5 | pass | 12 acceptance entries, each a command trigger and exact output, exit code or file state; AC-11 names the README content; AC-12 names `npm test` and the CI `test` check |
+| R6 | pass | `depends_on: [none]` |
+| R7 | pass | Stories table sequencing note `none — on the frontier`; graph acyclic |
+| R8 | pass | No `blocker` `Q-`; Ambiguity log A1–A9 all `pm-resolvable`; no contradiction found between `REQ-0013` and an accepted `PD-` or `constraints.md` (flag-only) |
+| R9 | pass | `PD-0012` cites `feasible-with-constraints`; coherence verdict `coherent` recorded in the Consultation log, round 1 terminal (no blocking defect), its 1 non-blocking finding dispositioned `fixed` |
+| R10 | pass | Every `decisions:` entry is `accepted`; no dependency on a non-accepted `REQ-` or an open `Q-` |
+| R11 | pass | Out of scope has 8 items; `REQ-0013` Non-goals mirror all eight; no AC exercises excluded behaviour |
+| R12 | pass | `INIT-0004`, `REQ-0013`, `CAP-0001`, `PD-0003/0004/0008/0010/0012` resolve through their indexes; file, `id`, frontmatter and index rows agree |
+
+Defects: none.
 
 ## Readiness log
 

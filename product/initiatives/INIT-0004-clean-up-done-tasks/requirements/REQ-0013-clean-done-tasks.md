@@ -2,8 +2,8 @@
 id: REQ-0013
 type: requirement
 title: Finished tasks are cleaned out of the list in one short command
-status: draft
-revision: 2
+status: accepted
+revision: 3
 owner_role: ROLE-product-manager
 created: 2026-10-28
 updated: 2026-10-28
@@ -15,7 +15,7 @@ acceptance:
   - "AC-3. Tasks 1–3 added, then `ttc done 1`, `ttc done 2`, `ttc done 3` and `ttc clean` → stdout is the single line `Removed 3 done tasks`, exit code 0; `ttc add \"New task\"` then prints `Added task 4`, and `ttc list --all` prints exactly `#4 [ ] New task`"
   - "AC-4. Only task 1 `Buy milk` stored, open, then `ttc clean` → stdout is the single line `Removed 0 done tasks`, stderr is empty, exit code 0, and `tasks.json` is byte-for-byte unchanged"
   - "AC-5. `$TTC_HOME` names a folder that does not exist, then `ttc clean` → stdout is the single line `Removed 0 done tasks`, exit code 0, and afterwards neither `tasks.json` nor the `$TTC_HOME` folder exists"
-  - "AC-6. `tasks.json` in format version 3 holding exactly `{\"version\":3,\"nextId\":3,\"tasks\":[{\"id\":1,\"title\":\"Pay rent\",\"status\":\"done\",\"due\":null,\"tags\":[],\"note\":null},{\"id\":2,\"title\":\"Buy milk\",\"status\":\"open\",\"due\":null,\"tags\":[],\"note\":null}]}`, then `ttc clean` → stdout is the single line `Removed 1 done tasks`, exit code 0; `tasks.json` now holds `\"version\": 4`, `ttc list --all` prints exactly `#2 [ ] Buy milk`, and `ttc add \"Call mom\"` prints `Added task 3`"
+  - "AC-6. `tasks.json` in format version 3 holding exactly `{\"version\":3,\"nextId\":5,\"tasks\":[{\"id\":1,\"title\":\"Pay rent\",\"status\":\"done\",\"due\":null,\"tags\":[],\"note\":null},{\"id\":2,\"title\":\"Buy milk\",\"status\":\"open\",\"due\":null,\"tags\":[],\"note\":null}]}`, then `ttc clean` → stdout is the single line `Removed 1 done tasks`, exit code 0; `tasks.json` now holds `\"version\": 4`, `ttc list --all` prints exactly `#2 [ ] Buy milk`, and `ttc add \"Call mom\"` prints `Added task 5`"
   - "AC-7. `tasks.json` in format version 3 holding exactly `{\"version\":3,\"nextId\":2,\"tasks\":[{\"id\":1,\"title\":\"Buy milk\",\"status\":\"open\",\"due\":null,\"tags\":[],\"note\":null}]}`, then `ttc clean` → stdout is the single line `Removed 0 done tasks`, exit code 0, and `tasks.json` is byte-for-byte unchanged"
   - "AC-8. Task 1 open and task 2 done stored, then each of `ttc clean 2`, `ttc clean --all` and `ttc clean --done` → stderr is one line starting `ttc: `, stdout is empty, exit code 1, and `tasks.json` is byte-for-byte unchanged"
   - "AC-9. `tasks.json` holding the text `not json`, then `ttc clean` → stderr is one line starting `ttc: cannot read `, stdout is empty, exit code 1, and `tasks.json` is byte-for-byte unchanged"
@@ -100,7 +100,7 @@ Rules are `PD-0012`; this section states what the user sees.
 - [ ] AC-3. Tasks 1–3 added, then `ttc done 1`, `ttc done 2`, `ttc done 3` and `ttc clean` → stdout is the single line `Removed 3 done tasks`, exit code 0; `ttc add "New task"` then prints `Added task 4`, and `ttc list --all` prints exactly `#4 [ ] New task`
 - [ ] AC-4. Only task 1 `Buy milk` stored, open, then `ttc clean` → stdout is the single line `Removed 0 done tasks`, stderr is empty, exit code 0, and `tasks.json` is byte-for-byte unchanged
 - [ ] AC-5. `$TTC_HOME` names a folder that does not exist, then `ttc clean` → stdout is the single line `Removed 0 done tasks`, exit code 0, and afterwards neither `tasks.json` nor the `$TTC_HOME` folder exists
-- [ ] AC-6. `tasks.json` in format version 3 holding exactly `{"version":3,"nextId":3,"tasks":[{"id":1,"title":"Pay rent","status":"done","due":null,"tags":[],"note":null},{"id":2,"title":"Buy milk","status":"open","due":null,"tags":[],"note":null}]}`, then `ttc clean` → stdout is the single line `Removed 1 done tasks`, exit code 0; `tasks.json` now holds `"version": 4`, `ttc list --all` prints exactly `#2 [ ] Buy milk`, and `ttc add "Call mom"` prints `Added task 3`
+- [ ] AC-6. `tasks.json` in format version 3 holding exactly `{"version":3,"nextId":5,"tasks":[{"id":1,"title":"Pay rent","status":"done","due":null,"tags":[],"note":null},{"id":2,"title":"Buy milk","status":"open","due":null,"tags":[],"note":null}]}`, then `ttc clean` → stdout is the single line `Removed 1 done tasks`, exit code 0; `tasks.json` now holds `"version": 4`, `ttc list --all` prints exactly `#2 [ ] Buy milk`, and `ttc add "Call mom"` prints `Added task 5`
 - [ ] AC-7. `tasks.json` in format version 3 holding exactly `{"version":3,"nextId":2,"tasks":[{"id":1,"title":"Buy milk","status":"open","due":null,"tags":[],"note":null}]}`, then `ttc clean` → stdout is the single line `Removed 0 done tasks`, exit code 0, and `tasks.json` is byte-for-byte unchanged
 - [ ] AC-8. Task 1 open and task 2 done stored, then each of `ttc clean 2`, `ttc clean --all` and `ttc clean --done` → stderr is one line starting `ttc: `, stdout is empty, exit code 1, and `tasks.json` is byte-for-byte unchanged
 - [ ] AC-9. `tasks.json` holding the text `not json`, then `ttc clean` → stderr is one line starting `ttc: cannot read `, stdout is empty, exit code 1, and `tasks.json` is byte-for-byte unchanged
