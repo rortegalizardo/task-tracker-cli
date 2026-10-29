@@ -17,7 +17,7 @@ story_set_digest: "REQ-0015@3/2026-10-29; INIT-0006@3"
 accepted_on: 2026-10-29
 dispatch_unit: ticket
 max_parallelism: 5
-completion: pending
+completion: complete
 stories: [REQ-0015]
 ---
 
@@ -68,7 +68,7 @@ none — dependencies are the only ordering
 
 | Unit | Stories | Depends on | State | Attempts | Last outcome | Dispatch ref | Wave | Updated |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| RCDEV-864 | REQ-0015 | none | eligible | 0 | none | none | 0 | 2026-10-29 |
+| RCDEV-864 | REQ-0015 | none | complete | 1 | DONE — release Status: merged | batch INIT-0006, wrapper_pid=44855; PR rortegalizardo/task-tracker-cli#42 | 0 | 2026-10-29 |
 
 ## Waves
 
@@ -80,7 +80,10 @@ none — dependencies are the only ordering
 
 | Date | Unit | Event | Detail |
 | --- | --- | --- | --- |
+| 2026-10-29 | RCDEV-864 | dispatched | cap 5 (max_parallelism); live worker wrapper_pid=44855 found at driver start, left running |
+| 2026-10-29 | RCDEV-864 | completed | PR #42 state MERGED, merge commit 4b017d0cdb21a44807294aa7ce2d73bccbb212e0 (read via gh pr view) |
+| 2026-10-29 | INIT-0006 | acceptance | delivery/acceptance.md: 55 rows, 0 fail, against origin/main 4b017d0 |
 
 ## Completion
 
-_Computed per schema §5.8. `pending` until every unit is `complete`._
+complete — 1 of 1 units complete (RCDEV-864, PR #42 merged, 4b017d0); acceptance checks 55/55 pass (`acceptance.md`).
