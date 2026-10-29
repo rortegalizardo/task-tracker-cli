@@ -3,7 +3,7 @@ id: PSTATE-INIT-0005
 type: product-state
 title: Product definition state for INIT-0005
 status: authoritative
-revision: 9
+revision: 10
 owner_role: ROLE-product-manager
 created: 2026-10-29
 updated: 2026-10-29
@@ -12,7 +12,7 @@ initiative: INIT-0005
 phase: HANDOFF
 phase_entered: 2026-10-29
 requester: "the requester (repository owner, rortegalizardo), via the driving session, 2026-10-29"
-next_action: "ROLE-product-manager: HANDOFF — create the Linear ticket for REQ-0014 (create-tickets-from-stories), write delivery/tickets.md, push"
+next_action: "ROLE-orchestrator: deliver RCDEV-859 (one ticket_code; dispatched by a human or a fan-out session). Product side done at HANDOFF; ROLE-product-manager re-enters only on a regression trigger or at initiative close"
 blocked_by: []
 converged: true
 readiness_verdict: READY   # none | READY | READY-with-known-issues | NOT READY | void
@@ -31,7 +31,8 @@ these two files never describe the same thing and never share a writer.
 
 HANDOFF. Option B chosen (`PD-0013`); `REQ-0014` rev 3 accepted and
 engineering-ready; readiness round 1 `READY`. Handoff packet and
-`delivery/manifest.md` (product band) issued. The Linear ticket is next.
+`delivery/manifest.md` (product band) issued. `REQ-0014` → `RCDEV-859`
+(`delivery/tickets.md`). Product side done.
 
 ## Problem statement
 
@@ -46,7 +47,7 @@ from it (`src/commands/index.js`, 16 commands). Head `7f4bddf`.
 
 ## Next action
 
-ROLE-product-manager: HANDOFF — create the Linear ticket for REQ-0014 (create-tickets-from-stories), write delivery/tickets.md, push.
+ROLE-orchestrator: deliver RCDEV-859 (one ticket_code; dispatched by a human or a fan-out session). Product side done at HANDOFF; ROLE-product-manager re-enters only on a regression trigger or at initiative close.
 
 ## Blocked by
 
@@ -169,6 +170,7 @@ Dispatch log: `phase | delegate | vendor | model | tokens-scale | ledger run | a
 - `SOLUTION_EXPLORATION | ROLE-planner | claude | opus | L (subagent reported 123,267 tokens, 27 tool uses, 339 s) | a3656a65b1a42165a | technical/capability-scan.md, impact.md, assessment.md`
 - `DECOMPOSITION | ROLE-planner | claude | opus | M (subagent reported 96,157 tokens, 20 tool uses, 202 s) | ae54e0acf1f8fdfbd | technical/coherence.md`
 - `READINESS | ROLE-product-readiness-reviewer | claude | sonnet | M (subagent reported 64,723 tokens, 17 tool uses, 73 s) | ae545c237589174e7 | Readiness log row 1 (READY)`
+- `HANDOFF | ticket-transcriber (create-tickets-from-stories §2) | claude | sonnet | M (subagent reported 45,023 tokens, 10 tool uses, 66 s) | a124e6e74118a8fd2 | scratch ticket body for RCDEV-859 (transcription only)`
 
 ## Escalation log
 
@@ -265,12 +267,13 @@ Assembled 2026-10-29 at ENGINEERING_READY by `ROLE-product-manager` against the 
   - Any change to the output of other commands, other than the new task being there.
 - **Open questions (non-blocking):** none. The verdict carries no conditions or known issues.
 - **Delivery manifest:** `product/initiatives/INIT-0005-copy-a-task/delivery/manifest.md`
-- **Tickets:** written at HANDOFF (Linear team RC Development, project Task Tracker CLI, `PD-0007`; mapping authority `delivery/tickets.md`).
+- **Tickets** (Linear team RC Development, project Task Tracker CLI, `PD-0007`; mapping authority `delivery/tickets.md`): `REQ-0014` → `RCDEV-859`.
 
 ## Handoff log
 
 | Date | Receiving role | Packet digest | Note |
 | --- | --- | --- | --- |
+| 2026-10-29 | ROLE-orchestrator (one `ticket_code`; no engineering dispatched by this session) | `2fd74c887e041d2d` (sha256 of the packet section, first 16 hex) | Ticket RCDEV-859 in Linear project Task Tracker CLI, team RC Development, state Backlog, created 2026-10-29T07:22:24Z. Idempotency: no `delivery/tickets.md` existed for INIT-0005; Linear searches (the title in team RC Development and `ttc copy` in project Task Tracker CLI, archived included) found no existing issue. Transcription by the Sonnet child (run `a124e6e74118a8fd2`), verified by the PM: X12 lint 0 matches on title and body; X13 six mapped sections only; X5 15 of 15 criteria byte-identical to the story; X14 no criterion carried a product identifier, so no translation (`(C6)` in AC-15 kept: a non-product label that resolves in the ticket's Dependencies); X11 no ticket dependencies; project set on create. Translations: Scope drops "(`project/constraints.md` row 9)"; Out of scope inlines the initiative's eight items and "(INIT-0001 out of scope)" becomes "(already out of scope in the earlier ttc work)"; Success metric drops the outcome pointer; Dependencies inline C1–C9, C6 "written from `PD-0013`" becomes "written from the decided behavior". No `DES-`, so no `design/` copy (X10). Global `synced_on` not bumped: only the new row was synced, the other rows' statuses were not re-read |
 
 ## Phase log
 
@@ -288,6 +291,7 @@ Dates are UTC timestamps.
 | 2026-10-29T07:15:51Z | DECOMPOSITION | READINESS | ROLE-product-manager | DECOMPOSITION exit criteria met: O1–O3 map to accepted `REQ-0014` rev 3; it meets the nine points of §10.3 (accepted, one testable outcome, 15 pass/fail ACs, `CAP-0001`, no visual surface so no `DES-`, independently verifiable, no `blocker` `Q-`, no contradiction, indexed in the same commit); coherence round 1 (terminal) left no open blocking defect; convergence declared (`converged: true`) | Entry precondition (`lifecycle-hooks.md` §3.4.1 READINESS) holds: `converged: true`; `HOOK-traceability` zero defects (Coverage validation, iteration 1); `technical/coherence.md` verdict `coherent`, round 1 terminal under §9d.3, its one non-blocking finding `fixed` in rev 3; no user-facing story, so no `DES-` needed. Review budget this session: 1 of 6. Hooks: HOOK-phase-entry pass | `0e519ee7443786e9`, head `be4ef26` |
 | 2026-10-29T07:18:48Z | READINESS | ENGINEERING_READY | ROLE-product-manager | READINESS exit criteria met: `READY` recorded by ROLE-product-readiness-reviewer, round 1 of 2 declared terminal unless blocking; no conditions or known issues to record as `Q-`/`PD-` | Coverage validation zero defects ran before the dispatch (not a review dispatch; set unchanged since). Review budget used this session: 2 of 6 (coherence 1, readiness 1). `readiness_verdict: READY` set by the PM from the reviewer's Readiness log row (the dispatch limited its writes to the log section). Entry precondition (`lifecycle-hooks.md` §3.4.1 ENGINEERING_READY) holds: verdict `READY`, not `void`, digest `(REQ-0014, 3, 2026-10-29)`; INIT-0005 rev 3 matches disk. Hooks: HOOK-readiness pass, HOOK-phase-entry pass | `0e519ee7443786e9` (carried), head `1fa351d` |
 | 2026-10-29T07:20:04Z | ENGINEERING_READY | HANDOFF | ROLE-product-manager | ENGINEERING_READY exit criteria met: the Handoff packet is self-contained (H0–H12), `delivery/manifest.md` exists at `band_owner: product` and satisfies M1–M8 (one story, acyclic; digest `REQ-0014@3/2026-10-29; INIT-0005@3` equals the verdict's; no execution band rows) | `INIT-0005` `status: active` (index too); `REQ-0014` `readiness: engineering-ready`; every referenced identifier resolves through its index; no `Q-` open; no story changed since the verdict; no HLD, plan or estimate in a product-side artifact (H11). Pushed and verified on `origin/main` at `8923ce4` before entering HANDOFF. Hooks: HOOK-handoff-packet pass, HOOK-phase-entry pass | `0e519ee7443786e9` (carried), head `8923ce4` |
+| 2026-10-29T07:23:05Z | HANDOFF | HANDOFF | ROLE-product-manager | HANDOFF exit criteria met: Handoff log row written, phase `HANDOFF`, accepted `REQ-0014` resolves to `RCDEV-859` | `SKILL-create-tickets-from-stories` X1–X14 verified by the PM (Handoff log). No review re-run. `delivery/state.md` not written; ROLE-orchestrator not dispatched by this session. Review budget used this session: 2 of 6. Requester questions asked: 0. Hooks: HOOK-handoff-conformance pass (H13: `RCDEV-859` from the Linear response) | `0e519ee7443786e9` (carried), head `9e1fa51` |
 
 > Every product-side session updates this file before ending — **including
 > sessions that failed**, which record the failure in `next_action` and do not
