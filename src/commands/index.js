@@ -2,6 +2,7 @@
 
 const help = require('./help');
 const add = require('./add');
+const copy = require('./copy');
 const list = require('./list');
 const { done, reopen } = require('./status');
 const { important, unimportant } = require('./important');
@@ -16,4 +17,4 @@ const importCmd = require('./import');
 const stats = require('./stats');
 
 // Registry order is the order of the usage (PD-0003 item 12).
-module.exports = [help, add, list, done, reopen, important, unimportant, postpone, rename, del, clean, tag, note, exportCmd, importCmd, stats];
+module.exports = [help, add, copy, list, done, reopen, important, unimportant, postpone, rename, del, clean, tag, note, exportCmd, importCmd, stats];
