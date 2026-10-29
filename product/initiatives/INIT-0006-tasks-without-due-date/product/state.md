@@ -3,16 +3,16 @@ id: PSTATE-INIT-0006
 type: product-state
 title: Product definition state for INIT-0006
 status: authoritative
-revision: 2
+revision: 3
 owner_role: ROLE-product-manager
 created: 2026-10-29
 updated: 2026-10-29
 updated_by_role: ROLE-product-manager
 initiative: INIT-0006
-phase: DISCOVERY
+phase: PRODUCT_DEFINITION
 phase_entered: 2026-10-29
 requester: "the requester (repository owner, rortegalizardo), via the driving session, 2026-10-29"
-next_action: "ROLE-product-manager: SKILL-advance-product-phase DISCOVERY -> PRODUCT_DEFINITION"
+next_action: "ROLE-product-manager: write the outcome, out of scope, success measures, draft REQ- and Product Definition Contract, then SKILL-advance-product-phase PRODUCT_DEFINITION -> SOLUTION_EXPLORATION"
 blocked_by: []
 converged: false
 readiness_verdict: none   # none | READY | READY-with-known-issues | NOT READY | void
@@ -29,9 +29,7 @@ these two files never describe the same thing and never share a writer.
 
 ## Where this stands
 
-DISCOVERY. Triage verdict `new-initiative`; `INIT-0006` allocated; raw
-request committed verbatim; ambiguities A1–A9 all `pm-resolvable`. Discovery
-written (J1–J3, P1–P3, `CAP-0001`, signals 1–4, non-goals).
+PRODUCT_DEFINITION. Discovery written (J1–J3, P1–P3, `CAP-0001`, signals 1–4, non-goals); ambiguities A1–A9 all `pm-resolvable`.
 
 ## Problem statement
 
@@ -49,7 +47,7 @@ CLI at head `5be0561`).
 
 ## Next action
 
-ROLE-product-manager: SKILL-advance-product-phase DISCOVERY -> PRODUCT_DEFINITION.
+ROLE-product-manager: write the outcome, out of scope, success measures, draft REQ- and Product Definition Contract, then SKILL-advance-product-phase PRODUCT_DEFINITION -> SOLUTION_EXPLORATION
 
 ## Blocked by
 
@@ -195,6 +193,7 @@ Dates are UTC timestamps.
 | 2026-10-29T17:49:59Z | — | BOOTSTRAP | ROLE-product-manager | Raw request relayed by the driving session | Packet: `readiness: ready`, `scope.initiative: null`, profile S, no areas, no open `Q-` (`Q-0001` answered). `neighbouring` read in full: `CAP-0001` (draft) has no way to list only tasks with no due date; no `PD-` (accepted or rejected) concerns it; `PD-0003` items 6–8, `PD-0009` items 4–5 (overdue, list view, line, order) bind; INIT-0001 out of scope "Changing or clearing a due date after `add`" is a story boundary, not a rejected decision. INIT-0001..INIT-0005 are not touched. Advisory, carried: `CAP-0001` is still draft and predates shipped behaviour (code and README at head `5be0561` are the current-state evidence); `delivery/tickets.md` mirror `synced_on` 2026-10-21 is stale; the working tree has an uncommitted delivery-owned edit to `INIT-0005/delivery/tickets.md`, left alone. Hooks: HOOK-canonical-root pass, HOOK-hydrate pass | `c995399e88ef32e3`, head `5be0561` |
 | 2026-10-29T17:50:50Z | BOOTSTRAP | INTAKE | ROLE-product-manager | Packet emitted, scope resolved to none | Triage verdict `new-initiative`: not `satisfied-by CAP-0001` (no option lists only tasks with no due date: `--due-from`/`--due-to` leave them out, `--overdue` never includes them, `--no-due` is an unknown option); no `PD-` settles it; no constraint forbids it; no initiative covers it (INIT-0001 base commands and `--overdue`, INIT-0002 important mark, INIT-0003 postpone, INIT-0004 clean, INIT-0005 copy), so not a duplicate; one outcome named. Raw request committed verbatim. `INIT-0006` allocated (counter 5 -> 6, checked against `origin/main` `5be0561`). Size: small (≤3 stories expected). Hooks: HOOK-initiative-resolved pass, HOOK-phase-entry pass | `c995399e88ef32e3`, head `5be0561` |
 | 2026-10-29T17:52:12Z | INTAKE | DISCOVERY | ROLE-product-manager | INTAKE exit criteria met: one initiative, one problem, one named requester, ambiguity rows A1–A9 all classified (`pm-resolvable`) | Entry precondition (`lifecycle-hooks.md` §3.4.1 DISCOVERY) holds: `initiative.md` at `status: draft`; state at INTAKE with requester, problem statement and a classified ambiguity log. Discovery written (J1–J3, P1–P3, S2 `CAP-0001`, S3 signals 1–4, non-goals). No delegate consulted (optional, read-only; the code answers the current state). No `Q-` raised. Hooks: HOOK-phase-entry pass | `c995399e88ef32e3`, head `28e0544` |
+| 2026-10-29T17:52:30Z | DISCOVERY | PRODUCT_DEFINITION | ROLE-product-manager | DISCOVERY exit criteria met: problem, user, current state and success signals stated with sources; no open escalation-class ambiguity | Entry precondition (`lifecycle-hooks.md` §3.4.1 PRODUCT_DEFINITION) holds: Discovery has the target user, jobs J1–J3 and problems P1–P3 each with a source (S1), mapping `CAP-0001` (S2), success signals 1–4 (S3) and known non-goals. Hooks: HOOK-phase-entry pass | `c995399e88ef32e3`, head `dd7f9af` |
 
 > Every product-side session updates this file before ending — **including
 > sessions that failed**, which record the failure in `next_action` and do not
