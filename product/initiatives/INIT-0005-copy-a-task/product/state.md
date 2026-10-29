@@ -3,16 +3,16 @@ id: PSTATE-INIT-0005
 type: product-state
 title: Product definition state for INIT-0005
 status: authoritative
-revision: 4
+revision: 5
 owner_role: ROLE-product-manager
 created: 2026-10-29
 updated: 2026-10-29
 updated_by_role: ROLE-product-manager
 initiative: INIT-0005
-phase: SOLUTION_EXPLORATION
+phase: SOLUTION_CONVERGENCE
 phase_entered: 2026-10-29
 requester: "the requester (repository owner, rortegalizardo), via the driving session, 2026-10-29"
-next_action: "ROLE-product-manager: SOLUTION_EXPLORATION — dispatch ROLE-planner (PRODUCT-DISCOVERY) for one feasibility assessment of options A and B"
+next_action: "ROLE-product-manager: SOLUTION_CONVERGENCE — record the chosen-option PD- and the Solution Contract"
 blocked_by: []
 converged: false
 readiness_verdict: none   # none | READY | READY-with-known-issues | NOT READY | void
@@ -29,9 +29,8 @@ these two files never describe the same thing and never share a writer.
 
 ## Where this stands
 
-SOLUTION_EXPLORATION. Outcome O1–O3, out of scope and success measures are in
-`initiative.md` rev 2; draft `REQ-0014`; Product Definition Contract in
-`product-definition-contract.md`. Options A and B go to the architect.
+SOLUTION_CONVERGENCE. Options A and B are recorded with the architect's
+verdicts (`technical/assessment.md`, round 1); the PM recommends B.
 
 ## Problem statement
 
@@ -46,7 +45,7 @@ from it (`src/commands/index.js`, 16 commands). Head `7f4bddf`.
 
 ## Next action
 
-ROLE-product-manager: SOLUTION_EXPLORATION — dispatch ROLE-planner (PRODUCT-DISCOVERY) for one feasibility assessment of options A and B.
+ROLE-product-manager: SOLUTION_CONVERGENCE — record the chosen-option PD- and the Solution Contract.
 
 ## Blocked by
 
@@ -70,7 +69,7 @@ or a success measure, and no row drops or narrows a stated need (§4.2), so no
 | 2026-10-29 | A2. Is the copy open, or does it keep the original's status? | pm-resolvable | Open. "another task" is new work to do, and copying a done task is the plain way to do it again. Recorded in the convergence `PD-`. |
 | 2026-10-29 | A3. What id does the copy get? | pm-resolvable | The next id, like any new task. Already decided: ids are given in order and never reused (`PD-0003` item 1). |
 | 2026-10-29 | A4. Where does the copy show in `ttc list`? | pm-resolvable | Where its id and important mark put it, like any task. Already decided (`PD-0003` item 7, `PD-0009`). |
-| 2026-10-29 | A5. Can the copy differ from the original in the same command, for example a new due date? | pm-resolvable | The title, tags, note and mark can already be changed afterwards (`ttc rename`, `ttc tag`, `ttc note`, `ttc important` / `ttc unimportant`). A due date cannot: `ttc postpone` only moves it one day at a time and never sets or clears one (`PD-0011` items 3, 5). Whether the copy command takes a due date is decided at SOLUTION_CONVERGENCE between the options, after the architect costs them; "without retyping everything" and "Keep it simple" are the tie-breakers. |
+| 2026-10-29 | A5. Can the copy differ from the original in the same command, for example a new due date? | pm-resolvable | The title, tags, note and mark can already be changed afterwards (`ttc rename`, `ttc tag`, `ttc note`, `ttc important` / `ttc unimportant`). A due date cannot: `ttc postpone` only moves it to one day after the later of its due date and today, and never sets or clears one (`PD-0011` items 3, 5). Whether the copy command takes a due date is decided at SOLUTION_CONVERGENCE between the options, after the architect costs them; "without retyping everything" and "Keep it simple" are the tie-breakers. |
 | 2026-10-29 | A6. One task at a time, or several? | pm-resolvable | One: "make a copy". Copying several tasks in one command is out of scope. |
 | 2026-10-29 | A7. What does the command print? | pm-resolvable | The new task's id, so the user can change the copy next without listing. Exact text decided at SOLUTION_CONVERGENCE. |
 | 2026-10-29 | A8. Does the copy remember which task it came from? | pm-resolvable | No. Nothing in the ask needs it, and it would add stored data against "Keep it simple". Out of scope. |
@@ -92,7 +91,7 @@ own machine: the requester. ttc has one user and no shared list
 | J3 | Keep the feature simple: little to learn, nothing else changes ("Keep it simple."). | Request, verbatim (same file) |
 | P1 | Today a task like an existing one is made with `ttc add`, typing the title, `--due`, each `--tag`, `--note` and `--important` again; the title and note must be retyped exactly. | `src/commands/add.js`; README "Task notes", "Important tasks"; head `7f4bddf` |
 | P2 | No command reads one task and makes another from it. | `src/commands/index.js` (16 commands); `ttc help` at head `7f4bddf` |
-| P3 | Once a task exists, its title, tags, note and mark can be changed (`ttc rename`, `ttc tag`, `ttc note`, `ttc important`, `ttc unimportant`), but its due date can only be moved one day at a time with `ttc postpone`, which never gives a task its first due date and never clears one. A copy that keeps an old due date would be overdue and could only be postponed day by day. | `PD-0011` items 3, 5; README "Postponing a task"; INIT-0001 out of scope "Changing or clearing a due date after `add`" |
+| P3 | Once a task exists, its title, tags, note and mark can be changed (`ttc rename`, `ttc tag`, `ttc note`, `ttc important`, `ttc unimportant`), but its due date can only be moved one day at a time with `ttc postpone`, which never gives a task its first due date and never clears one. A copy that keeps an old due date is overdue at once; one `ttc postpone` brings it to tomorrow, and each day further out takes one more postpone (corrected at SOLUTION_EXPLORATION, `technical/assessment.md` P8). | `PD-0011` items 3, 5; README "Postponing a task"; INIT-0001 out of scope "Changing or clearing a due date after `add`" |
 
 **Current-state capability mapping (S2).** `CAP-0001` — local task tracking
 from the `ttc` command line. This initiative extends it. `CAP-0001` is still
@@ -134,13 +133,33 @@ S2/S3 = the code and README at head `7f4bddf`.
 
 | Option | User-visible difference | Feasibility verdict | Cost / risk | Trade-off |
 | --- | --- | --- | --- | --- |
+| A — `ttc copy <id>` | The copy always has the original's due date; nothing is typed but the id | `feasible-with-constraints`, band `contained` (`technical/assessment.md`, round 1) | Constraints C1–C7. R1, R2; R3 (a copy of a task with an old due date is overdue at once, and a date further out than tomorrow takes one `ttc postpone` per day); R5 (a later `--due` stays additive). No stored-format change | Least to type and learn: one argument. A copy of a dated task carries a date the user can then only move forward a day at a time |
+| B — `ttc copy <id> [--due YYYY-MM-DD]` | As A when nothing else is typed; with `--due` the copy gets the date the user types instead | `feasible-with-constraints`, band `contained` (`technical/assessment.md`, round 1) | Constraints C1–C9 (C8, C9 B only: `--due` follows `ttc add --due` exactly and can only set a date). R1, R2; R4 (copy then delete acts like a reschedule with a new id). No stored-format change | One optional option, the same `--due` the user knows from `ttc add`; the user types only the detail that differs |
+
+_Recommended option and why:_ **B.** The due date is the one detail of a task
+that cannot be changed once the task exists (Discovery P3; R3): the title,
+tags, note and mark each have a command, the due date only moves forward a
+day at a time. "Another task like an existing one" is often the same task for
+another day, so under A the copy of a dated task carries the old date, and
+getting it to the right date is more typing, not less — against "without
+retyping everything". B keeps `ttc copy <id>` exactly as short as A when
+nothing else is typed, and its one option is the `--due` of `ttc add`, under
+the same rules (C8), so there is nothing new to learn: "Keep it simple" holds.
+Both are `contained` with no format change. R4 is accepted: a copy is a new
+task with a new id, and the README does not present copy-then-delete as a way
+to change a due date (P9). "Keep it simple" rules out further options on the
+copy command (title, tags, note, mark), which existing commands change
+afterwards.
 
 ## Consultation log
 
 | Date | Delegate role | Question | Answer / verdict | Recorded as |
 | --- | --- | --- | --- | --- |
+| 2026-10-29 | ROLE-planner (PRODUCT-DISCOVERY) | Feasibility verdict, constraints, risks and band for options A and B (one dispatch: capability scan, impact, assessment; §9d.1) | A `feasible-with-constraints`, `contained`; B `feasible-with-constraints`, `contained`; constraints C1–C9 (C8, C9 B only); risks R1–R5 (R3, R5 A only; R4 B only); narrowing points P1–P10, none blocking or costly; neither option changes the stored format (C4). P8 corrected Discovery P3 and A5 (one postpone brings an overdue task to tomorrow); corrected in place. Registry note: `CAP-0001` out of date (as in INIT-0002..0004), left for initiative close | `technical/capability-scan.md`, `technical/impact.md`, `technical/assessment.md` (round 1); this row; C2, C3, C5, C9 and P1–P10 go to the convergence `PD-`. Vendor claude, model opus |
 
 Dispatch log: `phase | delegate | vendor | model | tokens-scale | ledger run | artifact produced`
+
+- `SOLUTION_EXPLORATION | ROLE-planner | claude | opus | L (subagent reported 123,267 tokens, 27 tool uses, 339 s) | a3656a65b1a42165a | technical/capability-scan.md, impact.md, assessment.md`
 
 ## Escalation log
 
@@ -196,6 +215,7 @@ Dates are UTC timestamps.
 | 2026-10-29T06:53:58Z | INTAKE | DISCOVERY | ROLE-product-manager | INTAKE exit criteria met: one initiative, one problem, one named requester, ambiguity rows A1–A10 all classified (`pm-resolvable`) | Entry precondition (`lifecycle-hooks.md` §3.4.1 DISCOVERY) holds: `initiative.md` at `status: draft`; state at INTAKE with requester, problem statement and a classified ambiguity log. Discovery written (J1–J3, P1–P3, S2 `CAP-0001`, S3 signals 1–5, non-goals). No delegate consulted (optional, read-only; the code answers the current state). No `Q-` raised. Hooks: HOOK-phase-entry pass | `0e519ee7443786e9`, head `7d335d8` |
 | 2026-10-29T06:54:12Z | DISCOVERY | PRODUCT_DEFINITION | ROLE-product-manager | DISCOVERY exit criteria met: problem, user, current state and success signals stated with sources; no open escalation-class ambiguity | Entry precondition (`lifecycle-hooks.md` §3.4.1 PRODUCT_DEFINITION) holds: Discovery has the target user, jobs J1–J3 and problems P1–P3 each with a source (S1), mapping `CAP-0001` (S2), success signals 1–5 (S3) and known non-goals. Hooks: HOOK-phase-entry pass | `0e519ee7443786e9`, head `28899a1` |
 | 2026-10-29T06:55:12Z | PRODUCT_DEFINITION | SOLUTION_EXPLORATION | ROLE-product-manager | PRODUCT_DEFINITION exit criteria met: outcome O1–O3, out of scope (8 items), success measures 1–6, draft `REQ-0014` covering O1–O3, Product Definition Contract citing the raw request | Entry precondition (`lifecycle-hooks.md` §3.4.1 SOLUTION_EXPLORATION) holds: F1 `initiative.md` rev 2 has an outcome and a non-empty out-of-scope section; one `status: draft` `REQ-`; F2 draft-mode coverage (inline, deterministic): J1 -> `REQ-0014` Requirement, J2 -> Requirement ("needs only the existing task's id", the fields it holds), J3 -> Non-goals and the initiative out of scope; no `R1` defect. `requirement` counter 13 -> 14, checked against `origin/main`. No scope `PD-` needed yet: A1–A10 are recorded in the chosen-option `PD-`. Hooks: HOOK-phase-entry pass | `0e519ee7443786e9`, head `f89c9d9` |
+| 2026-10-29T07:02:31Z | SOLUTION_EXPLORATION | SOLUTION_CONVERGENCE | ROLE-product-manager | SOLUTION_EXPLORATION exit criteria met: options A and B recorded, each with a feasibility verdict (`feasible-with-constraints`) and a user-visible trade-off; PM recommends B with reasons | Entry precondition (`lifecycle-hooks.md` §3.4.1 SOLUTION_CONVERGENCE) holds: X1 two distinguishable options; X2 each verdict in the closed set (`technical/assessment.md` round 1); one Consultation log row for the one delegate response. Discovery P3 and A5 corrected in place from the architect's P8 (pre-freeze). No design dispatch: no visual surface (`project/constraints.md` row 8, `PD-0001` item 3; to be recorded in the convergence `PD-`, §9d.5). Hooks: HOOK-phase-entry pass | `0e519ee7443786e9`, head `fdf683d` |
 
 > Every product-side session updates this file before ending — **including
 > sessions that failed**, which record the failure in `next_action` and do not
