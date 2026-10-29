@@ -3,14 +3,14 @@ id: INIT-0005
 type: initiative
 title: A new task is made from an existing one without retyping it
 status: draft
-revision: 2
+revision: 3
 owner_role: ROLE-product-manager
 created: 2026-10-29
 updated: 2026-10-29
 capabilities: [CAP-0001]
 requirements: [REQ-0014]
 tickets: []
-decisions: []
+decisions: [PD-0013]
 ---
 
 # INIT-0005 — A new task is made from an existing one without retyping it
@@ -46,8 +46,8 @@ task like an existing one." Today every such task is typed again in full with
 - One command that makes a new open task from an existing one in one go.
 - What the new task holds: the original's title, due date, tags, note and
   important mark; a new id; status open.
-- Whether the command can give the copy a different due date (decided at
-  SOLUTION_CONVERGENCE).
+- The command's one option, `--due`, which gives the copy a different due
+  date (`PD-0013`).
 - The command's confirmation line, which gives the new task's id, and its
   errors.
 - `ttc help` lists the new usage, and the README documents it.
@@ -69,8 +69,7 @@ task like an existing one." Today every such task is typed again in full with
 
 ## Success measures
 
-1. One command, given only an existing task's id, makes a new task and
-   exits 0.
+1. `ttc copy <id>`, with nothing else typed, makes a new task and exits 0.
 2. The task it makes has the original's title, due date, tags, note and
    important mark, is open, and has a higher id than any task ever created.
 3. The command's one confirmation line gives the new task's id.
@@ -101,3 +100,4 @@ None.
 | --- | --- | --- | --- |
 | 2026-10-29 | 1 | Created at INTAKE | Triage verdict `new-initiative` |
 | 2026-10-29 | 2 | Outcome O1–O3, scope, out of scope (8 items), success measures 1–6, `REQ-0014` | PRODUCT_DEFINITION |
+| 2026-10-29 | 3 | `decisions: [PD-0013]`; in scope names the `--due` option; success measure 1 names `ttc copy <id>` | SOLUTION_CONVERGENCE, `PD-0013` (option B) |
