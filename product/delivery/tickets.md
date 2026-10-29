@@ -30,6 +30,7 @@ but re-sync before acting on it destructively (branching, closing, shipping).
 | RCDEV-857 | A task is postponed from the ttc command line in one short command | INIT-0003 | REQ-0012 |  |  |  | Backlog |
 | RCDEV-858 | Finished tasks are cleaned out of the list in one short command | INIT-0004 | REQ-0013 |  |  |  | Backlog |
 | RCDEV-859 | A new task is made from an existing one in one short command | INIT-0005 | REQ-0014 |  |  |  | Backlog |
+| RCDEV-864 | Tasks with no due date are listed on their own in one short command | INIT-0006 | REQ-0015 |  |  |  | Backlog |
 
 Empty `Depends on` = on the executable frontier. Tracker keys verbatim.
 Status is advisory once older than `freshness_window`.
