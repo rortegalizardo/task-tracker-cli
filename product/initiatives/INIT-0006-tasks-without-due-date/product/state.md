@@ -238,7 +238,34 @@ with no findings rows is invalid output.
 
 ## Handoff packet
 
-_Assembled at ENGINEERING_READY._
+Assembled 2026-10-29 at ENGINEERING_READY by `ROLE-product-manager` against the `READY` verdict of 2026-10-29 (Readiness log, round 1; digest `(REQ-0015, 3, 2026-10-29)`, INIT-0006 rev 3, unchanged on disk). Drafted inline under the size rule (§9d.2): a transcription of existing records.
+
+- **Repository:** `rortegalizardo/task-tracker-cli` (`~/Desktop/Projects/task-tracker-cli`), default branch `main` (`project/constraints.md` row 9).
+- **Outcome:** A person using `ttc` can see only their open tasks that have no due date with one short command, typing nothing else; see those tasks exactly as `ttc list` shows tasks today (the same line for each task, the same order, important first, then by id, and `No tasks.` when there are none), with nothing written; and keep everything else as it is today: every command typed as it can be typed today gives the same output, apart from the `ttc list` and `ttc export` usage lines that `ttc help` prints, and data files written by older ttc still work (`initiative.md` `## Outcome`, O1–O3).
+- **Stories, in suggested sequence:**
+  1. `REQ-0015` — the only story; `depends_on: [none]`, on the frontier.
+- **Design references and export paths:** none — no user-facing visual surface (`PD-0014` item 11; `project/constraints.md` row 8).
+- **Decisions in force:** `PD-0003`, `PD-0004`, `PD-0009`, `PD-0010`, `PD-0014` (chosen option B: `--no-due` narrows any status view of `ttc list` and `ttc export` to the tasks with no due date, like `--tag`; with `--overdue`, `--due-from` or `--due-to` it is refused with `ttc: options cannot be combined: <opts>`).
+- **Binding technical constraints** (all from `technical/assessment.md`, round 1; carried in `REQ-0015` `## Technical constraints`; C8 does not apply, option A only):
+  - C1 — `ttc list` stays read-only: every argument check before the read, never writes or creates `tasks.json` or its folder, a missing file is `No tasks.`, an older-version file is left as it is; `ttc export` keeps its rules.
+  - C2 — "no due date" is the stored due value being empty; no stored-format change, the version stays 4.
+  - C3 — the selection feeds today's line and order unchanged; `No tasks.` when none match.
+  - C4 — the two usage lines and the refusal text and its place in the check order are fixed text; every test that asserts the `ttc list` or `ttc export` usage line carries the new text.
+  - C5 — `list` and `export` keep one shared option set; export takes `--no-due` with the same meaning.
+  - C6 — the test oracle (`test/support/ttc-model.js`) and the argument fuzzing (`fuzz-gen.js`, `fuzz-harness.js`) gain `--no-due` and its refusal, written from `PD-0014`, not from the new code.
+  - C7 — the perf guard (10,000 tasks, median < 500 ms) must still pass.
+  - C9 — `--no-due` combines with every view: open by default for `list`, open and done by default for `export`; never-matching combinations are refused.
+  - C10 — check order: argument errors, then export `--format`, then two status views, the `--no-due` refusal, tag, `--due-from` date, `--due-to` date, from later than to, empty `--search`; all before the read.
+- **Explicitly out of scope** (copied from `initiative.md` `## Scope`, Out of scope):
+  - Giving, changing or clearing a task's due date (INIT-0001 out of scope).
+  - Counting tasks with no due date in `ttc stats`.
+  - Changing how `ttc list` shows or orders tasks in the views it has today, for example moving tasks with no due date to the end or marking them.
+  - Sorting tasks by due date.
+  - Reminders or prompts to give a task a due date.
+  - Any change to the output of a command typed as it can be typed today, other than the `ttc list` and `ttc export` usage lines in `ttc help`.
+- **Open questions (non-blocking):** none. The verdict carries no conditions or known issues.
+- **Delivery manifest:** `product/initiatives/INIT-0006-tasks-without-due-date/delivery/manifest.md`
+- **Tickets** (Linear team RC Development, project Task Tracker CLI, `PD-0007`; mapping authority `delivery/tickets.md`): written at HANDOFF.
 
 ## Handoff log
 

@@ -2,7 +2,7 @@
 id: INIT-0006
 type: initiative
 title: Tasks with no due date are listed on their own in one short command
-status: draft
+status: active
 revision: 3
 owner_role: ROLE-product-manager
 created: 2026-10-29
