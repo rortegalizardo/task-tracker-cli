@@ -84,10 +84,11 @@ ttc clean
 ## Listing and filtering tasks
 
 ```
-ttc list [--open|--done|--all|--overdue] [--tag <t>] [--due-from YYYY-MM-DD] [--due-to YYYY-MM-DD] [--search <text>]
+ttc list [--open|--done|--all|--overdue] [--no-due] [--tag <t>] [--due-from YYYY-MM-DD] [--due-to YYYY-MM-DD] [--search <text>]
 ```
 
 - Status view: `--open` (the default), `--done`, `--all` or `--overdue`. Give at most one of them.
+- `--no-due`: only tasks with no due date. It narrows the selected status view: `ttc list --no-due` shows open tasks with no due date, `ttc list --done --no-due` shows done ones, and `ttc list --all --no-due` shows both. It combines with `--tag` and `--search` by AND.
 - `--tag <t>`: only tasks with that tag.
 - `--due-from YYYY-MM-DD`: only tasks due on or after that date.
 - `--due-to YYYY-MM-DD`: only tasks due on or before that date. The range is inclusive at both ends, and either option works alone as an open-ended range.
@@ -95,19 +96,19 @@ ttc list [--open|--done|--all|--overdue] [--tag <t>] [--due-from YYYY-MM-DD] [--
 
 Important tasks come first, then the others; inside each group tasks are in ascending id order. This holds in every view and with every filter. An important task's line has the token `!important` after `!overdue` (when present) and before the tags, for example `#2 [ ] Pay rent due:2000-01-02 !overdue !important +home`.
 
-Every option can be given at most once. All options combine with AND: a task is listed only if it passes every option given. When `--due-from` or `--due-to` is given, tasks with no due date are left out.
+Every option can be given at most once. All options combine with AND: a task is listed only if it passes every option given. The one exception is `--no-due` with `--overdue`, `--due-from` or `--due-to`: these combinations are refused. For example, `ttc list --no-due --overdue` prints `ttc: options cannot be combined: --overdue --no-due`. When `--due-from` or `--due-to` is given, tasks with no due date are left out.
 
 Example: `ttc list --all --due-from 2026-01-01 --due-to 2026-01-31 --search rent` lists every task, open or done, due in January 2026 whose title or note contains "rent".
 
 ## Exporting tasks
 
 ```
-ttc export [<file>] [--format json|csv] [--open|--done|--all|--overdue] [--tag <t>] [--due-from YYYY-MM-DD] [--due-to YYYY-MM-DD] [--search <text>]
+ttc export [<file>] [--format json|csv] [--open|--done|--all|--overdue] [--no-due] [--tag <t>] [--due-from YYYY-MM-DD] [--due-to YYYY-MM-DD] [--search <text>]
 ```
 
 - `[<file>]`: where to write the export. Optional. Without it, the export goes to standard output.
 - `--format json|csv`: the output format. The default is `json`. The value is case-sensitive; anything else is an error.
-- `--open`, `--done`, `--all`, `--overdue`, `--tag`, `--due-from`, `--due-to` and `--search` mean the same as for `ttc list` (see "Listing and filtering tasks" above), and combine with AND in the same way.
+- `--open`, `--done`, `--all`, `--overdue`, `--no-due`, `--tag`, `--due-from`, `--due-to` and `--search` mean the same as for `ttc list` (see "Listing and filtering tasks" above), and combine with AND in the same way, with the same refused combinations.
 
 Unlike `ttc list`, the default status for `ttc export` is `--all`. So `ttc export <file>` still exports the whole list, open and done tasks alike.
 
