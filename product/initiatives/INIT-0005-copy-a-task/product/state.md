@@ -30,7 +30,7 @@ these two files never describe the same thing and never share a writer.
 ## Where this stands
 
 DECOMPOSITION. Option B chosen (`PD-0013`); Solution Contract in
-`solution-contract.md`. `REQ-0014` is written in full next.
+`solution-contract.md`. `REQ-0014` rev 2 is written in full (AC-1 to AC-15, C1–C9); the coherence check is next.
 
 ## Problem statement
 
@@ -174,7 +174,7 @@ Dispatch log: `phase | delegate | vendor | model | tokens-scale | ledger run | a
 
 | `REQ-` | Title | Status | `CAP-` | `DES-` | Sequencing note |
 | --- | --- | --- | --- | --- | --- |
-| REQ-0014 | A new task is made from an existing one in one short command | draft (rev 1) | CAP-0001 | none — no user-facing visual surface | none — on the frontier |
+| REQ-0014 | A new task is made from an existing one in one short command | draft (rev 2) | CAP-0001 | none — no user-facing visual surface | none — on the frontier |
 
 ## Readiness log
 
