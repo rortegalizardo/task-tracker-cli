@@ -11,7 +11,7 @@
 // and never an absolute path or "..".
 
 const MAX_SAFE = Number.MAX_SAFE_INTEGER;
-const COMMANDS = ['help', 'add', 'list', 'done', 'reopen', 'important', 'unimportant', 'postpone', 'rename', 'delete', 'clean', 'tag', 'note', 'export', 'import', 'stats'];
+const COMMANDS = ['help', 'add', 'copy', 'list', 'done', 'reopen', 'important', 'unimportant', 'postpone', 'rename', 'delete', 'clean', 'tag', 'note', 'export', 'import', 'stats'];
 
 const DIR = { kind: 'dir' };
 const file = (bytes) => ({ kind: 'file', bytes: Buffer.isBuffer(bytes) ? bytes : Buffer.from(bytes, 'utf8') });
@@ -244,6 +244,10 @@ function buildUnits(r, cmd, list, junkP, importTarget) {
       for (let i = r.chance(0.5) ? r.int(1, 3) : 0; i > 0; i--) options.push(opt('--tag', tag(), true));
       if (r.chance(0.3)) options.push(opt('--note', title()));
       if (r.chance(0.3)) options.push(opt('--important'));
+      break;
+    case 'copy':
+      positionals.push(pos(id()));
+      if (r.chance(0.5)) options.push(opt('--due', date()));
       break;
     case 'list':
       filterOptions();
