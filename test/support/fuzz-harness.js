@@ -3,6 +3,8 @@
 // Runs one generated property: every case is generated from (seed, property,
 // index), run through the real run() inside a sandbox, and compared with the
 // reference model. A second test sends every Nth case through a real process.
+// Focused cases may additionally require exact stderr (or the storage-error
+// prefix specified by AC-7); both execution modes enforce that same metadata.
 
 const test = require('node:test');
 const assert = require('node:assert/strict');
@@ -72,11 +74,21 @@ function treeDiff(want, got) {
 
 // Problems found in one run's outcome against the model's answer (empty when it matches).
 // outcome = { threw, status, signal, stdout (string or Buffer), stderr (string) }
-function judge(want, before, after, outcome) {
+function judge(want, before, after, outcome, c) {
   const problems = [];
   if (outcome.threw) return ['run() threw: ' + (outcome.threw.stack || outcome.threw)];
   if (outcome.signal) problems.push('killed by signal ' + outcome.signal);
   const stdoutText = typeof outcome.stdout === 'string' ? outcome.stdout : outcome.stdout.toString('utf8');
+  if (c.expectedStderr !== undefined || c.expectedStderrPrefix !== undefined) {
+    if (want.ok) problems.push('model accepted a required refusal');
+    if (outcome.status !== 1) problems.push('exit ' + outcome.status + ', want 1 for required refusal');
+    if (c.expectedStderr !== undefined && outcome.stderr !== c.expectedStderr) {
+      problems.push('stderr ' + JSON.stringify(outcome.stderr) + ', want ' + JSON.stringify(c.expectedStderr));
+    }
+    if (c.expectedStderrPrefix !== undefined && !outcome.stderr.startsWith(c.expectedStderrPrefix)) {
+      problems.push('stderr ' + JSON.stringify(outcome.stderr) + ', want prefix ' + JSON.stringify(c.expectedStderrPrefix));
+    }
+  }
   if (want.ok) {
     if (outcome.status !== 0) problems.push('exit ' + outcome.status + ', want 0');
     if (outcome.stderr !== '') problems.push('stderr ' + JSON.stringify(outcome.stderr) + ', want empty');
@@ -134,6 +146,8 @@ function defineFuzzProperty({ name, generate, labels, minPerLabel, minOkShare, c
       'argv: ' + JSON.stringify(c.argv),
       'stored ' + STORED + ': ' + storedLine,
       'expected: ' + (want.ok ? 'exit 0, stdout ' + JSON.stringify(want.stdout.slice(0, 300)) : 'non-zero exit, empty stdout, one ttc: line') + ', tasks.json ' + wantStored,
+      ...(c.expectedStderr === undefined ? [] : ['required stderr: ' + JSON.stringify(c.expectedStderr)]),
+      ...(c.expectedStderrPrefix === undefined ? [] : ['required stderr prefix: ' + JSON.stringify(c.expectedStderrPrefix)]),
       'actual: exit ' + outcome.status + ', stdout ' + JSON.stringify(String(outcome.stdout).slice(0, 300)) + ', stderr ' + JSON.stringify(String(outcome.stderr).slice(0, 300)),
       'problems:',
       ...problems.map((p) => '  - ' + p),
@@ -145,10 +159,10 @@ function defineFuzzProperty({ name, generate, labels, minPerLabel, minOkShare, c
   // run, so a midnight in between cannot fail a case.
   function check(c, before, after, outcome, todayBefore, todayAfter) {
     let want = expect({ argv: c.argv, files: before, today: todayBefore });
-    let problems = judge(want, before, after, outcome);
+    let problems = judge(want, before, after, outcome, c);
     if (problems.length > 0 && todayAfter !== todayBefore) {
       const alt = expect({ argv: c.argv, files: before, today: todayAfter });
-      const altProblems = judge(alt, before, after, outcome);
+      const altProblems = judge(alt, before, after, outcome, c);
       if (altProblems.length === 0) return { want: alt, problems: altProblems };
     }
     return { want, problems };
