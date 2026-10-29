@@ -3,16 +3,16 @@ id: PSTATE-INIT-0006
 type: product-state
 title: Product definition state for INIT-0006
 status: authoritative
-revision: 1
+revision: 2
 owner_role: ROLE-product-manager
 created: 2026-10-29
 updated: 2026-10-29
 updated_by_role: ROLE-product-manager
 initiative: INIT-0006
-phase: INTAKE
+phase: DISCOVERY
 phase_entered: 2026-10-29
 requester: "the requester (repository owner, rortegalizardo), via the driving session, 2026-10-29"
-next_action: "ROLE-product-manager: SKILL-advance-product-phase INTAKE -> DISCOVERY (write the Discovery section)"
+next_action: "ROLE-product-manager: SKILL-advance-product-phase DISCOVERY -> PRODUCT_DEFINITION"
 blocked_by: []
 converged: false
 readiness_verdict: none   # none | READY | READY-with-known-issues | NOT READY | void
@@ -29,8 +29,9 @@ these two files never describe the same thing and never share a writer.
 
 ## Where this stands
 
-INTAKE. Triage verdict `new-initiative`; `INIT-0006` allocated; raw request
-committed verbatim; ambiguities A1–A9 classified, all `pm-resolvable`.
+DISCOVERY. Triage verdict `new-initiative`; `INIT-0006` allocated; raw
+request committed verbatim; ambiguities A1–A9 all `pm-resolvable`. Discovery
+written (J1–J3, P1–P3, `CAP-0001`, signals 1–4, non-goals).
 
 ## Problem statement
 
@@ -48,7 +49,7 @@ CLI at head `5be0561`).
 
 ## Next action
 
-ROLE-product-manager: SKILL-advance-product-phase INTAKE -> DISCOVERY (write the Discovery section).
+ROLE-product-manager: SKILL-advance-product-phase DISCOVERY -> PRODUCT_DEFINITION.
 
 ## Blocked by
 
@@ -78,7 +79,59 @@ stated need (§4.2), so no `Q-` is raised.
 
 ## Discovery
 
-_Written at DISCOVERY._
+**Target user.** One person who keeps their own task list with `ttc` on their
+own machine: the requester. ttc has one user and no shared list
+(`CAP-0001` Boundaries; INIT-0001 out of scope). Source: S1 below.
+
+**Jobs and problems, with sources.**
+
+| # | Job or problem | Source |
+| --- | --- | --- |
+| J1 | Tasks with no due date get lost among the other tasks ("Tasks without a due date get lost in my list."). | Request, verbatim (`sources/2026-10-29-requester-request.md`) |
+| J2 | See only the tasks with no due date, quickly ("Give me a quick way to see just those."). | Request, verbatim (same file) |
+| J3 | Keep the feature simple: little to learn, nothing else changes ("Keep it simple."). | Request, verbatim (same file) |
+| P1 | `ttc list` shows open tasks, important first, then by id. A task with no due date is a line with no `due:` token among the dated lines, for example `#2 [ ] Call mom` between `#1 [ ] Pay rent due:2000-01-02 !overdue +home` and later tasks. | `src/commands/list.js`; `PD-0003` items 7, 8; `PD-0009` items 4, 5; checked on the CLI at head `5be0561` |
+| P2 | No option shows only the tasks with no due date. `--due-from` and `--due-to` leave them out; `--overdue` never shows them, since a task with no due date is never overdue; `ttc list --no-due` fails with `ttc: unknown option: --no-due`, exit 1. | README "Listing and filtering tasks"; `PD-0003` item 6; `src/filter.js`; checked on the CLI at head `5be0561` |
+| P3 | `ttc export` takes the same task-picking options as `ttc list` and says they "mean the same as for `ttc list`"; one option set serves both commands. | README "Exporting tasks"; `src/filter.js` used by `src/commands/list.js` and `src/commands/export.js` at head `5be0561` |
+
+**Current-state capability mapping (S2).** `CAP-0001` — local task tracking
+from the `ttc` command line. This initiative extends it. `CAP-0001` is still
+`draft` and does not describe everything that shipped; the current-state
+evidence is the code and README at head `5be0561`:
+
+- `ttc list [--open|--done|--all|--overdue] [--tag <t>] [--due-from YYYY-MM-DD] [--due-to YYYY-MM-DD] [--search <text>]`.
+  At most one status view; `--open` is the default. Every option at most once;
+  all options combine with AND; when `--due-from` or `--due-to` is given,
+  tasks with no due date are left out (README "Listing and filtering tasks").
+- Line format `#<id> [ ]|[x] <title> [due:<date>] [!overdue] [!important] [+<tag>]...`;
+  order important first, then ascending id, in every view; `No tasks.` when
+  nothing matches (`PD-0003` items 7, 8; `PD-0009` items 4, 5).
+- `ttc list` never writes and never creates `tasks.json` (`PD-0003` item 13).
+- `ttc export` takes the same options, with `--all` as its default status
+  (README "Exporting tasks").
+- Errors: one line `ttc: <message>` on stderr, exit 1; an unknown option is
+  `ttc: unknown option: <opt>`; two status views are
+  `ttc: options cannot be combined: <opts>` (`PD-0003` items 2, 7, 11;
+  `src/filter.js`).
+
+**Success signals (S3).**
+
+1. A user sees only their open tasks with no due date with one short command,
+   typing nothing but that command.
+2. Every task it shows has no due date, and no open task with no due date is
+   left out.
+3. The tasks look and are ordered exactly as `ttc list` shows them today, and
+   nothing is written.
+4. Everything else is unchanged: `ttc list` with the options it has today
+   prints the same output, other commands behave as today, and data files
+   written by older ttc still work.
+
+**Known non-goals.** Giving, changing or clearing a due date (A8); counting
+tasks with no due date in `ttc stats` (A9); changing how the normal
+`ttc list` shows or orders tasks; reminders or prompts to add due dates.
+
+Sources: S1 = the request file above; INIT-0001 `initiative.md` out of scope;
+S2/S3 = the code and README at head `5be0561`.
 
 ## Options
 
@@ -141,6 +194,7 @@ Dates are UTC timestamps.
 | --- | --- | --- | --- | --- | --- | --- |
 | 2026-10-29T17:49:59Z | — | BOOTSTRAP | ROLE-product-manager | Raw request relayed by the driving session | Packet: `readiness: ready`, `scope.initiative: null`, profile S, no areas, no open `Q-` (`Q-0001` answered). `neighbouring` read in full: `CAP-0001` (draft) has no way to list only tasks with no due date; no `PD-` (accepted or rejected) concerns it; `PD-0003` items 6–8, `PD-0009` items 4–5 (overdue, list view, line, order) bind; INIT-0001 out of scope "Changing or clearing a due date after `add`" is a story boundary, not a rejected decision. INIT-0001..INIT-0005 are not touched. Advisory, carried: `CAP-0001` is still draft and predates shipped behaviour (code and README at head `5be0561` are the current-state evidence); `delivery/tickets.md` mirror `synced_on` 2026-10-21 is stale; the working tree has an uncommitted delivery-owned edit to `INIT-0005/delivery/tickets.md`, left alone. Hooks: HOOK-canonical-root pass, HOOK-hydrate pass | `c995399e88ef32e3`, head `5be0561` |
 | 2026-10-29T17:50:50Z | BOOTSTRAP | INTAKE | ROLE-product-manager | Packet emitted, scope resolved to none | Triage verdict `new-initiative`: not `satisfied-by CAP-0001` (no option lists only tasks with no due date: `--due-from`/`--due-to` leave them out, `--overdue` never includes them, `--no-due` is an unknown option); no `PD-` settles it; no constraint forbids it; no initiative covers it (INIT-0001 base commands and `--overdue`, INIT-0002 important mark, INIT-0003 postpone, INIT-0004 clean, INIT-0005 copy), so not a duplicate; one outcome named. Raw request committed verbatim. `INIT-0006` allocated (counter 5 -> 6, checked against `origin/main` `5be0561`). Size: small (≤3 stories expected). Hooks: HOOK-initiative-resolved pass, HOOK-phase-entry pass | `c995399e88ef32e3`, head `5be0561` |
+| 2026-10-29T17:52:12Z | INTAKE | DISCOVERY | ROLE-product-manager | INTAKE exit criteria met: one initiative, one problem, one named requester, ambiguity rows A1–A9 all classified (`pm-resolvable`) | Entry precondition (`lifecycle-hooks.md` §3.4.1 DISCOVERY) holds: `initiative.md` at `status: draft`; state at INTAKE with requester, problem statement and a classified ambiguity log. Discovery written (J1–J3, P1–P3, S2 `CAP-0001`, S3 signals 1–4, non-goals). No delegate consulted (optional, read-only; the code answers the current state). No `Q-` raised. Hooks: HOOK-phase-entry pass | `c995399e88ef32e3`, head `28e0544` |
 
 > Every product-side session updates this file before ending — **including
 > sessions that failed**, which record the failure in `next_action` and do not
