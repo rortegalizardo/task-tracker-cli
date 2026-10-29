@@ -275,6 +275,7 @@ test('AC-15: help lists the new usages in order', () => {
       lines(
         '  ttc help',
         '  ttc add "<title>" [--due YYYY-MM-DD] [--tag <t>]... [--note "<text>"] [--important]',
+        '  ttc copy <id> [--due YYYY-MM-DD]',
         '  ttc list [--open|--done|--all|--overdue] [--tag <t>] [--due-from YYYY-MM-DD] [--due-to YYYY-MM-DD] [--search <text>]',
         '  ttc done <id>',
         '  ttc reopen <id>',
