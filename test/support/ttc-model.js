@@ -2,7 +2,7 @@
 
 // The test-owned reference model (the oracle) for ttc. It is written from the
 // documented rules (src/args.js and src/storage.js headers, PD-0002, PD-0003,
-// PD-0009, PD-0010, PD-0011, PD-0012, PD-0013, C7) and never requires anything under src/.
+// PD-0009, PD-0010, PD-0011, PD-0012, PD-0013, PD-0014, C7) and never requires anything under src/.
 //
 // expect({ argv, files, today }) returns { ok: false } or
 // { ok: true, stdout, files }. `files` maps paths relative to the case folder
@@ -20,7 +20,7 @@ const USAGE = [
   'ttc help',
   'ttc add "<title>" [--due YYYY-MM-DD] [--tag <t>]... [--note "<text>"] [--important]',
   'ttc copy <id> [--due YYYY-MM-DD]',
-  'ttc list [--open|--done|--all|--overdue] [--tag <t>] [--due-from YYYY-MM-DD] [--due-to YYYY-MM-DD] [--search <text>]',
+  'ttc list [--open|--done|--all|--overdue] [--no-due] [--tag <t>] [--due-from YYYY-MM-DD] [--due-to YYYY-MM-DD] [--search <text>]',
   'ttc done <id>',
   'ttc reopen <id>',
   'ttc important <id>',
@@ -31,7 +31,7 @@ const USAGE = [
   'ttc clean',
   'ttc tag <id> +<t> | -<t>',
   'ttc note <id> ["<text>" | --clear]',
-  'ttc export [<file>] [--format json|csv] [--open|--done|--all|--overdue] [--tag <t>] [--due-from YYYY-MM-DD] [--due-to YYYY-MM-DD] [--search <text>]',
+  'ttc export [<file>] [--format json|csv] [--open|--done|--all|--overdue] [--no-due] [--tag <t>] [--due-from YYYY-MM-DD] [--due-to YYYY-MM-DD] [--search <text>]',
   'ttc import <file>',
   'ttc stats',
 ];
@@ -342,6 +342,7 @@ const LIST = new Map([
   ['--done', {}],
   ['--all', {}],
   ['--overdue', {}],
+  ['--no-due', {}],
   ['--tag', { value: true }],
   ['--due-from', { value: true }],
   ['--due-to', { value: true }],
@@ -350,12 +351,16 @@ const LIST = new Map([
 const VIEWS = ['--open', '--done', '--all', '--overdue'];
 const EXPORT = new Map([...LIST, ['--format', { value: true }]]);
 
-// The filter checks shared by list and export, in order: more than one status
-// option, tag, dates, date order, empty search. Returns the task predicate.
-// `defaultView` is the status view when no status option is given.
+// PD-0014: --no-due is a once-only flag, separate from the four status views.
+// Grammar errors precede export format, then multiple views, no-due conflicts,
+// tag, from date, to date, reversed range, empty search, and finally storage.
+// Returns the task predicate; null due, tag and search narrow the view by AND.
+// With no view, list uses open and export uses all. Neither reads before checks.
 function filterOf(options, defaultView, today) {
   const given = VIEWS.filter((v) => options.has(v));
   if (given.length > 1) invalid();
+  const noDue = options.has('--no-due');
+  if (noDue && (options.has('--overdue') || options.has('--due-from') || options.has('--due-to'))) invalid();
   const view = given.length === 1 ? given[0] : defaultView;
   const tag = options.has('--tag') ? typedTag(options.get('--tag')) : null;
   const from = options.has('--due-from') ? options.get('--due-from') : null;
@@ -371,6 +376,7 @@ function filterOf(options, defaultView, today) {
     } else if (view !== '--all' && t.status !== (view === '--done' ? 'done' : 'open')) {
       return false;
     }
+    if (noDue && t.due !== null) return false;
     if (tag !== null && !t.tags.includes(tag)) return false;
     if (from !== null || to !== null) {
       if (t.due === null) return false;

@@ -20,7 +20,7 @@ function formatTask(task, today) {
 module.exports = {
   name: 'list',
   usage:
-    'ttc list [--open|--done|--all|--overdue] [--tag <t>] [--due-from YYYY-MM-DD] [--due-to YYYY-MM-DD] [--search <text>]',
+    'ttc list [--open|--done|--all|--overdue] [--no-due] [--tag <t>] [--due-from YYYY-MM-DD] [--due-to YYYY-MM-DD] [--search <text>]',
   run(args, ctx) {
     const parsed = parseArgs(args, { positionals: [], options: FILTER_OPTIONS });
     const filter = parseFilter(parsed.options);

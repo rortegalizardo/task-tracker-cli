@@ -160,6 +160,6 @@ test('ttc help lists the rename usage line (criterion 13)', () => {
   const lines = r.stdout.split('\n').map((l) => l.trim());
   assert.ok(lines.includes('ttc help'));
   assert.ok(lines.includes('ttc add "<title>" [--due YYYY-MM-DD] [--tag <t>]... [--note "<text>"] [--important]'));
-  assert.ok(lines.includes('ttc list [--open|--done|--all|--overdue] [--tag <t>] [--due-from YYYY-MM-DD] [--due-to YYYY-MM-DD] [--search <text>]'));
+  assert.ok(lines.includes('ttc list [--open|--done|--all|--overdue] [--no-due] [--tag <t>] [--due-from YYYY-MM-DD] [--due-to YYYY-MM-DD] [--search <text>]'));
   assert.ok(lines.includes('ttc rename <id> "<title>"'));
 });

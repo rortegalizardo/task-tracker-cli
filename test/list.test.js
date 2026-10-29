@@ -173,7 +173,7 @@ test('ttc help lists the list usage line (criterion 19)', () => {
   const lines = r.stdout.split('\n').map((l) => l.trim());
   assert.ok(lines.includes('ttc help'));
   assert.ok(lines.includes('ttc add "<title>" [--due YYYY-MM-DD] [--tag <t>]... [--note "<text>"] [--important]'));
-  assert.ok(lines.includes('ttc list [--open|--done|--all|--overdue] [--tag <t>] [--due-from YYYY-MM-DD] [--due-to YYYY-MM-DD] [--search <text>]'));
+  assert.ok(lines.includes('ttc list [--open|--done|--all|--overdue] [--no-due] [--tag <t>] [--due-from YYYY-MM-DD] [--due-to YYYY-MM-DD] [--search <text>]'));
 });
 
 // Due-range and title-search filters (RCDEV-839).
@@ -284,3 +284,144 @@ for (const [args, line] of [
     failsF(args, line);
   });
 }
+
+// RCDEV-864: the accepted fixture is created through the public commands.
+function noDueFixture(sb) {
+  for (const args of [
+    ['add', 'Pay rent', '--due', '2000-01-02', '--tag', 'bills'],
+    ['add', 'Call mom', '--tag', 'home'],
+    ['add', 'Plan trip', '--due', '2099-05-01'],
+    ['add', 'Fix bike', '--tag', 'home'],
+    ['add', 'Water plants', '--important'],
+    ['done', '4'],
+  ]) {
+    const r = ttc(sb, ...args);
+    assert.equal(r.status, 0, JSON.stringify(args));
+    assert.equal(r.stderr, '');
+  }
+}
+
+test('RCDEV-864 AC-1–AC-4 and AC-9: no-due narrows views without changing existing output or bytes', () => {
+  const sb = sandbox();
+  noDueFixture(sb);
+  const before = fs.readFileSync(sb.file);
+  const rent = '#1 [ ] Pay rent due:2000-01-02 !overdue +bills\n';
+  const mom = '#2 [ ] Call mom +home\n';
+  const trip = '#3 [ ] Plan trip due:2099-05-01\n';
+  const bike = '#4 [x] Fix bike +home\n';
+  const plants = '#5 [ ] Water plants !important\n';
+  for (const [args, stdout] of [
+    [['list', '--no-due'], plants + mom],
+    [['list', '--open', '--no-due'], plants + mom],
+    [['list', '--done', '--no-due'], bike],
+    [['list', '--all', '--no-due'], plants + mom + bike],
+    [['list', '--no-due', '--tag', 'home'], mom],
+    [['list', '--tag', 'home', '--all', '--no-due'], mom + bike],
+    [['list', '--search', 'plant', '--no-due'], plants],
+    [['list', '--no-due', '--tag', 'bills'], 'No tasks.\n'],
+    [['list'], plants + rent + mom + trip],
+    [['list', '--all'], plants + rent + mom + trip + bike],
+    [['list', '--done'], bike],
+    [['list', '--overdue'], rent],
+    [['list', '--due-from', '2000-01-01'], rent + trip],
+    [['list', '--tag', 'home'], mom],
+    [['list', '--search', 'plant'], plants],
+    [['stats'], 'open: 4\ndone: 1\noverdue: 1\n'],
+  ]) {
+    const r = ttc(sb, ...args);
+    assert.equal(r.status, 0, JSON.stringify(args));
+    assert.equal(r.stderr, '');
+    assert.equal(r.stdout, stdout, JSON.stringify(args));
+    assert.deepEqual(fs.readFileSync(sb.file), before);
+  }
+});
+
+test('RCDEV-864 AC-4: no-due with only dated tasks or an absent home creates nothing', () => {
+  const sb = sandbox();
+  const empty = ttc(sb, 'list', '--no-due');
+  assert.equal(empty.status, 0);
+  assert.equal(empty.stderr, '');
+  assert.equal(empty.stdout, 'No tasks.\n');
+  assert.equal(fs.existsSync(sb.file), false);
+  assert.equal(fs.existsSync(sb.dataDir), false);
+  assert.equal(ttc(sb, 'add', 'Pay rent', '--due', '2099-10-01').status, 0);
+  const before = fs.readFileSync(sb.file);
+  const dated = ttc(sb, 'list', '--no-due');
+  assert.equal(dated.status, 0);
+  assert.equal(dated.stderr, '');
+  assert.equal(dated.stdout, 'No tasks.\n');
+  assert.deepEqual(fs.readFileSync(sb.file), before);
+});
+
+test('RCDEV-864 AC-5: no-due reads v1 and v3 without rewriting them', () => {
+  for (const [list, args, stdout] of [
+    [{ nextId: 3, tasks: [
+      { id: 1, title: 'Pay rent', status: 'open', due: '2099-10-01', tags: ['bills'] },
+      { id: 2, title: 'Call mom', status: 'open', due: null, tags: [] },
+    ] }, ['--no-due'], '#2 [ ] Call mom\n'],
+    [{ version: 3, nextId: 4, tasks: [
+      { id: 1, title: 'Call mom', status: 'open', due: null, tags: [], note: null },
+      { id: 2, title: 'Pay rent', status: 'open', due: '2099-10-01', tags: ['bills'], note: 'by card' },
+      { id: 3, title: 'Fix bike', status: 'done', due: null, tags: ['home'], note: 'chain' },
+    ] }, ['--all', '--no-due'], '#1 [ ] Call mom\n#3 [x] Fix bike +home\n'],
+  ]) {
+    const sb = sandbox();
+    seed(sb, list);
+    const before = fs.readFileSync(sb.file);
+    const r = ttc(sb, 'list', ...args);
+    assert.equal(r.status, 0);
+    assert.equal(r.stderr, '');
+    assert.equal(r.stdout, stdout);
+    assert.deepEqual(fs.readFileSync(sb.file), before);
+  }
+});
+
+test('RCDEV-864 AC-6–AC-7 and AC-9: exact no-due refusals follow validation order', () => {
+  const sb = sandbox();
+  noDueFixture(sb);
+  const before = fs.readFileSync(sb.file);
+  for (const [args, message] of [
+    [['--no-due', '--overdue'], 'options cannot be combined: --overdue --no-due'],
+    [['--overdue', '--no-due'], 'options cannot be combined: --overdue --no-due'],
+    [['--no-due', '--due-from', '2026-01-01'], 'options cannot be combined: --no-due --due-from'],
+    [['--due-to', '2026-01-31', '--no-due'], 'options cannot be combined: --no-due --due-to'],
+    [['--no-due', '--due-from', '2026-01-01', '--due-to', '2026-01-31'], 'options cannot be combined: --no-due --due-from --due-to'],
+    [['--due-to', '2026-01-31', '--due-from', '2026-01-01', '--no-due', '--overdue'], 'options cannot be combined: --overdue --no-due --due-from --due-to'],
+    [['--no-due', '--no-due'], 'option given twice: --no-due'],
+    [['--no-due', 'home'], 'unexpected argument: home'],
+    [['--no-due', '--overdue', '--bogus'], 'unknown option: --bogus'],
+    [['--overdue', '--no-due', '--due-from'], 'option needs a value: --due-from'],
+    [['--done', '--overdue', '--no-due'], 'options cannot be combined: --done --overdue'],
+    [['--no-due', '--tag', 'a b', '--overdue'], 'options cannot be combined: --overdue --no-due'],
+    [['--no-due', '--due-from', '2026-02-30'], 'options cannot be combined: --no-due --due-from'],
+    [['--no-due', '--due-from', '2026-02-01', '--due-to', '2026-01-01'], 'options cannot be combined: --no-due --due-from --due-to'],
+    [['--no-due', '--overdue', '--search', ''], 'options cannot be combined: --overdue --no-due'],
+    [['--no-due', '--tag', 'a b'], 'invalid tag: a b'],
+    [['--no-due', '--search', ''], '--search text must not be empty'],
+    [['--done', '--overdue'], 'options cannot be combined: --done --overdue'],
+  ]) {
+    const r = ttc(sb, 'list', ...args);
+    assert.equal(r.status, 1, JSON.stringify(args));
+    assert.equal(r.stdout, '');
+    assert.equal(r.stderr, 'ttc: ' + message + '\n', JSON.stringify(args));
+    assert.deepEqual(fs.readFileSync(sb.file), before);
+  }
+});
+
+test('RCDEV-864 AC-7: no-due conflicts precede corrupt storage, valid filters reach the read', () => {
+  const sb = sandbox();
+  fs.mkdirSync(sb.dataDir);
+  fs.writeFileSync(sb.file, 'not json');
+  const before = fs.readFileSync(sb.file);
+  for (const [args, expected] of [
+    [['--no-due', '--overdue'], 'ttc: options cannot be combined: --overdue --no-due\n'],
+    [['--no-due'], /^ttc: cannot read [^\n]+\n$/],
+  ]) {
+    const r = ttc(sb, 'list', ...args);
+    assert.equal(r.status, 1);
+    assert.equal(r.stdout, '');
+    if (typeof expected === 'string') assert.equal(r.stderr, expected);
+    else assert.match(r.stderr, expected);
+    assert.deepEqual(fs.readFileSync(sb.file), before);
+  }
+});

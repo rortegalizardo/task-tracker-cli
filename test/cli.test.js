@@ -67,7 +67,7 @@ test('ttc help lists the add, list, export and import usages (RCDEV-830 AC31)', 
   assert.ok(lines.some((l) => l.startsWith('ttc tag ')));
   assert.equal(lines.indexOf('ttc note <id> ["<text>" | --clear]'), lines.findIndex((l) => l.startsWith('ttc tag ')) + 1);
   assert.ok(lines.includes(
-    'ttc export [<file>] [--format json|csv] [--open|--done|--all|--overdue] [--tag <t>] [--due-from YYYY-MM-DD] [--due-to YYYY-MM-DD] [--search <text>]',
+    'ttc export [<file>] [--format json|csv] [--open|--done|--all|--overdue] [--no-due] [--tag <t>] [--due-from YYYY-MM-DD] [--due-to YYYY-MM-DD] [--search <text>]',
   ));
   assert.ok(lines.includes('ttc import <file>'));
 });

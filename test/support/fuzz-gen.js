@@ -1,10 +1,12 @@
 'use strict';
 
 // Case generators for the two generated properties. Each takes a case PRNG
-// (fuzz-random.js) and returns { argv, files, label }:
+// (fuzz-random.js) and returns { argv, files, label, expectedStderr?, expectedStderrPrefix? }:
 //   argv   the argument list given to run()
 //   files  { 'path relative to the case folder': { kind: 'file', bytes } | { kind: 'dir' } }
 //   label  a short class name, counted by the harness's coverage floor
+//   expectedStderr / expectedStderrPrefix  requirement-owned error expectations
+//     for the bounded PD-0014 / AC-6 / AC-7 cases, never read from the command
 //
 // The generators only aim; the reference model decides what is valid. They
 // never emit NUL or a lone surrogate in argv (a real argv cannot carry them),
@@ -232,6 +234,9 @@ function buildUnits(r, cmd, list, junkP, importTarget) {
   // The filter options shared by list and export.
   const filterOptions = () => {
     if (r.chance(0.6)) options.push(opt(r.pick(['--open', '--done', '--all', '--overdue'])));
+    // Independent of the view, tag/search and dates; structural mutation can
+    // duplicate this once-only flag just like the other options.
+    if (r.chance(0.3)) options.push(opt('--no-due'));
     if (r.chance(0.3)) options.push(opt('--tag', tag()));
     if (r.chance(0.25)) options.push(opt('--due-from', date()));
     if (r.chance(0.25)) options.push(opt('--due-to', date()));
@@ -339,7 +344,82 @@ const flatten = (units) => units.flatMap((u) => u.tokens);
 
 const ARGS_LABELS = [...COMMANDS, 'unknown', 'empty', 'dash-help'];
 
-function genArgsCase(r) {
+// Keep the 10,000-case budget. Required cases occupy the subprocess sampling
+// slots first, so every seed exercises them in both execution modes.
+const ARGS_SAMPLE_EVERY = 100;
+
+// Fixed from AC-1's resulting state, not from production code. The important
+// open task, done task, dates and tags distinguish the default views and ANDs.
+const NO_DUE_LIST = {
+  nextId: 6,
+  tasks: [
+    { id: 1, title: 'Pay rent', status: 'open', due: '2000-01-02', tags: ['bills'], note: null, important: false },
+    { id: 2, title: 'Call mom', status: 'open', due: null, tags: ['home'], note: null, important: false },
+    { id: 3, title: 'Plan trip', status: 'open', due: '2099-05-01', tags: [], note: null, important: false },
+    { id: 4, title: 'Fix bike', status: 'done', due: null, tags: ['home'], note: null, important: false },
+    { id: 5, title: 'Water plants', status: 'open', due: null, tags: [], note: null, important: true },
+  ],
+};
+
+function noDueCases() {
+  const cases = [];
+  const add = (argv, message, corrupt = false) => {
+    const c = { argv, label: argv[0], files: { [STORED]: file(corrupt ? 'not json' : canonicalText(NO_DUE_LIST)) } };
+    if (message !== undefined) c.expectedStderr = 'ttc: ' + message + '\n';
+    cases.push(c);
+    return c;
+  };
+  // Each nonempty subset of the three conflicts, with fixed requirement text
+  // independent of argv order. Deliberately put --no-due last in several cases.
+  const conflicts = [
+    [['--no-due', '--overdue'], '--overdue --no-due'],
+    [['--no-due', '--due-from', '2026-01-01'], '--no-due --due-from'],
+    [['--due-to', '2026-01-31', '--no-due'], '--no-due --due-to'],
+    [['--due-from', '2026-01-01', '--no-due', '--overdue'], '--overdue --no-due --due-from'],
+    [['--due-to', '2026-01-31', '--overdue', '--no-due'], '--overdue --no-due --due-to'],
+    [['--no-due', '--due-from', '2026-01-01', '--due-to', '2026-01-31'], '--no-due --due-from --due-to'],
+    [['--due-to', '2026-01-31', '--due-from', '2026-01-01', '--no-due', '--overdue'], '--overdue --no-due --due-from --due-to'],
+  ];
+  const precedence = [
+    [['--no-due', '--no-due'], 'option given twice: --no-due'],
+    [['--no-due', '--overdue', '--bogus'], 'unknown option: --bogus'],
+    [['--overdue', '--no-due', '--due-from'], 'option needs a value: --due-from'],
+    [['--done', '--overdue', '--no-due'], 'options cannot be combined: --done --overdue'],
+    [['--no-due', '--tag', 'a b', '--overdue'], 'options cannot be combined: --overdue --no-due'],
+    [['--no-due', '--due-from', '2026-02-30'], 'options cannot be combined: --no-due --due-from'],
+    [['--no-due', '--due-to', '2026-02-30'], 'options cannot be combined: --no-due --due-to'],
+    [['--no-due', '--due-from', '2026-02-01', '--due-to', '2026-01-01'], 'options cannot be combined: --no-due --due-from --due-to'],
+    [['--no-due', '--overdue', '--search', ''], 'options cannot be combined: --overdue --no-due'],
+    [['--no-due', '--tag', 'a b'], 'invalid tag: a b'],
+    [['--no-due', '--search', ''], '--search text must not be empty'],
+  ];
+  for (const cmd of ['list', 'export']) {
+    for (const view of [[], ['--open'], ['--done'], ['--all']]) {
+      for (const filters of [[], ['--tag', 'home'], ['--search', 'plant'], ['--tag', 'home', '--search', 'mom']]) {
+        add([cmd, ...view, ...filters, '--no-due']);
+      }
+    }
+    for (const [args, names] of conflicts) add([cmd, ...args], 'options cannot be combined: ' + names);
+    add([cmd, '--overdue', '--no-due'], 'options cannot be combined: --overdue --no-due');
+    for (const [args, message] of precedence) add([cmd, ...args], message);
+    // Export accepts one optional positional; a second one is unexpected.
+    const extra = cmd === 'list' ? ['home'] : ['out.json', 'home'];
+    add([cmd, '--no-due', ...extra], 'unexpected argument: home');
+    add([cmd, '--no-due', '--overdue'], 'options cannot be combined: --overdue --no-due', true);
+    add([cmd, '--no-due'], undefined, true).expectedStderrPrefix = 'ttc: cannot read ';
+  }
+  add(['export', '--format', 'xml', '--no-due', '--overdue'], 'invalid format: xml (use json or csv)');
+  add(['export', '--format', 'csv', '--due-to', '2026-01-31', '--no-due'], 'options cannot be combined: --no-due --due-to');
+  add(['export', 'undated.json', '--no-due', '--due-from', '2026-01-01'], 'options cannot be combined: --no-due --due-from');
+  return cases;
+}
+
+const NO_DUE_CASES = noDueCases();
+
+function genArgsCase(r, index) {
+  if (index % ARGS_SAMPLE_EVERY === 0 && index / ARGS_SAMPLE_EVERY < NO_DUE_CASES.length) {
+    return NO_DUE_CASES[index / ARGS_SAMPLE_EVERY];
+  }
   // State first: the argument builder aims at ids that exist.
   const files = {};
   let list = null;
@@ -599,4 +679,4 @@ function genDataCase(r, index) {
   return { argv: [cmd, ...flatten(units)], files, label: kind };
 }
 
-module.exports = { genArgsCase, genDataCase, ARGS_LABELS, DATA_KINDS, COMMANDS };
+module.exports = { genArgsCase, genDataCase, ARGS_LABELS, DATA_KINDS, COMMANDS, ARGS_SAMPLE_EVERY, NO_DUE_CASES };
