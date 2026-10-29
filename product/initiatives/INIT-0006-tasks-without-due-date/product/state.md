@@ -166,10 +166,12 @@ recommended (`PD-0014` items 1–13). No option is left under consideration.
 | Date | Delegate role | Question | Answer / verdict | Recorded as |
 | --- | --- | --- | --- | --- |
 | 2026-10-29 | ROLE-planner (PRODUCT-DISCOVERY) | Feasibility verdict, constraints, risks and band for options A and B, plus recommendations on N1–N5 (one dispatch: capability scan, impact, assessment; §9d.1) | A `feasible-with-constraints`, `contained`; B `feasible-with-constraints`, `contained`; constraints C1–C10 (C8 A only, C9 B only); risks R1–R5 (R3 A only); assumptions P1–P7 all narrowing, none blocking or costly; no stored-format change (C2). N1 refuse never-matching combinations with the existing combine message, checked after the two-views check; N2 export takes the option; N3 no storage change; N4 oracle and fuzz from the `PD-` text, list usage in 9 unit files plus the oracle, export usage in 5 plus the oracle (PM re-ran the search: 10 and 6 files); N5 keep `--no-due`. Registry note: `CAP-0001` out of date (as in INIT-0002..0005), left for initiative close | `technical/capability-scan.md`, `technical/impact.md`, `technical/assessment.md` (round 1); this row; C2–C5, C8–C10, N1, N2, N5 and P1, P7 go to the convergence `PD-`. Vendor claude, model opus |
+| 2026-10-29 | ROLE-planner (PRODUCT-DISCOVERY) | Story-set technical coherence, full pass, on the draft set `REQ-0015` rev 3 against `PD-0014` and `technical/assessment.md` round 1; declared round 1 of 2, terminal unless it reports a blocking defect (§9d.3, §9a.1) | `coherent`; no defect, no question. Independently verifiable, sequencing consistent (frontier, head `5be0561`), only assumed-absent capability is the one the story creates, no drift from option B, N1, N2 or C1–C7, C9, C10; every AC-1..AC-12 text and check-order dependency checked against `node bin/ttc.js` today. Code, tests, README and CI unchanged between `5be0561` and HEAD. Round 1 terminal: no round 2 | `technical/coherence.md` (round 1); this row. Vendor claude, model opus |
 
 Dispatch log: `phase | delegate | vendor | model | tokens-scale | ledger run | artifact produced`
 
 - `SOLUTION_EXPLORATION | ROLE-planner | claude | opus | L (subagent reported 120,560 tokens, 34 tool uses, 357 s) | a79b3dafbc8d6f50b | technical/capability-scan.md, impact.md, assessment.md`
+- `DECOMPOSITION | ROLE-planner (coherence, round 1 of 2) | claude | opus | M (subagent reported 83,565 tokens, 15 tool uses, 115 s) | ac5cf5f7fec926021 | technical/coherence.md`
 
 ## Escalation log
 
