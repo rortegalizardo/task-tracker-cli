@@ -17,7 +17,7 @@ story_set_digest: "REQ-0014@3/2026-10-29; INIT-0005@3"
 accepted_on: 2026-10-29
 dispatch_unit: ticket
 max_parallelism: 5
-completion: pending
+completion: complete
 stories: [REQ-0014]
 ---
 
@@ -68,7 +68,7 @@ none — dependencies are the only ordering
 
 | Unit | Stories | Depends on | State | Attempts | Last outcome | Dispatch ref | Wave | Updated |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| RCDEV-859 | REQ-0014 | none | eligible | 0 | none | none | 0 | 2026-10-29 |
+| RCDEV-859 | REQ-0014 | none | complete | 1 | DONE (release.md Status: merged) | INIT-0005 / orch-RCDEV-859; PRs #35 #37 #38 merged, last merge e42cd955e3fd520683c877c8ecfce5c2a3f609e4 | 0 | 2026-10-29 |
 
 ## Waves
 
@@ -80,7 +80,12 @@ none — dependencies are the only ordering
 
 | Date | Unit | Event | Detail |
 | --- | --- | --- | --- |
+| 2026-10-29 | RCDEV-859 | dispatched | cap 5 (manifest max_parallelism); live session orch-RCDEV-859 wrapper_pid=82743 |
+| 2026-10-29 | RCDEV-859 | completed | PRs #35 (1caa82c9), #37 (7811fb6b), #38 (e42cd955) MERGED per gh pr view |
+| 2026-10-29 | INIT-0005 | completion | complete: 1/1 units complete, acceptance 15/15 pass (delivery/acceptance.md) |
 
 ## Completion
 
 _Computed per schema §5.8. `pending` until every unit is `complete`._
+
+completion: complete — RCDEV-859 complete (PRs #35, #37, #38 merged); acceptance checks 15/15 pass (`acceptance.md`).
