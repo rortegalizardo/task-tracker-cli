@@ -3,16 +3,16 @@ id: PSTATE-INIT-0005
 type: product-state
 title: Product definition state for INIT-0005
 status: authoritative
-revision: 2
+revision: 3
 owner_role: ROLE-product-manager
 created: 2026-10-29
 updated: 2026-10-29
 updated_by_role: ROLE-product-manager
 initiative: INIT-0005
-phase: DISCOVERY
+phase: PRODUCT_DEFINITION
 phase_entered: 2026-10-29
 requester: "the requester (repository owner, rortegalizardo), via the driving session, 2026-10-29"
-next_action: "ROLE-product-manager: SKILL-advance-product-phase DISCOVERY -> PRODUCT_DEFINITION"
+next_action: "ROLE-product-manager: PRODUCT_DEFINITION — outcome, out of scope, success measures, draft REQ, Product Definition Contract"
 blocked_by: []
 converged: false
 readiness_verdict: none   # none | READY | READY-with-known-issues | NOT READY | void
@@ -29,8 +29,8 @@ these two files never describe the same thing and never share a writer.
 
 ## Where this stands
 
-DISCOVERY. Discovery is written (J1–J3, P1–P3, `CAP-0001`, signals 1–5). No
-escalation-class ambiguity is open.
+PRODUCT_DEFINITION. Discovery is written (J1–J3, P1–P3, `CAP-0001`, signals
+1–5). No escalation-class ambiguity is open.
 
 ## Problem statement
 
@@ -45,7 +45,7 @@ from it (`src/commands/index.js`, 16 commands). Head `7f4bddf`.
 
 ## Next action
 
-ROLE-product-manager: SKILL-advance-product-phase DISCOVERY -> PRODUCT_DEFINITION.
+ROLE-product-manager: PRODUCT_DEFINITION — outcome, out of scope, success measures, draft REQ, Product Definition Contract.
 
 ## Blocked by
 
@@ -192,6 +192,7 @@ Dates are UTC timestamps.
 | 2026-10-29T06:51:09Z | — | BOOTSTRAP | ROLE-product-manager | Raw request relayed by the driving session | Packet: `readiness: ready`, `scope.initiative: null`, profile S, no areas, no open `Q-` (`Q-0001` answered). `neighbouring` read in full: `CAP-0001` (draft) has no copy of a task; no `PD-` (accepted or rejected) concerns copying a task; INIT-0001 out of scope "Recurring tasks" and "Changing or clearing a due date after `add`" are story boundaries, not rejected decisions, and a copy made by hand is not a recurring task; `PD-0003` items 1, 2, 7, 10, `PD-0004`, `PD-0008`, `PD-0009`, `PD-0010` and `PD-0011` bind. INIT-0001..INIT-0004 are not touched. Defect carried (advisory): `CAP-0001` is still draft and predates shipped behaviour; code and README at head `7f4bddf` are the current-state evidence. Hooks: HOOK-canonical-root pass, HOOK-hydrate pass | `0e519ee7443786e9`, head `7f4bddf` |
 | 2026-10-29T06:52:56Z | BOOTSTRAP | INTAKE | ROLE-product-manager | Packet emitted, scope resolved to none | Triage verdict `new-initiative`: not `satisfied-by CAP-0001` (no command makes a task from another; `ttc add` needs every detail typed again); no `PD-` settles it; no constraint forbids it; no initiative covers it (INIT-0001 base commands, INIT-0002 important mark, INIT-0003 postpone, INIT-0004 clean), so not a duplicate; one outcome named. Raw request committed verbatim. `INIT-0005` allocated (counter 4 -> 5, checked against `origin/main` `7f4bddf`). Size: small (≤3 stories expected). Hooks: HOOK-initiative-resolved pass, HOOK-phase-entry pass | `0e519ee7443786e9`, head `7f4bddf` |
 | 2026-10-29T06:53:58Z | INTAKE | DISCOVERY | ROLE-product-manager | INTAKE exit criteria met: one initiative, one problem, one named requester, ambiguity rows A1–A10 all classified (`pm-resolvable`) | Entry precondition (`lifecycle-hooks.md` §3.4.1 DISCOVERY) holds: `initiative.md` at `status: draft`; state at INTAKE with requester, problem statement and a classified ambiguity log. Discovery written (J1–J3, P1–P3, S2 `CAP-0001`, S3 signals 1–5, non-goals). No delegate consulted (optional, read-only; the code answers the current state). No `Q-` raised. Hooks: HOOK-phase-entry pass | `0e519ee7443786e9`, head `7d335d8` |
+| 2026-10-29T06:54:12Z | DISCOVERY | PRODUCT_DEFINITION | ROLE-product-manager | DISCOVERY exit criteria met: problem, user, current state and success signals stated with sources; no open escalation-class ambiguity | Entry precondition (`lifecycle-hooks.md` §3.4.1 PRODUCT_DEFINITION) holds: Discovery has the target user, jobs J1–J3 and problems P1–P3 each with a source (S1), mapping `CAP-0001` (S2), success signals 1–5 (S3) and known non-goals. Hooks: HOOK-phase-entry pass | `0e519ee7443786e9`, head `28899a1` |
 
 > Every product-side session updates this file before ending — **including
 > sessions that failed**, which record the failure in `next_action` and do not
