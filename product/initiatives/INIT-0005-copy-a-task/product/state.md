@@ -3,19 +3,19 @@ id: PSTATE-INIT-0005
 type: product-state
 title: Product definition state for INIT-0005
 status: authoritative
-revision: 7
+revision: 8
 owner_role: ROLE-product-manager
 created: 2026-10-29
 updated: 2026-10-29
 updated_by_role: ROLE-product-manager
 initiative: INIT-0005
-phase: READINESS
+phase: ENGINEERING_READY
 phase_entered: 2026-10-29
 requester: "the requester (repository owner, rortegalizardo), via the driving session, 2026-10-29"
-next_action: "ROLE-product-manager: READINESS — dispatch the readiness review of {REQ-0014 rev 3} (round 1 of 2, terminal unless blocking)"
+next_action: "ROLE-product-manager: ENGINEERING_READY — assemble the Handoff packet, compile delivery/manifest.md (product band), push, then enter HANDOFF"
 blocked_by: []
 converged: true
-readiness_verdict: none   # none | READY | READY-with-known-issues | NOT READY | void
+readiness_verdict: READY   # none | READY | READY-with-known-issues | NOT READY | void
 stories: [REQ-0014]
 design_refs: []
 decisions: [PD-0013]
@@ -29,10 +29,9 @@ these two files never describe the same thing and never share a writer.
 
 ## Where this stands
 
-READINESS. Option B chosen (`PD-0013`); Solution Contract in
-`solution-contract.md`. `REQ-0014` rev 3 is accepted (AC-1 to AC-15, C1–C9);
-coherence round 1 `coherent`, coverage zero defects, convergence declared. The
-readiness review is next.
+ENGINEERING_READY. Option B chosen (`PD-0013`); `REQ-0014` rev 3 accepted
+(AC-1 to AC-15, C1–C9); coherence round 1 `coherent`; readiness round 1 `READY`
+with no findings. The Handoff packet and the delivery manifest are next.
 
 ## Problem statement
 
@@ -47,7 +46,7 @@ from it (`src/commands/index.js`, 16 commands). Head `7f4bddf`.
 
 ## Next action
 
-ROLE-product-manager: READINESS — dispatch the readiness review of {REQ-0014 rev 3} (round 1 of 2, terminal unless blocking).
+ROLE-product-manager: ENGINEERING_READY — assemble the Handoff packet, compile delivery/manifest.md (product band), push, then enter HANDOFF.
 
 ## Blocked by
 
@@ -163,11 +162,13 @@ recommended (`PD-0013` items 1–13). No option is left under consideration.
 | --- | --- | --- | --- | --- |
 | 2026-10-29 | ROLE-planner (PRODUCT-DISCOVERY) | Feasibility verdict, constraints, risks and band for options A and B (one dispatch: capability scan, impact, assessment; §9d.1) | A `feasible-with-constraints`, `contained`; B `feasible-with-constraints`, `contained`; constraints C1–C9 (C8, C9 B only); risks R1–R5 (R3, R5 A only; R4 B only); narrowing points P1–P10, none blocking or costly; neither option changes the stored format (C4). P8 corrected Discovery P3 and A5 (one postpone brings an overdue task to tomorrow); corrected in place. Registry note: `CAP-0001` out of date (as in INIT-0002..0004), left for initiative close | `technical/capability-scan.md`, `technical/impact.md`, `technical/assessment.md` (round 1); this row; C2, C3, C5, C9 and P1–P10 go to the convergence `PD-`. Vendor claude, model opus |
 | 2026-10-29 | ROLE-planner (PRODUCT-DISCOVERY) | `story-set-technical-coherence` full pass on draft {REQ-0014 rev 2}, round 1 of 2, terminal unless blocking (§9d.3) | `coherent`: 0 blocking, 1 non-blocking (#1: no AC names C6's oracle and fuzz work, and no AC tests C8's edge dates as a `--due` value — a past date, `9999-12-31` accepted, `10000-01-01` refused); every AC's reliance on existing behaviour checked against the real CLI at head `927176e`; no verdict drift from `PD-0013`, no absent capability assumed, no sequencing problem. Round 1 is terminal; no round 2. Disposition (PM): #1 `fixed` — `REQ-0014` rev 3: AC-3 adds `--due 9999-12-31` and a past `--due 2021-06-01` copy, AC-9 adds `--due 10000-01-01` → `ttc: invalid date: 10000-01-01`, AC-15 names the oracle and fuzz cover of `ttc copy` and its `--due` cases (C6); expected lines checked on the CLI with `ttc add` standing in; no `PD-0013` behaviour changes; Behavior and Scope unchanged; AC numbering AC-1..AC-15 kept | `technical/coherence.md` (round 1, commit `be4ef26`); this row. Vendor claude, model opus |
+| 2026-10-29 | ROLE-product-readiness-reviewer | Readiness verdict on {REQ-0014 rev 3}, R13–R18 plus flag-only R8/R9, round 1 of 2 terminal unless blocking | `READY`, no conditions, no findings | Readiness log row (round 1, commit `1fa351d`); `readiness_verdict: READY` set by the PM from it. Vendor claude, model sonnet |
 
 Dispatch log: `phase | delegate | vendor | model | tokens-scale | ledger run | artifact produced`
 
 - `SOLUTION_EXPLORATION | ROLE-planner | claude | opus | L (subagent reported 123,267 tokens, 27 tool uses, 339 s) | a3656a65b1a42165a | technical/capability-scan.md, impact.md, assessment.md`
 - `DECOMPOSITION | ROLE-planner | claude | opus | M (subagent reported 96,157 tokens, 20 tool uses, 202 s) | ae54e0acf1f8fdfbd | technical/coherence.md`
+- `READINESS | ROLE-product-readiness-reviewer | claude | sonnet | M (subagent reported 64,723 tokens, 17 tool uses, 73 s) | ae545c237589174e7 | Readiness log row 1 (READY)`
 
 ## Escalation log
 
@@ -256,6 +257,7 @@ Dates are UTC timestamps.
 | 2026-10-29T07:02:31Z | SOLUTION_EXPLORATION | SOLUTION_CONVERGENCE | ROLE-product-manager | SOLUTION_EXPLORATION exit criteria met: options A and B recorded, each with a feasibility verdict (`feasible-with-constraints`) and a user-visible trade-off; PM recommends B with reasons | Entry precondition (`lifecycle-hooks.md` §3.4.1 SOLUTION_CONVERGENCE) holds: X1 two distinguishable options; X2 each verdict in the closed set (`technical/assessment.md` round 1); one Consultation log row for the one delegate response. Discovery P3 and A5 corrected in place from the architect's P8 (pre-freeze). No design dispatch: no visual surface (`project/constraints.md` row 8, `PD-0001` item 3; to be recorded in the convergence `PD-`, §9d.5). Hooks: HOOK-phase-entry pass | `0e519ee7443786e9`, head `fdf683d` |
 | 2026-10-29T07:04:12Z | SOLUTION_CONVERGENCE | DECOMPOSITION | ROLE-product-manager | SOLUTION_CONVERGENCE exit criteria met: one accepted chosen-option `PD-0013` (option B), indexed, with the rejected option A and its reasons; it also settles A1–A10, C2, C3, C5, C9 and P1–P10; `REQ-0014` (draft) is consistent with it; no option left under consideration; Solution Contract `product/solution-contract.md` cites `PD-0013` and states there is no design concept (no visual surface, `PD-0013` item 14) | Choice settled by the request (escalation-policy §3 route 2: "without retyping everything", "Keep it simple"; the driving session relayed "Make the product decisions yourself"); no `Q-`. Entry precondition (`lifecycle-hooks.md` §3.4.1 DECOMPOSITION) holds: exactly one accepted chosen-option `PD-` (`PD-0013`) citing verdict `feasible-with-constraints` (`technical/assessment.md` round 1). Counter `decision` 12 -> 13, checked against `origin/main`. `INIT-0005` rev 3. Hooks: HOOK-phase-entry pass | `0e519ee7443786e9`, head `7676d74` |
 | 2026-10-29T07:15:51Z | DECOMPOSITION | READINESS | ROLE-product-manager | DECOMPOSITION exit criteria met: O1–O3 map to accepted `REQ-0014` rev 3; it meets the nine points of §10.3 (accepted, one testable outcome, 15 pass/fail ACs, `CAP-0001`, no visual surface so no `DES-`, independently verifiable, no `blocker` `Q-`, no contradiction, indexed in the same commit); coherence round 1 (terminal) left no open blocking defect; convergence declared (`converged: true`) | Entry precondition (`lifecycle-hooks.md` §3.4.1 READINESS) holds: `converged: true`; `HOOK-traceability` zero defects (Coverage validation, iteration 1); `technical/coherence.md` verdict `coherent`, round 1 terminal under §9d.3, its one non-blocking finding `fixed` in rev 3; no user-facing story, so no `DES-` needed. Review budget this session: 1 of 6. Hooks: HOOK-phase-entry pass | `0e519ee7443786e9`, head `be4ef26` |
+| 2026-10-29T07:18:48Z | READINESS | ENGINEERING_READY | ROLE-product-manager | READINESS exit criteria met: `READY` recorded by ROLE-product-readiness-reviewer, round 1 of 2 declared terminal unless blocking; no conditions or known issues to record as `Q-`/`PD-` | Coverage validation zero defects ran before the dispatch (not a review dispatch; set unchanged since). Review budget used this session: 2 of 6 (coherence 1, readiness 1). `readiness_verdict: READY` set by the PM from the reviewer's Readiness log row (the dispatch limited its writes to the log section). Entry precondition (`lifecycle-hooks.md` §3.4.1 ENGINEERING_READY) holds: verdict `READY`, not `void`, digest `(REQ-0014, 3, 2026-10-29)`; INIT-0005 rev 3 matches disk. Hooks: HOOK-readiness pass, HOOK-phase-entry pass | `0e519ee7443786e9` (carried), head `1fa351d` |
 
 > Every product-side session updates this file before ending — **including
 > sessions that failed**, which record the failure in `next_action` and do not
