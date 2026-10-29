@@ -40,6 +40,21 @@ ttc unimportant <id>
 - Both commands work on open and done tasks.
 - The mark stays through `done`, `reopen`, `rename`, `tag` and `note`.
 
+## Copying a task
+
+```
+ttc copy <id> [--due YYYY-MM-DD]
+```
+
+- Adds one new task with the original's title, due date, tags, note and important mark, as stored. The copy is open, even if the original is done, and gets a new id that is never reused.
+- `--due <d>` gives only the copy a different due date, or a date if the original has none. It follows the same rule as `ttc add --due`: `YYYY-MM-DD`, a real calendar date, with past dates allowed and nothing later than `9999-12-31`. It cannot clear a due date.
+- Prints `Copied task <id> as task <new-id>` and exits 0.
+- Three refusals, each exit 1 with nothing changed: no task with that id (`ttc: no task with id <id>`), an invalid date (`ttc: invalid date: <d>`), or no id left (`ttc: no task id is left`).
+- Only the new task is added. The original and every other task keep every field and their stored order.
+- It takes exactly one id and at most one `--due`, before or after the id. No other option is accepted.
+
+Example: with task 1 already stored, `ttc copy 1` adds a new open task with the same details. `ttc copy 1 --due 2099-11-01` adds another open task due on that date.
+
 ## Postponing a task
 
 ```
