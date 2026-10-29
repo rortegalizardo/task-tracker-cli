@@ -2,7 +2,7 @@
 id: INIT-0005
 type: initiative
 title: A new task is made from an existing one without retyping it
-status: draft
+status: active
 revision: 3
 owner_role: ROLE-product-manager
 created: 2026-10-29

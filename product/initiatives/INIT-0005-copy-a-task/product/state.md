@@ -236,7 +236,36 @@ with no findings rows is invalid output.
 
 ## Handoff packet
 
-_Assembled at ENGINEERING_READY._
+Assembled 2026-10-29 at ENGINEERING_READY by `ROLE-product-manager` against the `READY` verdict of 2026-10-29 (Readiness log, round 1; digest `(REQ-0014, 3, 2026-10-29)`, INIT-0005 rev 3, unchanged on disk). Drafted inline under the size rule (§9d.2): a transcription of existing records.
+
+- **Repository:** `rortegalizardo/task-tracker-cli` (`~/Desktop/Projects/task-tracker-cli`), default branch `main` (`project/constraints.md` row 9).
+- **Outcome:** A person using `ttc` can make a new task like an existing one with one short command that needs only the existing task's id, the new task holding the existing task's title, due date, tags, note and important mark, so none of them has to be typed again, and being open; see in that command's output the new task's id, without listing, so they can change the copy next; and keep everything else as it is today: the original task and every other task with their ids and fields, ids that are never given again, the order and format of `ttc list`, and data files written by older ttc (`initiative.md` `## Outcome`, O1–O3).
+- **Stories, in suggested sequence:**
+  1. `REQ-0014` — the only story; `depends_on: [none]`, on the frontier.
+- **Design references and export paths:** none — no user-facing visual surface (`PD-0013` item 14; `project/constraints.md` row 8).
+- **Decisions in force:** `PD-0003`, `PD-0004`, `PD-0008`, `PD-0009`, `PD-0010`, `PD-0011`, `PD-0013` (chosen option B: `ttc copy <id> [--due YYYY-MM-DD]` adds one new open task with the original's title, due date, tags, note and important mark and prints `Copied task <id> as task <new-id>`).
+- **Binding technical constraints** (all from `technical/assessment.md`, round 1; carried in `REQ-0014` `## Technical constraints`; C8 and C9 apply because option B is chosen):
+  - C1 — `ttc copy` inherits, unchanged, the argument, id, lock, atomic-write, permission and failure-after-save rules of the existing changing commands; a refusal writes nothing: the file stays byte-identical, an older-version file is not upgraded, and a missing `tasks.json` stays missing with no folder created; every accepted copy writes.
+  - C2 — the copy gets the stored next id and the next id rises by 1, as for `add`; when no id is left it refuses with `ttc: no task id is left` and changes nothing.
+  - C3 — the success line, the usage line and its position, the id-limit refusal, the check order and the `--due` rules are fixed text; tests assert them exactly.
+  - C4 — no stored-format change; older files are copied without error and a successful copy writes them as version 4.
+  - C5 — the copy is made from the original's stored form, with status open and nothing else copied; the original and every other task keep every field and their stored order.
+  - C6 — the test oracle (`test/support/ttc-model.js`) and the argument fuzzing (`fuzz-gen.js`, `fuzz-harness.js`) gain `copy` and its `--due` cases, written from `PD-0013`, not from the new code; the three tests that list the whole usage gain the new line.
+  - C7 — the perf guard (10,000 tasks, median < 500 ms) must still pass.
+  - C8 — `--due` follows the `ttc add --due` rule exactly (format, real date, past allowed, nothing after `9999-12-31`, one value, before or after the id, checked before the lock).
+  - C9 — `--due` can only set a date; it cannot remove one.
+- **Explicitly out of scope** (copied from `initiative.md` `## Scope`, Out of scope):
+  - Copying several tasks in one command.
+  - Changing the copy's title, tags, note or important mark in the copy command: `ttc rename`, `ttc tag`, `ttc note`, `ttc important` and `ttc unimportant` do it afterwards.
+  - Changing or clearing the due date of a task that already exists (INIT-0001 out of scope), including removing the due date from a copy.
+  - Recurring tasks, or copies made automatically or on a schedule.
+  - Templates or saved task presets.
+  - Recording which task a copy came from.
+  - Copying a task into another list or file.
+  - Any change to the output of other commands, other than the new task being there.
+- **Open questions (non-blocking):** none. The verdict carries no conditions or known issues.
+- **Delivery manifest:** `product/initiatives/INIT-0005-copy-a-task/delivery/manifest.md`
+- **Tickets:** written at HANDOFF (Linear team RC Development, project Task Tracker CLI, `PD-0007`; mapping authority `delivery/tickets.md`).
 
 ## Handoff log
 
