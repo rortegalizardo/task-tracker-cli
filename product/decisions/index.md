@@ -7,6 +7,7 @@ not re-open the question.
 
 | ID | Title | Status | Path | Updated |
 | --- | --- | --- | --- | --- |
+| PD-0014 | Build INIT-0006 as option B, ttc list --no-due narrows any view to tasks with no due date, and ttc export takes it too | accepted | [PD-0014-ttc-no-due-filter-option-b.md](PD-0014-ttc-no-due-filter-option-b.md) | 2026-10-29 |
 | PD-0013 | Build INIT-0005 as option B, ttc copy makes a new open task from an existing one and can give it a different due date | accepted | [PD-0013-ttc-copy-option-b.md](PD-0013-ttc-copy-option-b.md) | 2026-10-29 |
 | PD-0012 | Build INIT-0004 as option A, ttc clean removes every done task in one command and prints how many it removed | accepted | [PD-0012-ttc-clean-option-a.md](PD-0012-ttc-clean-option-a.md) | 2026-10-28 |
 | PD-0011 | Build INIT-0003 as option B, ttc postpone moves a task's due date one day later, counting from today when it is overdue | accepted | [PD-0011-ttc-postpone-option-b.md](PD-0011-ttc-postpone-option-b.md) | 2026-10-27 |

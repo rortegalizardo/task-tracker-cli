@@ -3,7 +3,7 @@ id: REQ-0015
 type: requirement
 title: Tasks with no due date are listed on their own in one short command
 status: draft
-revision: 1
+revision: 2
 owner_role: ROLE-product-manager
 created: 2026-10-29
 updated: 2026-10-29
@@ -12,7 +12,7 @@ outcome_element: "O1, O2 and O3 (initiative.md): one short command lists only th
 acceptance: []
 capabilities: [CAP-0001]
 design_refs: []
-decisions: []
+decisions: [PD-0014]
 depends_on: [none]
 constraints: []
 observability: []
@@ -34,14 +34,14 @@ superseded_by:
 A user can list only their tasks that have no due date with one short
 command. With nothing else typed it shows the open tasks with no due date,
 each on the line `ttc list` prints for it today and in the same order, or
-`No tasks.` when there are none. It writes nothing. `ttc list` with the
-options it has today, and every other command, behave as before.
+`No tasks.` when there are none. It writes nothing. Every command typed as it
+can be typed today behaves as before, apart from two `ttc help` usage lines.
 
 ## Scope
 
-- The new way to list tasks with no due date, its rules with the other
-  `ttc list` options, and its errors.
-- Whether `ttc export` takes it too (decided at SOLUTION_CONVERGENCE).
+- `ttc list --no-due`, its rules with the other `ttc list` options, and the
+  refusal of the combinations that can never match (`PD-0014`).
+- `ttc export --no-due`, with the same meaning (`PD-0014` item 6).
 - Working on data files written by older ttc without rewriting them.
 - The `ttc help` usage line and the README.
 - Repository: `rortegalizardo/task-tracker-cli` (`project/constraints.md` row 9).
