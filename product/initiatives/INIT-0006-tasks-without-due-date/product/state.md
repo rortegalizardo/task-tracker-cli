@@ -3,16 +3,16 @@ id: PSTATE-INIT-0006
 type: product-state
 title: Product definition state for INIT-0006
 status: authoritative
-revision: 8
+revision: 9
 owner_role: ROLE-product-manager
 created: 2026-10-29
 updated: 2026-10-29
 updated_by_role: ROLE-product-manager
 initiative: INIT-0006
-phase: ENGINEERING_READY
+phase: HANDOFF
 phase_entered: 2026-10-29
 requester: "the requester (repository owner, rortegalizardo), via the driving session, 2026-10-29"
-next_action: "ROLE-product-manager: assemble the Handoff packet and delivery/manifest.md (product band), set INIT-0006 active and REQ-0015 readiness engineering-ready, push and verify, then enter HANDOFF"
+next_action: "ROLE-product-manager: create the Linear ticket for REQ-0015 via SKILL-create-tickets-from-stories, write delivery/tickets.md and the Handoff log row; no engineering dispatch by this session"
 blocked_by: []
 converged: true
 readiness_verdict: READY   # none | READY | READY-with-known-issues | NOT READY | void
@@ -29,7 +29,7 @@ these two files never describe the same thing and never share a writer.
 
 ## Where this stands
 
-ENGINEERING_READY. `READY` (round 1, terminal, no findings, no conditions) on story-set digest `(REQ-0015, 3, 2026-10-29)`, INIT-0006 rev 3. Next: Handoff packet and delivery manifest.
+HANDOFF. Handoff packet and `delivery/manifest.md` (product band) issued against `READY` round 1; INIT-0006 active; REQ-0015 engineering-ready. Next: one Linear ticket.
 
 ## Problem statement
 
@@ -47,7 +47,7 @@ CLI at head `5be0561`).
 
 ## Next action
 
-ROLE-product-manager: assemble the Handoff packet and delivery/manifest.md (product band), set INIT-0006 active and REQ-0015 readiness engineering-ready, push and verify, then enter HANDOFF
+ROLE-product-manager: create the Linear ticket for REQ-0015 via SKILL-create-tickets-from-stories, write delivery/tickets.md and the Handoff log row; no engineering dispatch by this session
 
 ## Blocked by
 
@@ -287,6 +287,7 @@ Dates are UTC timestamps.
 | 2026-10-29T18:03:33Z | SOLUTION_CONVERGENCE | DECOMPOSITION | ROLE-product-manager | SOLUTION_CONVERGENCE exit criteria met: one accepted chosen-option `PD-0014` (option B), indexed, with the rejected option A and its reasons; it also settles A1–A7, N1–N5, P1 and P7; `REQ-0015` rev 2 (draft) is consistent with it; no option left under consideration; Solution Contract `product/solution-contract.md` cites `PD-0014` and states there is no design concept (no visual surface, `PD-0014` item 11) | Choice settled by the request (escalation-policy §3 route 2; §4.1: the quick command `ttc list --no-due` is the same under both options, which differ only in combinations the request does not mention; "Keep it simple" decides those); no stated need dropped or narrowed (§4.2); no `Q-`. Entry precondition (`lifecycle-hooks.md` §3.4.1 DECOMPOSITION) holds: exactly one accepted chosen-option `PD-` (`PD-0014`) citing verdict `feasible-with-constraints` (`technical/assessment.md` round 1). Counter `decision` 13 -> 14, checked against `origin/main`. `INIT-0006` rev 3 (O3, success measures 1 and 4, scope and last out-of-scope item name the two `ttc help` usage lines, architect P1). Hooks: HOOK-phase-entry pass | `c995399e88ef32e3`, head `bec62d4` |
 | 2026-10-29T18:11:43Z | DECOMPOSITION | READINESS | ROLE-product-manager | DECOMPOSITION exit criteria met: O1–O3 map to accepted `REQ-0015` rev 3; it meets the nine points of §10.3 (accepted, one testable outcome, 12 pass/fail ACs, `CAP-0001`, no visual surface so no `DES-`, independently verifiable, no `blocker` `Q-`, no contradiction, indexed in the same commit); coherence round 1 (terminal) left no open blocking defect; convergence declared (`converged: true`) | Entry precondition (`lifecycle-hooks.md` §3.4.1 READINESS) holds: `converged: true`; `HOOK-traceability` zero defects (Coverage validation, iteration 1); `technical/coherence.md` verdict `coherent`, round 1 terminal under §9d.3, no findings; no user-facing story, so no `DES-` needed. AC texts for today's behaviour checked by the PM on `node bin/ttc.js` at head `5be0561`. Review budget this session: 1 of 6. Hooks: HOOK-phase-entry pass | `c995399e88ef32e3` (carried), head `b8d03c1` |
 | 2026-10-29T18:13:50Z | READINESS | ENGINEERING_READY | ROLE-product-manager | READINESS exit criteria met: `READY` recorded by ROLE-product-readiness-reviewer, round 1 of 2 declared terminal unless blocking; no conditions or known issues to record as `Q-`/`PD-` | Coverage validation zero defects ran before the dispatch (not a review dispatch; set unchanged since). Review budget used this session: 2 of 6 (coherence 1, readiness 1). `readiness_verdict: READY` set by the PM from the reviewer's Readiness log row (the dispatch limited its writes to the log row). Entry precondition (`lifecycle-hooks.md` §3.4.1 ENGINEERING_READY) holds: verdict `READY`, not `void`, digest `(REQ-0015, 3, 2026-10-29)`; INIT-0006 rev 3 matches disk. Hooks: HOOK-readiness pass, HOOK-phase-entry pass | `c995399e88ef32e3` (carried), head `fa0498f` |
+| 2026-10-29T18:14:38Z | ENGINEERING_READY | HANDOFF | ROLE-product-manager | ENGINEERING_READY exit criteria met: the Handoff packet is self-contained (H0–H12), `delivery/manifest.md` exists at `band_owner: product` and satisfies M1–M8 (one story, acyclic; digest `REQ-0015@3/2026-10-29; INIT-0006@3` equals the verdict's; no execution band rows) | `INIT-0006` `status: active` (index too); `REQ-0015` `readiness: engineering-ready`; every referenced identifier resolves through its index; no `Q-` open; no story changed since the verdict; no HLD, plan or estimate in a product-side artifact (H11). Pushed and verified on `origin/main` at `675906d` before entering HANDOFF. Hooks: HOOK-handoff-packet pass, HOOK-phase-entry pass | `c995399e88ef32e3` (carried), head `675906d` |
 
 > Every product-side session updates this file before ending — **including
 > sessions that failed**, which record the failure in `next_action` and do not
