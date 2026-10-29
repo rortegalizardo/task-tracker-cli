@@ -3,16 +3,16 @@ id: PSTATE-INIT-0006
 type: product-state
 title: Product definition state for INIT-0006
 status: authoritative
-revision: 4
+revision: 5
 owner_role: ROLE-product-manager
 created: 2026-10-29
 updated: 2026-10-29
 updated_by_role: ROLE-product-manager
 initiative: INIT-0006
-phase: SOLUTION_EXPLORATION
+phase: SOLUTION_CONVERGENCE
 phase_entered: 2026-10-29
 requester: "the requester (repository owner, rortegalizardo), via the driving session, 2026-10-29"
-next_action: "ROLE-product-manager: dispatch ROLE-planner (PRODUCT-DISCOVERY) for one feasibility assessment of options A and B (size rule §9d.1), record the Options table, then SKILL-advance-product-phase SOLUTION_EXPLORATION -> SOLUTION_CONVERGENCE"
+next_action: "ROLE-product-manager: record the chosen-option PD- (option B) and the Solution Contract, update REQ-0015 and initiative.md, then SKILL-advance-product-phase SOLUTION_CONVERGENCE -> DECOMPOSITION"
 blocked_by: []
 converged: false
 readiness_verdict: none   # none | READY | READY-with-known-issues | NOT READY | void
@@ -29,7 +29,7 @@ these two files never describe the same thing and never share a writer.
 
 ## Where this stands
 
-SOLUTION_EXPLORATION. Outcome O1–O3, out of scope (6 items), success measures 1–6 in `initiative.md` rev 2; draft `REQ-0015`; Product Definition Contract `product/product-definition-contract.md`. Next: options A and B costed by the architect.
+SOLUTION_CONVERGENCE. Options A and B costed by the architect (`technical/assessment.md` round 1: both `feasible-with-constraints`, `contained`); PM recommends B with N1–N5 as the architect recommended.
 
 ## Problem statement
 
@@ -47,7 +47,7 @@ CLI at head `5be0561`).
 
 ## Next action
 
-ROLE-product-manager: dispatch ROLE-planner (PRODUCT-DISCOVERY) for one feasibility assessment of options A and B (size rule §9d.1), record the Options table, then SKILL-advance-product-phase SOLUTION_EXPLORATION -> SOLUTION_CONVERGENCE
+ROLE-product-manager: record the chosen-option PD- (option B) and the Solution Contract, update REQ-0015 and initiative.md, then SKILL-advance-product-phase SOLUTION_CONVERGENCE -> DECOMPOSITION
 
 ## Blocked by
 
@@ -133,14 +133,39 @@ S2/S3 = the code and README at head `5be0561`.
 
 ## Options
 
-_Written at SOLUTION_EXPLORATION._
+| Option | User-visible difference | Feasibility verdict | Cost / risk | Trade-off |
+| --- | --- | --- | --- | --- |
+| A — `--no-due` as a fifth status view of `ttc list` | `ttc list --no-due` shows open tasks with no due date; it cannot be given with `--open`, `--done`, `--all` or `--overdue`, so done tasks with no due date cannot be listed on their own | `feasible-with-constraints`, band `contained` (`technical/assessment.md`, round 1) | Constraints C1–C7, C8, C10; R1, R2, R3 (a later move to B changes `ttc export --no-due` if export takes it under A), R4, R5. No stored-format change | One more member of the "pick one view" group, with a hidden "open only" meaning; `--no-due --done` is an error |
+| B — `--no-due` as a filter, like `--tag` | `ttc list --no-due` shows open tasks with no due date, exactly as A; it also narrows any other view, so `ttc list --all --no-due` and `ttc list --done --no-due` work | `feasible-with-constraints`, band `contained` (`technical/assessment.md`, round 1) | Constraints C1–C7, C9, C10; R1, R2, R4 (one more never-matching combination: `--overdue`), R5. No stored-format change | One rule the README already states ("All options combine with AND"); `--no-due` works with every view the way `--tag` does |
+
+_Recommended option and why:_ **B.** The quick command the request asks for
+is the same in both: `ttc list --no-due`, nothing else typed (O1). The
+options differ only in what other combinations do, and "Keep it simple"
+decides that: under B, `--no-due` follows the rule every `ttc list` filter
+already follows (it narrows whatever view is shown, like `--tag`), so there
+is nothing new to learn; under A it joins the "pick one view" group, carries
+an unstated "open only" meaning, and makes `--no-due --done` an error. A
+missing due date is a fact about the date, not a status, so it sits with the
+date options. B costs one more never-matching combination (`--overdue`),
+which the N1 refusal covers. The architect's N1–N5 are taken as recommended:
+never-matching combinations (`--overdue`, `--due-from`, `--due-to`) are
+refused with `ttc: options cannot be combined: <opts>` before the read (N1,
+avoids R4); `ttc export` takes `--no-due` with the same meaning, keeping one
+shared option set and the README promise true (N2; under B it exports open
+and done tasks by its `--all` default, as `--tag` does); no stored-format
+change (N3); oracle and fuzz from the `PD-` text (N4); the name `--no-due`
+(N5; R5 is not material: `ttc add` without `--due` already makes a task with
+no due date, and removing a date stays out of scope).
 
 ## Consultation log
 
 | Date | Delegate role | Question | Answer / verdict | Recorded as |
 | --- | --- | --- | --- | --- |
+| 2026-10-29 | ROLE-planner (PRODUCT-DISCOVERY) | Feasibility verdict, constraints, risks and band for options A and B, plus recommendations on N1–N5 (one dispatch: capability scan, impact, assessment; §9d.1) | A `feasible-with-constraints`, `contained`; B `feasible-with-constraints`, `contained`; constraints C1–C10 (C8 A only, C9 B only); risks R1–R5 (R3 A only); assumptions P1–P7 all narrowing, none blocking or costly; no stored-format change (C2). N1 refuse never-matching combinations with the existing combine message, checked after the two-views check; N2 export takes the option; N3 no storage change; N4 oracle and fuzz from the `PD-` text, list usage in 9 unit files plus the oracle, export usage in 5 plus the oracle (PM re-ran the search: 10 and 6 files); N5 keep `--no-due`. Registry note: `CAP-0001` out of date (as in INIT-0002..0005), left for initiative close | `technical/capability-scan.md`, `technical/impact.md`, `technical/assessment.md` (round 1); this row; C2–C5, C8–C10, N1, N2, N5 and P1, P7 go to the convergence `PD-`. Vendor claude, model opus |
 
 Dispatch log: `phase | delegate | vendor | model | tokens-scale | ledger run | artifact produced`
+
+- `SOLUTION_EXPLORATION | ROLE-planner | claude | opus | L (subagent reported 120,560 tokens, 34 tool uses, 357 s) | a79b3dafbc8d6f50b | technical/capability-scan.md, impact.md, assessment.md`
 
 ## Escalation log
 
@@ -195,6 +220,7 @@ Dates are UTC timestamps.
 | 2026-10-29T17:52:12Z | INTAKE | DISCOVERY | ROLE-product-manager | INTAKE exit criteria met: one initiative, one problem, one named requester, ambiguity rows A1–A9 all classified (`pm-resolvable`) | Entry precondition (`lifecycle-hooks.md` §3.4.1 DISCOVERY) holds: `initiative.md` at `status: draft`; state at INTAKE with requester, problem statement and a classified ambiguity log. Discovery written (J1–J3, P1–P3, S2 `CAP-0001`, S3 signals 1–4, non-goals). No delegate consulted (optional, read-only; the code answers the current state). No `Q-` raised. Hooks: HOOK-phase-entry pass | `c995399e88ef32e3`, head `28e0544` |
 | 2026-10-29T17:52:30Z | DISCOVERY | PRODUCT_DEFINITION | ROLE-product-manager | DISCOVERY exit criteria met: problem, user, current state and success signals stated with sources; no open escalation-class ambiguity | Entry precondition (`lifecycle-hooks.md` §3.4.1 PRODUCT_DEFINITION) holds: Discovery has the target user, jobs J1–J3 and problems P1–P3 each with a source (S1), mapping `CAP-0001` (S2), success signals 1–4 (S3) and known non-goals. Hooks: HOOK-phase-entry pass | `c995399e88ef32e3`, head `dd7f9af` |
 | 2026-10-29T17:54:03Z | PRODUCT_DEFINITION | SOLUTION_EXPLORATION | ROLE-product-manager | PRODUCT_DEFINITION exit criteria met: outcome O1–O3, out of scope (6 items), success measures 1–6, draft `REQ-0015` covering O1–O3, Product Definition Contract citing the raw request | Entry precondition (`lifecycle-hooks.md` §3.4.1 SOLUTION_EXPLORATION) holds: F1 `initiative.md` rev 2 has an outcome and a non-empty out-of-scope section; one `status: draft` `REQ-`; F2 draft-mode coverage (inline, deterministic): J1 -> `REQ-0015` Requirement ("only their tasks that have no due date"), J2 -> Requirement ("one short command", "With nothing else typed"), J3 -> Non-goals and the initiative out of scope; no `R1` defect. `requirement` counter 14 -> 15, checked against `origin/main`. No scope `PD-` needed yet: A2–A4, A6, A7 are recorded in the chosen-option `PD-`. Hooks: HOOK-phase-entry pass | `c995399e88ef32e3`, head `e5fee86` |
+| 2026-10-29T18:01:36Z | SOLUTION_EXPLORATION | SOLUTION_CONVERGENCE | ROLE-product-manager | SOLUTION_EXPLORATION exit criteria met: options A and B recorded, each with a feasibility verdict (`feasible-with-constraints`) and a user-visible trade-off; PM recommends B with reasons | Entry precondition (`lifecycle-hooks.md` §3.4.1 SOLUTION_CONVERGENCE) holds: X1 two distinguishable options; X2 each verdict in the closed set (`technical/assessment.md` round 1); one Consultation log row for the one delegate response. No design dispatch: no visual surface (`project/constraints.md` row 8, `PD-0001` item 3; to be recorded in the convergence `PD-`, §9d.5). Hooks: HOOK-phase-entry pass | `c995399e88ef32e3`, head `53c39af` |
 
 > Every product-side session updates this file before ending — **including
 > sessions that failed**, which record the failure in `next_action` and do not
