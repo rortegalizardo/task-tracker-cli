@@ -2,7 +2,7 @@
 
 // The test-owned reference model (the oracle) for ttc. It is written from the
 // documented rules (src/args.js and src/storage.js headers, PD-0002, PD-0003,
-// PD-0009, PD-0010, PD-0011, PD-0012, C7) and never requires anything under src/.
+// PD-0009, PD-0010, PD-0011, PD-0012, PD-0013, C7) and never requires anything under src/.
 //
 // expect({ argv, files, today }) returns { ok: false } or
 // { ok: true, stdout, files }. `files` maps paths relative to the case folder
@@ -19,6 +19,7 @@ const STORED = 'home/tasks.json';
 const USAGE = [
   'ttc help',
   'ttc add "<title>" [--due YYYY-MM-DD] [--tag <t>]... [--note "<text>"] [--important]',
+  'ttc copy <id> [--due YYYY-MM-DD]',
   'ttc list [--open|--done|--all|--overdue] [--tag <t>] [--due-from YYYY-MM-DD] [--due-to YYYY-MM-DD] [--search <text>]',
   'ttc done <id>',
   'ttc reopen <id>',
@@ -334,6 +335,7 @@ function isLate(t, today) {
 }
 
 const ADD = new Map([['--due', { value: true }], ['--tag', { value: true, repeat: true }], ['--note', { value: true }], ['--important', {}]]);
+const COPY = new Map([['--due', { value: true }]]);
 const NOTE = new Map([['--clear', {}]]);
 const LIST = new Map([
   ['--open', {}],
@@ -419,6 +421,30 @@ const COMMANDS = {
     list.nextId = id + 1;
     writeStored(ctx.tree, list);
     ctx.out = 'Added task ' + id + '\n';
+  },
+
+  copy(args, ctx) {
+    const { positionals, options } = grammar(args, { positionals: 1, options: COPY });
+    const sourceId = parseId(positionals[0]);
+    const due = options.get('--due');
+    if (options.has('--due') && !isDate(due)) invalid();
+    const list = readStored(ctx.tree);
+    const source = list.tasks.find((t) => t.id === sourceId);
+    if (source === undefined) invalid();
+    if (list.nextId > MAX_SAFE) invalid();
+    const id = list.nextId;
+    list.tasks.push({
+      id,
+      title: source.title,
+      status: 'open',
+      due: options.has('--due') ? due : source.due,
+      tags: [...source.tags],
+      note: source.note,
+      important: source.important,
+    });
+    list.nextId = id + 1;
+    writeStored(ctx.tree, list);
+    ctx.out = 'Copied task ' + sourceId + ' as task ' + id + '\n';
   },
 
   list(args, ctx) {
