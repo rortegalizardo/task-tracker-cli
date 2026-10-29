@@ -10,7 +10,7 @@ const { readList, serializeList, replaceFile, reasonOf } = require('../storage')
 module.exports = {
   name: 'export',
   usage:
-    'ttc export [<file>] [--format json|csv] [--open|--done|--all|--overdue] [--tag <t>] [--due-from YYYY-MM-DD] [--due-to YYYY-MM-DD] [--search <text>]',
+    'ttc export [<file>] [--format json|csv] [--open|--done|--all|--overdue] [--no-due] [--tag <t>] [--due-from YYYY-MM-DD] [--due-to YYYY-MM-DD] [--search <text>]',
   run(args, ctx) {
     const parsed = parseArgs(args, {
       positionals: ['[<file>]'],

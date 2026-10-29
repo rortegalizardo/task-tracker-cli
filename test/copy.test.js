@@ -215,7 +215,7 @@ test('AC-13: help lists the exact copy usage between add and list', (t) => {
     '  ttc help',
     '  ttc add "<title>" [--due YYYY-MM-DD] [--tag <t>]... [--note "<text>"] [--important]',
     '  ttc copy <id> [--due YYYY-MM-DD]',
-    '  ttc list [--open|--done|--all|--overdue] [--tag <t>] [--due-from YYYY-MM-DD] [--due-to YYYY-MM-DD] [--search <text>]',
+    '  ttc list [--open|--done|--all|--overdue] [--no-due] [--tag <t>] [--due-from YYYY-MM-DD] [--due-to YYYY-MM-DD] [--search <text>]',
     '  ttc done <id>',
     '  ttc reopen <id>',
     '  ttc important <id>',
@@ -226,7 +226,7 @@ test('AC-13: help lists the exact copy usage between add and list', (t) => {
     '  ttc clean',
     '  ttc tag <id> +<t> | -<t>',
     '  ttc note <id> ["<text>" | --clear]',
-    '  ttc export [<file>] [--format json|csv] [--open|--done|--all|--overdue] [--tag <t>] [--due-from YYYY-MM-DD] [--due-to YYYY-MM-DD] [--search <text>]',
+    '  ttc export [<file>] [--format json|csv] [--open|--done|--all|--overdue] [--no-due] [--tag <t>] [--due-from YYYY-MM-DD] [--due-to YYYY-MM-DD] [--search <text>]',
     '  ttc import <file>',
     '  ttc stats',
   ), 'help');

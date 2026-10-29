@@ -333,3 +333,83 @@ test('export - writes a file named - (not stdout)', () => {
   assertExported(ttc(sb, ['export', '-']), 1, '-');
   assert.ok(fs.existsSync(path.join(sb.work, '-')));
 });
+
+function noDueFixture(sb) {
+  for (const args of [
+    ['add', 'Pay rent', '--due', '2000-01-02', '--tag', 'bills'],
+    ['add', 'Call mom', '--tag', 'home'],
+    ['add', 'Plan trip', '--due', '2099-05-01'],
+    ['add', 'Fix bike', '--tag', 'home'],
+    ['add', 'Water plants', '--important'],
+    ['done', '4'],
+  ]) {
+    const r = ttc(sb, args);
+    assert.equal(r.status, 0, JSON.stringify(args));
+    assert.equal(r.stderr, '');
+  }
+}
+
+test('RCDEV-864 AC-8–AC-9: no-due exports JSON, CSV and a named file without changing source bytes', () => {
+  const sb = sandbox();
+  noDueFixture(sb);
+  const before = fs.readFileSync(sb.file);
+  const expected = { version: 4, nextId: 6, tasks: [
+    { id: 2, title: 'Call mom', status: 'open', due: null, tags: ['home'], note: null, important: false },
+    { id: 4, title: 'Fix bike', status: 'done', due: null, tags: ['home'], note: null, important: false },
+    { id: 5, title: 'Water plants', status: 'open', due: null, tags: [], note: null, important: true },
+  ] };
+  const json = ttc(sb, ['export', '--no-due']);
+  assert.equal(json.status, 0);
+  assert.equal(json.stderr, '');
+  assert.deepEqual(JSON.parse(json.stdout), expected);
+  assert.deepEqual(fs.readFileSync(sb.file), before);
+
+  for (const [args, stdout] of [
+    [['--format', 'csv', '--no-due'], 'id,title,status,due,tags,note\r\n2,Call mom,open,,home,\r\n4,Fix bike,done,,home,\r\n5,Water plants,open,,,\r\n'],
+    [['--open', '--no-due', '--format', 'csv'], 'id,title,status,due,tags,note\r\n2,Call mom,open,,home,\r\n5,Water plants,open,,,\r\n'],
+    [['--format', 'csv'], 'id,title,status,due,tags,note\r\n1,Pay rent,open,2000-01-02,bills,\r\n2,Call mom,open,,home,\r\n3,Plan trip,open,2099-05-01,,\r\n4,Fix bike,done,,home,\r\n5,Water plants,open,,,\r\n'],
+  ]) {
+    const r = ttc(sb, ['export', ...args]);
+    assert.equal(r.status, 0, JSON.stringify(args));
+    assert.equal(r.stderr, '');
+    assert.equal(r.stdout, stdout);
+    assert.deepEqual(fs.readFileSync(sb.file), before);
+  }
+
+  const file = path.join(sb.work, 'undated.json');
+  assertExported(ttc(sb, ['export', file, '--no-due']), 3, file);
+  assert.deepEqual(JSON.parse(fs.readFileSync(file, 'utf8')), JSON.parse(json.stdout));
+  assert.deepEqual(fs.readFileSync(sb.file), before);
+});
+
+test('RCDEV-864 AC-6–AC-7: export validates no-due before reading or creating its target', () => {
+  const sb = sandbox();
+  noDueFixture(sb);
+  const before = fs.readFileSync(sb.file);
+  const file = path.join(sb.work, 'undated.json');
+  for (const [args, message] of [
+    [['--no-due', '--overdue'], 'options cannot be combined: --overdue --no-due'],
+    [['--format', 'csv', '--due-to', '2026-01-31', '--no-due'], 'options cannot be combined: --no-due --due-to'],
+    [[file, '--no-due', '--due-from', '2026-01-01'], 'options cannot be combined: --no-due --due-from'],
+    [['--format', 'xml', '--no-due', '--overdue'], 'invalid format: xml (use json or csv)'],
+  ]) {
+    const r = ttc(sb, ['export', ...args]);
+    assert.equal(r.status, 1, JSON.stringify(args));
+    assert.equal(r.stdout, '');
+    assert.equal(r.stderr, 'ttc: ' + message + '\n');
+    assert.deepEqual(fs.readFileSync(sb.file), before);
+    assert.equal(fs.existsSync(file), false);
+  }
+});
+
+test('RCDEV-864 AC-7: export no-due reports corrupt input without changing it', () => {
+  const sb = sandbox();
+  fs.mkdirSync(sb.dataDir);
+  fs.writeFileSync(sb.file, 'not json');
+  const before = fs.readFileSync(sb.file);
+  const r = ttc(sb, ['export', '--no-due']);
+  assert.equal(r.status, 1);
+  assert.equal(r.stdout, '');
+  assert.match(r.stderr, /^ttc: cannot read [^\n]+\n$/);
+  assert.deepEqual(fs.readFileSync(sb.file), before);
+});

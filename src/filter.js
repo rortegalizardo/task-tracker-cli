@@ -12,6 +12,7 @@ const FILTER_OPTIONS = {
   '--done': { value: false },
   '--all': { value: false },
   '--overdue': { value: false },
+  '--no-due': { value: false },
   '--tag': { value: true },
   '--due-from': { value: true },
   '--due-to': { value: true },
@@ -19,12 +20,21 @@ const FILTER_OPTIONS = {
 };
 
 // Validates the options parseArgs returned and returns the filter:
-// { view, tag, dueFrom, dueTo, search } (absent values are null). `defaultView`
-// is the status view when no status option is given.
+// { view, noDue, tag, dueFrom, dueTo, search }; noDue is boolean and absent
+// tag/date/search values are null. `defaultView` is the status view when no
+// status option is given.
 function parseFilter(options, defaultView = '--open') {
   const given = STATUS_OPTIONS.filter((o) => Object.hasOwn(options, o));
   if (given.length > 1) {
     throw new TtcError('options cannot be combined: ' + given.join(' '));
+  }
+  const noDue = Object.hasOwn(options, '--no-due');
+  if (noDue) {
+    const conflicts = ['--overdue', '--no-due', '--due-from', '--due-to']
+      .filter((o) => Object.hasOwn(options, o));
+    if (conflicts.length > 1) {
+      throw new TtcError('options cannot be combined: ' + conflicts.join(' '));
+    }
   }
   const view = given.length === 1 ? given[0] : defaultView;
 
@@ -41,16 +51,17 @@ function parseFilter(options, defaultView = '--open') {
   const search = Object.hasOwn(options, '--search') ? options['--search'] : null;
   if (search === '') throw new TtcError('--search text must not be empty');
 
-  return { view, tag, dueFrom, dueTo, search };
+  return { view, noDue, tag, dueFrom, dueTo, search };
 }
 
 // The predicate for a parsed filter: true when a task passes the status view,
-// the tag, the due range and the search (all AND-combined). Stored dates are
-// YYYY-MM-DD, so string comparison gives date order. The search is a literal,
+// no due date when requested, the tag, the due range and the search (all
+// AND-combined). Stored dates are YYYY-MM-DD, so string comparison gives date
+// order. The search is a literal,
 // case-insensitive substring match against the title or, when there is one,
 // the note.
 function taskFilter(filter, today) {
-  const { view, tag, dueFrom, dueTo, search } = filter;
+  const { view, noDue, tag, dueFrom, dueTo, search } = filter;
   const needle = search === null ? null : search.toLowerCase();
   return (task) => {
     if (view === '--overdue') {
@@ -58,6 +69,7 @@ function taskFilter(filter, today) {
     } else if (view !== '--all' && task.status !== (view === '--done' ? 'done' : 'open')) {
       return false;
     }
+    if (noDue && task.due !== null) return false;
     if (tag !== null && !task.tags.includes(tag)) return false;
     if (dueFrom !== null || dueTo !== null) {
       if (task.due === null) return false;
