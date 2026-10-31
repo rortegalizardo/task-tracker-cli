@@ -381,7 +381,7 @@ function removeLeftoverTemps(dir) {
     try {
       process.kill(Number(m[1]), 0);
     } catch (err) {
-      alive = err.code === 'ESRCH';
+      alive = err.code !== 'ESRCH';
     }
     if (alive) continue; // EPERM or anything else: keep
     try {
