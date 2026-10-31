@@ -377,12 +377,13 @@ function removeLeftoverTemps(dir) {
   for (const name of names) {
     const m = TASKS_TEMP.exec(name);
     if (m === null) continue;
+    let alive = true;
     try {
       process.kill(Number(m[1]), 0);
-      continue; // alive
     } catch (err) {
-      if (err.code !== 'ESRCH') continue; // EPERM or anything else: keep
+      alive = err.code === 'ESRCH';
     }
+    if (alive) continue; // EPERM or anything else: keep
     try {
       fs.unlinkSync(path.join(dir, name));
     } catch {
